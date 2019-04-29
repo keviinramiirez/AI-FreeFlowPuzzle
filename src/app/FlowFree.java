@@ -1,3 +1,4 @@
+package app;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -5,18 +6,15 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
-import javax.swing.JTextPane;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
-import FlowPointer.FlowPointer;
+import flowPointer.FlowPointer;
+import priorityQueue.HeapPriorityQueue;
 
-import javax.swing.JFormattedTextField;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
@@ -26,26 +24,26 @@ import java.awt.event.ItemEvent;
 
 public class FlowFree 
 {
-	
 	private JFrame frame;
 	private final JButton btnNewButton = new JButton("Radomize Colors");
 	private final JPanel panel_1 = new JPanel();
 	private final JPanel panel_2 = new JPanel();
-	private final JComboBox pairColorsComboBox = new JComboBox();
-	
+	private final JComboBox<Integer> pairColorsComboBox = new JComboBox<>();
+	private final JComboBox<Integer> columnComboBox = new JComboBox<>(), rowComboBox = new JComboBox<>();
+	private JPanel grid = new JPanel();
+
 	static int MINIMUM_DIMENSIONS = 2, MAXIMUM_DIMENSIONS = 12;
 	JPanel[][] panels = new JPanel[2][2];
 	FlowPointer[][] flowPointers = new FlowPointer[2][2];
-	LinkedList<String> positions = new LinkedList<>();;
+	HeapPriorityQueue<Integer, FlowPointer> pq = new HeapPriorityQueue<>();
+	LinkedList<String> positions;
 	LinkedList<String> initialPositions;
 	
 	
-	Iterator<Color> colorIterator = (new ColorManager()).iterator();
-	JPanel grid = new JPanel();
-	JComboBox columnComboBox = new JComboBox(), rowComboBox = new JComboBox();
-	int nCols = MINIMUM_DIMENSIONS, nRows = MINIMUM_DIMENSIONS;
-	int nPairFlowPointer = 2;
 	
+	Iterator<Color> colorIterator = (new ColorManager()).iterator();
+	int nCols = MINIMUM_DIMENSIONS, nRows = MINIMUM_DIMENSIONS;
+	int nPairFlowPointer = nCols;
 
 	/**
 	 * Launch the application.
@@ -68,7 +66,11 @@ public class FlowFree
 	 */
 	public FlowFree() {
 		initialize();
+		
+		
 	}
+	
+//	PaintCell
 	
 	public void clearPanels() {
 		initialPositions = new LinkedList<>();
@@ -84,13 +86,14 @@ public class FlowFree
 	
 	
 	public void createGrid() {
-		initialPositions = new LinkedList<>();
 		grid = new JPanel();
 		grid.setLayout(new GridLayout(nCols, nRows));
 		frame.getContentPane().remove(grid);
-
-		panels = new JPanel[nCols][nRows];
 		frame.getContentPane().add(grid, BorderLayout.CENTER);
+
+		this.initialPositions = new LinkedList<>();
+		this.panels = new JPanel[nCols][nRows];
+		this.flowPointers = new FlowPointer[nCols][nRows];
 		
 		for (int c = 0; c < nCols; c++) {
 			for (int r = 0; r < nRows; r++) {
@@ -98,6 +101,7 @@ public class FlowFree
 				panel.setBorder(new LineBorder(new Color(0, 0, 0)));
 				grid.add(panel);
 				panels[c][r] = panel;
+				flowPointers[c][r] = new FlowPointer();
 			}
 		}
 		grid.revalidate();
@@ -114,11 +118,12 @@ public class FlowFree
 			randomRow = rand.nextInt(nRows);
 		} while (initialPositions.contains(randomCol+","+randomRow));
 		
-		initialPositions.add(randomCol+","+randomRow);
-		panels[randomCol][randomRow].setBackground(color);
+		this.initialPositions.add(randomCol+","+randomRow);
+		this.panels[randomCol][randomRow].setBackground(color);
+		this.flowPointers[randomCol][randomRow].color = color;
 	}
 	
-	
+
 	private void randomizeFlowPointers() {
 		this.clearPanels();
 		if (nCols*nRows/2 < this.nPairFlowPointer) {
@@ -130,8 +135,24 @@ public class FlowFree
 			paintRandomCell(color);
 			paintRandomCell(color);
 		}
+		
+		
+//		for (int c = 0; c < nCols; c++) {
+//			for (int r = 0; r < nRows; r++) {
+//				int countAdjacents = 0;
+//				for (int[] dir : DIRECTIONS)
+//					if (this.flowPointers[c + dis[0]][r + dis[1]])
+//			}
+//		}
+//		
+//		for (int[] dir : DIRECTIONS)
+//			if (solve(currStep.row + dir[0], currStep.col + dir[1]))
+//				return true;
 	}
 
+	
+	private static int[][] DIRECTIONS = 
+		{{ 0, 1 }, { -1, 0 }, { 0, -1 }, { 1, 0 }};// right, up, left, down
 
 	/**
 	 * Initialize the contents of the frame.
