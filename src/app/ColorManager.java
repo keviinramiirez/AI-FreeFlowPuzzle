@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 public class ColorManager implements Iterable<Color>
 {
+	
 	int i = 0;
 	public static final Color DEFAULT_COLOR = new Color(240, 240, 240);
 	Color[] colors = {
@@ -13,9 +14,7 @@ public class ColorManager implements Iterable<Color>
 	};
 
 	
-	public ColorManager() {
-		
-	}
+	public ColorManager() {}
 	public class ColorIterator implements Iterator<Color> 
 	{
 		@Override
