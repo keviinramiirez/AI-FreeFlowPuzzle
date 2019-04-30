@@ -2,8 +2,6 @@ package util;
 
 import java.util.Comparator;
 
-import app.Pos;
-
 public class HeuristicComparator implements Comparator<Integer>
 {
 	@Override

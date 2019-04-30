@@ -33,8 +33,8 @@ public class App
 	static int MINIMUM_DIMENSIONS = 2, MAXIMUM_DIMENSIONS = 12;
 
 	JPanel[][] gridPanel = new JPanel[Grid.ROWS][Grid.COLS];
-	Solver solver = new Solver();
 	public Grid grid = new Grid();
+	private final JButton btnNewButton = new JButton("Solve Now");
 
 
 	/**
@@ -100,14 +100,14 @@ public class App
 		for (GridCell currInitPointer : hardCodePointers.generateInitialFlowPointers1()) {
 			int row = currInitPointer.pos.row;
 			int col = currInitPointer.pos.col;
-			
+
 			// UI Grid
 			this.gridPanel[row][col].setBackground(currInitPointer.color);
 
 			// Grid Class
 			grid.getInitialFlowPointers().add(currInitPointer.pos);
 			this.grid.getGridCells()[row][col] = currInitPointer;
-			
+
 			// process to set pairFlowPointer property of each pair of FlowPointers
 			if (cellPainted.containsKey(currInitPointer.color)) {
 				GridCell pairPointer = cellPainted.get(currInitPointer.color);
@@ -128,7 +128,7 @@ public class App
 		// inserts the most constraint InitialPointers
 		HashSet<GridCell> visitedCells = new HashSet<>();
 		for (Pos initPos : grid.getInitialFlowPointers()) {
-			// initial Flow Pointers
+			// Initial Flow Pointers
 			GridCell ifp = this.grid.getGridCells()[initPos.row][initPos.col];
 			int adjCount = ifp.countActiveAdjacent();
 			if (visitedCells.contains(ifp.pairFlowPointer)) {
@@ -142,6 +142,11 @@ public class App
 			else
 				visitedCells.add(ifp);
 		}
+	}
+	
+	public void solve() {
+		Solver solver = new Solver(grid);
+		
 	}
 	
 	
@@ -158,8 +163,8 @@ public class App
 //		this.matrixPanel[randomCol][randomRow].setBackground(color);
 //		this.gridsssss.flowPointers[randomCol][randomRow].color = color;
 //	}
-	
-
+//	
+//
 //	private void randomizeFlowPointers() {
 //		this.clearPanels();
 //		if (grid.COLS*grid.ROWS/2 < this.nPairFlowPointer) {
@@ -197,6 +202,15 @@ public class App
 		panel.add(panel_1, BorderLayout.NORTH);
 		panel_1.add(rowComboBox);
 		panel_1.add(columnComboBox);
+		panel_1.add(btnCreateGrid);
+		
+		
+		btnCreateGrid.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				createGrid();
+			}
+		});
 		
 		
 		rowComboBox.addItemListener(new ItemListener() {
@@ -212,15 +226,13 @@ public class App
 		});
 		
 		panel.add(panel_2, BorderLayout.CENTER);
-		
-		
-		btnCreateGrid.addMouseListener(new MouseAdapter() {
+		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				createGrid();
+				solve();
 			}
 		});
-		panel_2.add(btnCreateGrid);
+		panel_2.add(btnNewButton);
 	}
 
 }

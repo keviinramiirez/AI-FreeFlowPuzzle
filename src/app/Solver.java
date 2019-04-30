@@ -1,15 +1,13 @@
 package app;
 
-import priorityQueue.HeapPriorityQueue;
-
 public class Solver 
 {
-	Grid grid = new Grid();
+	Grid grid;
 	Validation validation = new Validation();
-	HeapPriorityQueue<Integer, GridCell> pq = new HeapPriorityQueue<>();
 
-	public Solver() {
-		
+
+	public Solver(Grid grid) {
+		this.grid = grid;
 	}
 	
 	public boolean validate(GridCell cell) {
