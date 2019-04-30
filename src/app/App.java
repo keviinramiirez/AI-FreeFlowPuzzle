@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -94,10 +95,21 @@ public class App
 		
 		// Hard Coded Flow Pointers
 		HardCodeFlowPointers hardCodePointers = new HardCodeFlowPointers(grid);
+		initializeInitialPointers(hardCodePointers.generateInitialFlowPointers1());
+		
+		// inserts the most constraint Initial Pointers within the priority queue
+		this.queueMostConstraintInitialPointers();
+	}
+	
+	
+	/** Paints the grid panel cells that have with the given Initial Flow Pointers respectively.
+	 *  Also, pairs (pairFlowPointer property) the initial flow pointers that have same colors.
+	 */
+	private void initializeInitialPointers(ArrayList<GridCell> initialFlowPointers) {
 		HashMap<Color, GridCell> cellPainted = new HashMap<>();
 
 		// paints UI grid and sets each pairFlowPointer property of the Initial Pointers
-		for (GridCell currInitPointer : hardCodePointers.generateInitialFlowPointers1()) {
+		for (GridCell currInitPointer : initialFlowPointers) {
 			int row = currInitPointer.pos.row;
 			int col = currInitPointer.pos.col;
 
@@ -117,16 +129,16 @@ public class App
 			}
 			else cellPainted.put(currInitPointer.color, currInitPointer);
 		}
+		
+		// updates the grid panel
 		gridComponent.revalidate();
 		gridComponent.repaint();
-		
-		// inserts the most constraint Initial Pointers within the priority queue
-		this.queueMostConstraintInitialPointers();
 	}
 	
-	/** Gets */
+	/** Queues the most constraint initial pointer of each pair. <br>
+	 *  *Note: The more non-empty adjacent cells, the more constraint it is.
+	 */
 	private void queueMostConstraintInitialPointers() {
-		// inserts the most constraint InitialPointers
 		HashSet<GridCell> visitedCells = new HashSet<>();
 		
 		// count amount of adjacent cells of each initial pointer and
@@ -139,7 +151,7 @@ public class App
 			if (visitedCells.contains(ifp.pairFlowPointer)) {
 				int pairPointerAdjCount = ifp.pairFlowPointer.countActiveAdjacent();
 				
-				// inserts the most constraint grid cell of this pair
+				// inserts the most constraint initial pointer of this pair
 				if (adjCount >= pairPointerAdjCount)
 					this.grid.pq.insert(adjCount, ifp);
 				else
