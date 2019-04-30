@@ -54,19 +54,20 @@ public class GridCell
 		return cell.isActiveCell() && cell == pairFlowPointer;
 	}
 	
+	
 	public boolean isInitialFlowPointer() {
 		return this.isActiveCell() && grid.initialFlowPointers.contains(this);
 	}
 	
-	public GridCell getAdjacentCell(int incrRow, int incrCol) {
-		try {
+	/** Return null if row index or column index is out of bounds of the game matrix.
+	 *  Otherwise, returns the Grid Cell that is <i>incrRow</i> far horizontally
+	 *  and <i>incrCol</i> far vertically.
+	 */
+	private GridCell getAdjacentCell(int incrRow, int incrCol) {
+		// check
 		return (pos.row+incrRow >= Grid.ROWS || pos.col+incrCol >= Grid.COLS)
 				? null 
 				: grid.gridCells[pos.row + incrRow][pos.col + incrCol];
-		} catch(NullPointerException e) {
-			System.out.println();
-			return null;
-		}
 	}
 	
 	public int countActiveAdjacent() {
