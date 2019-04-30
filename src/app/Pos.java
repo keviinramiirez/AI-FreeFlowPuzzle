@@ -7,4 +7,8 @@ public class Pos
 		this.col = col;
 		this.row = row;
 	}
+	
+	public String toString() {
+		return "("+ row +","+ col +")";
+	}
 }

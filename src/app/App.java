@@ -6,13 +6,11 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.swing.border.LineBorder;
 
-import priorityQueue.HeapPriorityQueue;
 import util.HardCodeFlowPointers;
 
 import javax.swing.JComboBox;
@@ -36,13 +34,8 @@ public class App
 
 	JPanel[][] gridPanel = new JPanel[Grid.ROWS][Grid.COLS];
 	Solver solver = new Solver();
-	Grid grid = new Grid();
-	
-//	LinkedList<Pos> positions;
-//	LinkedList<Pos> initialPositions;
-//
-//	Iterator<Color> colorIterator = (new ColorManager()).iterator();
-//	int nPairFlowPointer = nCols;
+	public Grid grid = new Grid();
+
 
 	/**
 	 * Launch the application.
@@ -59,6 +52,7 @@ public class App
 			}
 		});
 	}
+	
 
 	/**
 	 * Create the application.
@@ -93,27 +87,61 @@ public class App
 		for (int r = 0; r < Grid.ROWS; r++) {
 			for (int c = 0; c < Grid.COLS; c++) {
 				gridPanel[r][c] = new JPanel();
-//				JPanel panel = new JPanel();
 				gridPanel[r][c].setBorder(new LineBorder(new Color(0, 0, 0)));
 				gridComponent.add(gridPanel[r][c]);
 			}
 		}
-		// Hard Coded Flow Pointers
 		
-		HardCodeFlowPointers hardCodePointers = new HardCodeFlowPointers();
-		for (GridCell initialPointer : hardCodePointers.generateInitialFlowPointers1()) {
-			int row = initialPointer.pos.row;
-			int col = initialPointer.pos.col;
-			grid.initialFlowPointerPos.add(initialPointer.pos);
-			grid.gridCells[row][col] = initialPointer;
-			
-			// UI gridPanel
-			gridPanel[row][col].setBackground(initialPointer.color);
-//			gridComponent.add(gridPanel[col][row]);
-		}
+		// Hard Coded Flow Pointers
+		HardCodeFlowPointers hardCodePointers = new HardCodeFlowPointers(grid);
+		HashMap<Color, GridCell> cellPainted = new HashMap<>();
 
+		// paints UI grid and sets each pairFlowPointer property of the Initial Pointers
+		for (GridCell currInitPointer : hardCodePointers.generateInitialFlowPointers1()) {
+			int row = currInitPointer.pos.row;
+			int col = currInitPointer.pos.col;
+			
+			// UI Grid
+			this.gridPanel[row][col].setBackground(currInitPointer.color);
+
+			// Grid Class
+			grid.getInitialFlowPointers().add(currInitPointer.pos);
+			this.grid.getGridCells()[row][col] = currInitPointer;
+			
+			// process to set pairFlowPointer property of each pair of FlowPointers
+			if (cellPainted.containsKey(currInitPointer.color)) {
+				GridCell pairPointer = cellPainted.get(currInitPointer.color);
+				currInitPointer.pairFlowPointer = pairPointer;
+				pairPointer.pairFlowPointer = currInitPointer;
+				cellPainted.remove(currInitPointer.color);
+			}
+			else cellPainted.put(currInitPointer.color, currInitPointer);
+		}
 		gridComponent.revalidate();
 		gridComponent.repaint();
+		
+		// inserts the most constraint Initial Pointers within the priority queue
+		this.queueMostConstraintPointers();
+	}
+	
+	private void queueMostConstraintPointers() {
+		// inserts the most constraint InitialPointers
+		HashSet<GridCell> visitedCells = new HashSet<>();
+		for (Pos initPos : grid.getInitialFlowPointers()) {
+			// initial Flow Pointers
+			GridCell ifp = this.grid.getGridCells()[initPos.row][initPos.col];
+			int adjCount = ifp.countActiveAdjacent();
+			if (visitedCells.contains(ifp.pairFlowPointer)) {
+				int pairPointerAdjCount = ifp.pairFlowPointer.countActiveAdjacent();
+				
+				if (adjCount >= pairPointerAdjCount)
+					this.grid.pq.insert(adjCount, ifp);
+				else
+					this.grid.pq.insert(pairPointerAdjCount, ifp.pairFlowPointer);
+			}
+			else
+				visitedCells.add(ifp);
+		}
 	}
 	
 	
@@ -153,7 +181,6 @@ public class App
 		frame = new JFrame();
 		frame.setBounds(1600, 800, 700, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		gridComponent.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
 		frame.getContentPane().add(gridComponent, BorderLayout.CENTER);
 		gridComponent.setLayout(new GridLayout(Grid.ROWS, Grid.COLS, 0, 0));

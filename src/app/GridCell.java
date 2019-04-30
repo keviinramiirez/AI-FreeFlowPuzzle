@@ -9,7 +9,7 @@ import java.awt.Color;
  */
 public class GridCell 
 {
-	private Grid grid = new Grid();
+	private Grid grid;
 	public Pos pos;
 	public Color color;
 	
@@ -19,11 +19,11 @@ public class GridCell
 	public GridCell previousPointer, pairFlowPointer;
 	public boolean wasMoveForced;
 	
-	public GridCell(Pos pos) {
-		this(pos, Grid.EMPTY_COLOR, 0, null, null);
+	public GridCell(Grid grid, Pos pos) {
+		this(grid, pos, Grid.EMPTY_COLOR, 0, null, null);
 	}
-	public GridCell(Pos pos, int heuristic, Color color) {
-		this(pos, color, heuristic, null, null);
+	public GridCell(Grid grid, Pos pos, int heuristic, Color color) {
+		this(grid, pos, color, heuristic, null, null);
 	}
 	/** 
 	 *  @param pos position of this cell
@@ -32,8 +32,9 @@ public class GridCell
 	 *  @param pairFlowPointer this cell's pair color pointer. Null if this cell is non empty.
 	 *  @param previousPointer reference to the previous pointer, tracked to move backwards to it.
 	 */
-	public GridCell(Pos pos, Color color, int heuristic,
+	public GridCell(Grid grid, Pos pos, Color color, int heuristic,
 			GridCell pairFlowPointer, GridCell previousPointer) {
+		this.grid = grid;
 		this.pos = pos;
 		this.color = color;
 		this.heuristic = heuristic;
@@ -54,14 +55,34 @@ public class GridCell
 	}
 	
 	public boolean isInitialFlowPointer() {
-		return this.isActiveCell() && grid.initialFlowPointerPos.contains(pos);
+		return this.isActiveCell() && grid.initialFlowPointers.contains(this);
 	}
-
+	
+	public GridCell getAdjacentCell(int incrRow, int incrCol) {
+		try {
+		return (pos.row+incrRow >= Grid.ROWS || pos.col+incrCol >= Grid.COLS)
+				? null 
+				: grid.gridCells[pos.row + incrRow][pos.col + incrCol];
+		} catch(NullPointerException e) {
+			System.out.println();
+			return null;
+		}
+	}
+	
 	public int countActiveAdjacent() {
 		int count = 0;
-		for (int[] dir : grid.DIRECTIONS)
-			if (grid.gridCells[pos.row + dir[0]][pos.col+ dir[1]].isActiveCell())
+		for (int[] dir : Grid.DIRECTIONS) {
+			GridCell adjCell = getAdjacentCell(dir[0], dir[1]);
+			if (adjCell != null && adjCell.isActiveCell())
 				count++;
+		}
 		return count;
+	}
+	
+	
+	public String toString() {
+		return (this == null) ? "null" :
+			"Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairFlowPointer.pos 
+			+" : previousPointerPos="+ previousPointer.pos +" : forced="+ wasMoveForced;
 	}
 }

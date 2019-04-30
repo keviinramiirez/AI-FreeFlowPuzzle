@@ -56,7 +56,7 @@ public abstract class AbstractPriorityQueue<K,V>
 	/**
 	 * Returns true if the queue is empty; otherwise, returns false. 
 	 */
-	public boolean isEmpty() { 
+	public boolean isEmpty() {
 		return this.size() == 0; 
 	}
 	
@@ -100,13 +100,11 @@ public abstract class AbstractPriorityQueue<K,V>
 		
 		@Override
 		public K getKey() {
-			// TODO Auto-generated method stub
 			return key;
 		}
 
 		@Override
 		public V getValue() {
-			// TODO Auto-generated method stub
 			return value;
 		}
 

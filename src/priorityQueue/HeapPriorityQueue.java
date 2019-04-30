@@ -65,6 +65,12 @@ public class HeapPriorityQueue<K, V> extends AbstractPriorityQueue<K, V> {
 		return entry;
 	}
 	
+	public Entry<K, V> remove(K key) throws IllegalArgumentException {
+		if (!validate(key)) 
+			throw new IllegalArgumentException("Invalid key."); 
+		return remove(key);
+	}
+	
 	public void display() { 
 		heap.display(); 
 	}
