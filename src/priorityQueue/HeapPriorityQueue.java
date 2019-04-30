@@ -1,6 +1,7 @@
 package priorityQueue;
 
 import java.util.Comparator;
+import java.util.Iterator;
 
 import heap.Heap;
 import interfaces.Entry;
@@ -15,7 +16,8 @@ import interfaces.Entry;
  * @param <V>
  */
 
-public class HeapPriorityQueue<K, V> extends AbstractPriorityQueue<K, V> {
+public class HeapPriorityQueue<K, V> extends AbstractPriorityQueue<K, V> implements Iterable<Entry<K, V>> 
+{
 	
 	// The elements of the priority queue will be stored in a heap. 
 	// Since a Heap is a particular case of a binary tree, we are going
@@ -63,6 +65,10 @@ public class HeapPriorityQueue<K, V> extends AbstractPriorityQueue<K, V> {
 		heap.add(entry);
 		
 		return entry;
+	}
+	
+	public Iterator<Entry<K, V>> iterator() {
+		return heap.iterator();
 	}
 	
 	public Entry<K, V> remove(K key) throws IllegalArgumentException {

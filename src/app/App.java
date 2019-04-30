@@ -63,8 +63,7 @@ public class App
 	}
 		
 	public void clearPanels() {
-//		initialPositions = new LinkedList<>();
-//		positions = new LinkedList<>();
+//		this.grid.initialFlowPointers = new HashSet<Pos>();
 //		for (int c = 0; c < nCols; c++) {
 //			for (int r = 0; r < nRows; r++) {
 //				positions.add(new Pos(c, r));
@@ -162,8 +161,9 @@ public class App
 		}
 	}
 	
-	public void solve() {
+	public void solvePuzzle() {
 		Solver solver = new Solver(grid);
+		
 		
 	}
 	
@@ -247,7 +247,7 @@ public class App
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				solve();
+				solvePuzzle();
 			}
 		});
 		panel_2.add(btnNewButton);
