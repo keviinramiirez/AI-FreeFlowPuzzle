@@ -20,23 +20,25 @@ public class Validation
 		int adjCount = cell.countActiveAdjacent();
 		if (adjCount == 1) return true;
 		if (adjCount == 0) return false;
-		
 
 		return true;
 	}
 	
-	/** Returns true if the position of the given cell constraints its adjacent cells. */
-	boolean constraintsAdjacents(GridCell cell, Boolean pairPointerFound) {
-		int currRow = cell.pos.row;
-		int currCol = cell.pos.col;
+	/** Returns true if the position of the given flow pointer, constraints its adjacent cells.
+	 *  @param flowPointer current analyzed flow pointer.
+	 *  @param pairPointerFound boolean reference to be used when exiting the method.
+	 */
+	boolean constraintsAdjacents(GridCell flowPointer, Boolean pairPointerFound) {
+		int currRow = flowPointer.pos.row;
+		int currCol = flowPointer.pos.col;
 
-		for (int[] dir : grid.DIRECTIONS) {
+		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell currAdjCell = grid.gridCells
 					[currCol + dir[0]][currRow + dir[1]];
 			
 			int adjCount = currAdjCell.countActiveAdjacent();
 
-			if (cell.isPairFlowPointer(currAdjCell))
+			if (flowPointer.isPairFlowPointer(currAdjCell))
 				pairPointerFound = true;
 			
 			if (currAdjCell.isActiveCell() && currAdjCell.isInitialFlowPointer()

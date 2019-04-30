@@ -27,7 +27,6 @@ public class App
 	private final JButton btnCreateGrid = new JButton("Create Grid");
 	private final JPanel panel_1 = new JPanel();
 	private final JPanel panel_2 = new JPanel();
-//	private final JComboBox<Integer> pairColorsComboBox = new JComboBox<>();
 	private final JComboBox<Integer> columnComboBox = new JComboBox<>(), rowComboBox = new JComboBox<>();
 	private JPanel gridComponent = new JPanel();
 
@@ -94,7 +93,7 @@ public class App
 		
 		// Hard Coded Flow Pointers
 		HardCodeFlowPointers hardCodePointers = new HardCodeFlowPointers(grid);
-		initializeInitialPointers(hardCodePointers.generateInitialFlowPointers1());
+		initializeInitialPointers(hardCodePointers.generateInitFlowPointers1());
 		
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
@@ -122,8 +121,8 @@ public class App
 			// process to set pairFlowPointer property of each pair of FlowPointers
 			if (cellPainted.containsKey(currInitPointer.color)) {
 				GridCell pairPointer = cellPainted.get(currInitPointer.color);
-				currInitPointer.pairFlowPointer = pairPointer;
-				pairPointer.pairFlowPointer = currInitPointer;
+				currInitPointer.pairInitialFlowPointer = pairPointer;
+				pairPointer.pairInitialFlowPointer = currInitPointer;
 				cellPainted.remove(currInitPointer.color);
 			}
 			else cellPainted.put(currInitPointer.color, currInitPointer);
@@ -147,14 +146,14 @@ public class App
 			GridCell ifp = this.grid.getGridCells()[initPos.row][initPos.col];
 			int adjCount = ifp.countActiveAdjacent();
 			
-			if (visitedCells.contains(ifp.pairFlowPointer)) {
-				int pairPointerAdjCount = ifp.pairFlowPointer.countActiveAdjacent();
+			if (visitedCells.contains(ifp.pairInitialFlowPointer)) {
+				int pairPointerAdjCount = ifp.pairInitialFlowPointer.countActiveAdjacent();
 				
 				// inserts the most constraint initial pointer of this pair
 				if (adjCount >= pairPointerAdjCount)
 					this.grid.pq.insert(adjCount, ifp);
 				else
-					this.grid.pq.insert(pairPointerAdjCount, ifp.pairFlowPointer);
+					this.grid.pq.insert(pairPointerAdjCount, ifp.pairInitialFlowPointer);
 			}
 			else
 				visitedCells.add(ifp);

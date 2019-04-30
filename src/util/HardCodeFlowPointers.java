@@ -15,7 +15,7 @@ public class HardCodeFlowPointers
 		this.grid = grid;
 	}
 	
-	public ArrayList<GridCell> generateInitialFlowPointers1() {
+	public ArrayList<GridCell> generateInitFlowPointers1() {
 		// RED
 		GridCell red28 = new GridCell(grid, new Pos(2, 8), 0, Color.red);
 		GridCell red53 = new GridCell(grid, new Pos(5, 3), 0, Color.red);

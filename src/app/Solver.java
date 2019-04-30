@@ -22,12 +22,13 @@ public class Solver
 		for (Entry<Integer, GridCell> entry : pq) {
 			GridCell cell = entry.getValue();
 			validate(cell);
-
 		}
 	}
 	
 	public boolean validate(GridCell cell) {
-		validation.isForceMove(cell);
+		if (validation.isForceMove(cell) || validation.)
+			return false;
+		
 		return true;
 	}
 }

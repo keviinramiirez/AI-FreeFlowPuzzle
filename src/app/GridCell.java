@@ -9,15 +9,30 @@ import java.awt.Color;
  */
 public class GridCell 
 {
+	/** Contains the grid properties such as the 2d array of grid cells, 
+	 *  set of all initialFlowPointers, and priority queue of initialPointers 
+	 *  to move first.
+	 */
 	private Grid grid;
+	
+	/** This Grid Cell's position within the grid. */
 	public Pos pos;
+	
+	/** This Grid Cell's color. */
 	public Color color;
 	
-	// these variables have values (not zero nor null) 
-	// only if this Grid Cell is an Active Cell.
+	/** This Grid Cell's heuristic value. */
 	public int heuristic = 0;
-	public GridCell previousPointer, pairFlowPointer;
+	
+	/** The previous pointer to backtrack to. */
+	public GridCell previousPointer;
+	
+	/** This Grid Cell's Pair Initial Flow Pointer. */
+	public GridCell pairInitialFlowPointer;
+	
+	/** Tells us if this Grid Cell was forced to move to this position. */
 	public boolean wasMoveForced;
+	
 	
 	public GridCell(Grid grid, Pos pos) {
 		this(grid, pos, Grid.EMPTY_COLOR, 0, null, null);
@@ -40,7 +55,7 @@ public class GridCell
 		this.heuristic = heuristic;
 
 		this.previousPointer = previousPointer;
-		this.pairFlowPointer = pairFlowPointer;
+		this.pairInitialFlowPointer = pairFlowPointer;
 		this.wasMoveForced = false;
 	}
 	
@@ -51,7 +66,7 @@ public class GridCell
 	
 	/** Return true if given cell is the pair of this FlowPointer. */
 	public boolean isPairFlowPointer(GridCell cell) {
-		return cell.isActiveCell() && cell == pairFlowPointer;
+		return cell.isActiveCell() && cell == pairInitialFlowPointer;
 	}
 	
 	
@@ -83,7 +98,7 @@ public class GridCell
 	
 	public String toString() {
 		return (this == null) ? "null" :
-			"Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairFlowPointer.pos 
+			"Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairInitialFlowPointer.pos 
 			+" : previousPointerPos="+ previousPointer.pos +" : forced="+ wasMoveForced;
 	}
 }
