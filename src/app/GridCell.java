@@ -1,6 +1,7 @@
 package app;
 
 import java.awt.Color;
+import java.util.LinkedList;
 
 /** This class represents each Grid Cell.  Can either be an Empty Cell 
  *  or an Active Cell (colored cell). 
@@ -63,36 +64,36 @@ public class GridCell
 	public boolean isActiveCell() {
 		return !color.equals(Grid.EMPTY_COLOR);
 	}
-	
+		
 	/** Return true if given cell is the pair of this FlowPointer. */
 	public boolean isPairFlowPointer(GridCell cell) {
 		return cell.isActiveCell() && cell == pairInitialFlowPointer;
 	}
 	
-	
+	/** Returns true if this is an INTITIAL Flow Pointer. */
 	public boolean isInitialFlowPointer() {
 		return this.isActiveCell() && grid.initialFlowPointers.contains(this);
 	}
 	
-	/** Return null if row index or column index is out of bounds of the game matrix.
+	/** Returns null if row index or column index is out of bounds of the game matrix.
 	 *  Otherwise, returns the Grid Cell that is <i>incrRow</i> far horizontally
 	 *  and <i>incrCol</i> far vertically.
 	 */
 	private GridCell getAdjacentCell(int incrRow, int incrCol) {
-		// check
 		return (pos.row+incrRow >= Grid.ROWS || pos.col+incrCol >= Grid.COLS)
 				? null 
 				: grid.gridCells[pos.row + incrRow][pos.col + incrCol];
 	}
 	
-	public int countActiveAdjacent() {
-		int count = 0;
+	/** Counts amount of Active Adjacent this Grid Cell has. */
+	public LinkedList<GridCell> getActiveAdjacents() {
+		LinkedList<GridCell> activeCells = new LinkedList<>();
 		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell adjCell = getAdjacentCell(dir[0], dir[1]);
 			if (adjCell != null && adjCell.isActiveCell())
-				count++;
+				activeCells.add(adjCell);
 		}
-		return count;
+		return activeCells;
 	}
 	
 	
@@ -102,3 +103,64 @@ public class GridCell
 			+" : previousPointerPos="+ previousPointer.pos +" : forced="+ wasMoveForced;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//
+//
+//
+//
+///** Counts the amount of Active Cells that are adjacent to the given position*/
+//public static int countActiveAdjacent(Grid grid, Pos pos) {
+//	int count = 0;
+//	for (int[] dir : Grid.DIRECTIONS) {
+//		if (pos.row + dir[0] >= Grid.ROWS || pos.col + dir[1] >= Grid.COLS)
+//			
+////			(pos.row+incrRow >= Grid.ROWS || pos.col+incrCol >= Grid.COLS)
+//		GridCell currAdjCell = getAdjacentCell(dir[0], dir[1]);
+////		grid.gridCells
+////				[pos.row + dir[0]][pos.col + dir[1]];
+//		if (currAdjCell != null && currAdjCell.isActiveCell())
+//			count++;
+//	}
+//	return count;
+//}
+//
+///** Counts this Grid Cell's amount of Active Adjacent. */
+//public int countActiveAdjacent() {
+//	return GridCell.countActiveAdjacent(grid, this.pos);
+//}
+//
+///** Returns null if row index or column index is out of bounds of the game matrix.
+// *  Otherwise, returns the Grid Cell that is <i>incrRow</i> away horizontally
+// *  and <i>incrCol</i> away vertically.
+// */
+//private GridCell getAdjacentCell(int incrRow, int incrCol) {
+//	return (pos.row+incrRow >= Grid.ROWS || pos.col+incrCol >= Grid.COLS)
+//			? null 
+//			: grid.gridCells[pos.row + incrRow][pos.col + incrCol];
+//}
+//
+//
+//public String toString() {
+//	return (this == null) ? "null" :
+//		"Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairInitialFlowPointer.pos 
+//		+" : previousPointerPos="+ previousPointer.pos +" : forced="+ wasMoveForced;
+//}
+
+

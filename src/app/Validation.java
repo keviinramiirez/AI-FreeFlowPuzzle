@@ -1,50 +1,66 @@
 package app;
 
+import java.util.LinkedList;
+
 public class Validation 
 {
 	Grid grid = new Grid();
-//	boolean validateProcess() {
-//		
-//	}
-	
-	
-	
-	boolean isForceMove(GridCell cell) {
-		Boolean pairPointerFound = false; //shall be true if at one of its adjacent is its pair
-		
-		if (constraintsAdjacents(cell, pairPointerFound))
-			return false; //backtrack to previous node
-		
-		if (pairPointerFound) return true;
-		
-		int adjCount = cell.countActiveAdjacent();
-		if (adjCount == 1) return true;
-		if (adjCount == 0) return false;
 
+	boolean causesStrandedRegions(GridCell flowPointer) {
+//		for (int r = 0; r < Grid.ROWS; r++) {
+//			for (int c = 0; c < Grid.COLS; c++) {
+//				
+//			}
+//		}
+		
+		
 		return true;
+	}
+	
+	boolean puzzleIsSolved() {
+		return false;
+	}
+	
+	/** Returns null if the given flow pointer has no forces move. If it has,
+	 *  then returns the position to which the flow pointer is required to to move. 
+	 */
+	LinkedList<GridCell> cellsToConsider(GridCell flowPointer) {
+		LinkedList<GridCell> cellsToConsider = new LinkedList<>();
+		if (constraintsAdjacents(flowPointer, cellsToConsider))
+			return cellsToConsider; //backtrack to previous node
+
+		// at this point, 
+		LinkedList<GridCell> activeAdjArray = flowPointer.getActiveAdjacents();
+		if (activeAdjArray.size() == 1) return cellsToConsider;
+		if (activeAdjArray.size() == 0) return null;
+
+		return activeAdjArray;
 	}
 	
 	/** Returns true if the position of the given flow pointer, constraints its adjacent cells.
 	 *  @param flowPointer current analyzed flow pointer.
 	 *  @param pairPointerFound boolean reference to be used when exiting the method.
 	 */
-	boolean constraintsAdjacents(GridCell flowPointer, Boolean pairPointerFound) {
+	boolean constraintsAdjacents(GridCell flowPointer, LinkedList<GridCell> cellsToConsider) {
 		int currRow = flowPointer.pos.row;
 		int currCol = flowPointer.pos.col;
 
 		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell currAdjCell = grid.gridCells
-					[currCol + dir[0]][currRow + dir[1]];
-			
-			int adjCount = currAdjCell.countActiveAdjacent();
+					[currRow + dir[0]][currCol + dir[1]];
 
-			if (flowPointer.isPairFlowPointer(currAdjCell))
-				pairPointerFound = true;
+			int currAdjCount = currAdjCell.getActiveAdjacents().size();
+
+			if (flowPointer.isPairFlowPointer(currAdjCell)){
+				cellsToConsider.add(currAdjCell);
+				return false;
+			}
 			
 			if (currAdjCell.isActiveCell() && currAdjCell.isInitialFlowPointer()
-					&& !pairPointerFound && adjCount == 0)
+					&& cellsToConsider.size() == 0 && currAdjCount == 0)
 				return true;
-			if (!currAdjCell.isActiveCell() && adjCount == 1)
+			
+			else if (currAdjCount == 1)
 				return true;			
 		}
 		

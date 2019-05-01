@@ -1,6 +1,7 @@
 package app;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import interfaces.Entry;
 import priorityQueue.HeapPriorityQueue;
@@ -18,16 +19,21 @@ public class Solver
 		HeapPriorityQueue<Integer, GridCell> pq = this.grid.pq;
 		GridCell[][] gridCells = this.grid.gridCells;
 		HashSet<Pos> initialFlowPointers = this.grid.initialFlowPointers;
-		
-		for (Entry<Integer, GridCell> entry : pq) {
-			GridCell cell = entry.getValue();
-			validate(cell);
+
+		while (validation.puzzleIsSolved()) {
+			GridCell currFlowPointer = pq.min().getValue();
+
+			LinkedList<GridCell> cellsToConsider = validation.cellsToConsider(currFlowPointer);
+
+			for (int[] dir : Grid.DIRECTIONS) {
+				
+			}
 		}
 	}
-	
-	public boolean validate(GridCell cell) {
-		if (validation.isForceMove(cell) || validation.)
-			return false;
+
+	public boolean validate(GridCell flowPointer) {
+//		if (validation.cellsToConsider(flowPointer) || validation.causesStrandedRegions(flowPointer))
+//			return false;
 		
 		return true;
 	}

@@ -63,17 +63,16 @@ public class App
 		
 	public void clearPanels() {
 //		this.grid.initialFlowPointers = new HashSet<Pos>();
-//		for (int c = 0; c < nCols; c++) {
-//			for (int r = 0; r < nRows; r++) {
+//		for (int r = 0; r < nRows; r++) {
+//			for (int c = 0; c < nCols; c++) {
 //				positions.add(new Pos(c, r));
-//				matrixPanel[c][r].setBackground(new Color(240, 240, 240));
+//				matrixPanel[c][r].setBackground(Grid.EMPTY_COLOR);
 //			}
 //		}
 	}
 
 	
 	public void createGrid() {
-		
 		Grid.ROWS = 10;
 		Grid.COLS = 10;
 
@@ -85,6 +84,7 @@ public class App
 		
 		for (int r = 0; r < Grid.ROWS; r++) {
 			for (int c = 0; c < Grid.COLS; c++) {
+				this.grid.getGridCells()[r][c] = new GridCell(grid, new Pos(r, c));
 				gridPanel[r][c] = new JPanel();
 				gridPanel[r][c].setBorder(new LineBorder(new Color(0, 0, 0)));
 				gridComponent.add(gridPanel[r][c]);
@@ -115,7 +115,7 @@ public class App
 			this.gridPanel[row][col].setBackground(currInitPointer.color);
 
 			// Grid Class
-			grid.getInitialFlowPointers().add(currInitPointer.pos);
+			this.grid.getInitialFlowPointers().add(currInitPointer.pos);
 			this.grid.getGridCells()[row][col] = currInitPointer;
 
 			// process to set pairFlowPointer property of each pair of FlowPointers
@@ -144,11 +144,11 @@ public class App
 		for (Pos initPos : grid.getInitialFlowPointers()) {
 			// Initial Flow Pointers
 			GridCell ifp = this.grid.getGridCells()[initPos.row][initPos.col];
-			int adjCount = ifp.countActiveAdjacent();
-			
+			int adjCount = ifp.getActiveAdjacents().size();
+
 			if (visitedCells.contains(ifp.pairInitialFlowPointer)) {
-				int pairPointerAdjCount = ifp.pairInitialFlowPointer.countActiveAdjacent();
-				
+				int pairPointerAdjCount = ifp.pairInitialFlowPointer.getActiveAdjacents().size();
+
 				// inserts the most constraint initial pointer of this pair
 				if (adjCount >= pairPointerAdjCount)
 					this.grid.pq.insert(adjCount, ifp);
@@ -162,8 +162,7 @@ public class App
 	
 	public void solvePuzzle() {
 		Solver solver = new Solver(grid);
-		
-		
+		solver.solve();
 	}
 	
 	
