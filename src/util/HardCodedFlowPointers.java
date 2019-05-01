@@ -7,11 +7,11 @@ import app.Grid;
 import app.GridCell;
 import app.Pos;
 
-public class HardCodeFlowPointers 
+public class HardCodedFlowPointers 
 {
 	private Grid grid;
 		
-	public HardCodeFlowPointers(Grid grid) {
+	public HardCodedFlowPointers(Grid grid) {
 		this.grid = grid;
 	}
 	
@@ -59,5 +59,32 @@ public class HardCodeFlowPointers
 		initialFlowPointers.add(yellow42);
 		initialFlowPointers.add(yellow94);	
 		return initialFlowPointers;
+	}
+	
+	public ArrayList<GridCell> generateStrandedRegion1() {
+		ArrayList<GridCell> generatedCells = generateInitFlowPointers1();
+		
+		GridCell orange34 = generatedCells.get(6);
+		GridCell orange24 = cellToModify(new Pos(2, 4), Color.orange, orange34, orange34.pairInitialFlowPointer, generatedCells);
+		GridCell orange14 = cellToModify(new Pos(1, 4), Color.orange, orange24, orange24.pairInitialFlowPointer, generatedCells);
+
+		GridCell yellow42 = generatedCells.get(10);
+		GridCell yellow32 = cellToModify(new Pos(3, 2), Color.yellow, yellow42, yellow42.pairInitialFlowPointer, generatedCells);
+		GridCell yellow22 = cellToModify(new Pos(2, 2), Color.yellow, yellow32, yellow32.pairInitialFlowPointer, generatedCells);
+		GridCell yellow12 = cellToModify(new Pos(1, 2), Color.yellow, yellow22, yellow22.pairInitialFlowPointer, generatedCells);
+		GridCell yellow02 = cellToModify(new Pos(0, 2), Color.yellow, yellow12, yellow12.pairInitialFlowPointer, generatedCells);
+		GridCell yellow03 = cellToModify(new Pos(0, 3), Color.yellow, yellow02, yellow02.pairInitialFlowPointer, generatedCells);
+		GridCell yellow04 = cellToModify(new Pos(0, 4), Color.yellow, yellow03, yellow03.pairInitialFlowPointer, generatedCells);
+
+		return generatedCells;
+	}
+	
+	public GridCell cellToModify(Pos pos, Color color, GridCell previous, GridCell pairPointer, ArrayList<GridCell> toAddTo) {
+		GridCell cell = grid.gridCells[pos.row][pos.col];
+		cell.color = color;
+		cell.previousPointer = previous;
+		cell.pairInitialFlowPointer = pairPointer;
+		toAddTo.add(cell);
+		return cell;
 	}
 }

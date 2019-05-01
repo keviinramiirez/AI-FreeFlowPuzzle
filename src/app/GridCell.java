@@ -38,7 +38,7 @@ public class GridCell
 	public GridCell(Grid grid, Pos pos) {
 		this(grid, pos, Grid.EMPTY_COLOR, 0, null, null);
 	}
-	public GridCell(Grid grid, Pos pos, int heuristic, Color color) {
+	public GridCell(Grid grid, Pos pos, Color color, int heuristic) {
 		this(grid, pos, color, heuristic, null, null);
 	}
 	/** 
@@ -64,15 +64,20 @@ public class GridCell
 	public boolean isActiveCell() {
 		return !color.equals(Grid.EMPTY_COLOR);
 	}
-		
-	/** Return true if given cell is the pair of this FlowPointer. */
-	public boolean isPairFlowPointer(GridCell cell) {
-		return cell.isActiveCell() && cell == pairInitialFlowPointer;
-	}
 	
 	/** Returns true if this is an INTITIAL Flow Pointer. */
 	public boolean isInitialFlowPointer() {
 		return this.isActiveCell() && grid.initialFlowPointers.contains(this);
+	}
+	
+	/** Return true if given cell is the pair of this FlowPointer. */
+	public boolean isCellPairFlowPointer(GridCell cell) {
+		return cell.isActiveCell() && cell == this.pairInitialFlowPointer;
+	}
+	
+	/** Returns true if the given cell is the previous cell of this FlowPointer. */
+	public boolean isCellPreviousPointer(GridCell cell) {
+		return cell.isActiveCell() && cell == this.previousPointer;
 	}
 	
 	/** Returns null if row index or column index is out of bounds of the game matrix.
@@ -80,7 +85,8 @@ public class GridCell
 	 *  and <i>incrCol</i> far vertically.
 	 */
 	private GridCell getAdjacentCell(int incrRow, int incrCol) {
-		return (pos.row+incrRow >= Grid.ROWS || pos.col+incrCol >= Grid.COLS)
+		return (pos.row+incrRow >= Grid.ROWS || pos.col+incrCol >= Grid.COLS 
+				|| pos.row+incrRow < 0 || pos.col+incrCol < 0)
 				? null 
 				: grid.gridCells[pos.row + incrRow][pos.col + incrCol];
 	}

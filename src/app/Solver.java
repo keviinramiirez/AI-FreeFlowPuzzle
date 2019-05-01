@@ -23,11 +23,17 @@ public class Solver
 		while (validation.puzzleIsSolved()) {
 			GridCell currFlowPointer = pq.min().getValue();
 
-			LinkedList<GridCell> cellsToConsider = validation.cellsToConsider(currFlowPointer);
-
-			for (int[] dir : Grid.DIRECTIONS) {
-				
+			// cellsToConsider can contain the forced move or the previous move
+			LinkedList<GridCell> cellsToConsider = new LinkedList<>();
+			// is current pointer or its adjacent cells aren't constraint
+			if (!validation.constraintsPointerOrAdjacents(currFlowPointer, cellsToConsider)) {
+				System.out.println("backtrack to previous cell");
+				return;
 			}
+			
+			
+			
+			
 		}
 	}
 

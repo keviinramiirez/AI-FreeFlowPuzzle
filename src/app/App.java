@@ -12,7 +12,7 @@ import java.util.HashSet;
 
 import javax.swing.border.LineBorder;
 
-import util.HardCodeFlowPointers;
+import util.HardCodedFlowPointers;
 
 import javax.swing.JComboBox;
 import javax.swing.JButton;
@@ -92,15 +92,16 @@ public class App
 		}
 		
 		// Hard Coded Flow Pointers
-		HardCodeFlowPointers hardCodePointers = new HardCodeFlowPointers(grid);
-		initializeInitialPointers(hardCodePointers.generateInitFlowPointers1());
+		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
+//		this.initializeInitialPointers(hardCodedPointers.generateInitFlowPointers1());
+		this.initializeInitialPointers(hardCodedPointers.generateStrandedRegion1());
 		
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
 	}
 	
 	
-	/** Paints the grid panel cells that have with the given Initial Flow Pointers respectively.
+	/** Updates and repaints the grid cells with the given Initial Flow Pointers.
 	 *  Also, pairs (pairFlowPointer property) the initial flow pointers that have same colors.
 	 */
 	private void initializeInitialPointers(ArrayList<GridCell> initialFlowPointers) {
@@ -128,7 +129,7 @@ public class App
 			else cellPainted.put(currInitPointer.color, currInitPointer);
 		}
 		
-		// updates the grid panel
+		// repaints the grid panel with the updated cells
 		gridComponent.revalidate();
 		gridComponent.repaint();
 	}
