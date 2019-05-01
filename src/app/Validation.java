@@ -37,33 +37,47 @@ public class Validation
 		return activeAdjArray;
 	}
 	
-	/** Returns true if the position of the given flow pointer, constraints its adjacent cells.
-	 *  @param flowPointer current analyzed flow pointer.
-	 *  @param pairPointerFound boolean reference to be used when exiting the method.
+	/** 
+	 *  If the given flow pointer constraints an adjacent initial flow pointer which
+	 *  isn't its own pair initial pointer, then only consider its previous active cell.
+	 *  Else, if there is only one adjacent cell, then only consider that cell.
+	 *  Else, if there is no constraint and one of the active adjacent was its pair 
+	 *  pointer, then only consider its pair.
+	 *  @param flowPointer current flow pointer to analyze.
+	 *  @param cellsToConsider cells to consider move toward to.
 	 */
 	boolean constraintsAdjacents(GridCell flowPointer, LinkedList<GridCell> cellsToConsider) {
 		int currRow = flowPointer.pos.row;
 		int currCol = flowPointer.pos.col;
-
+		LinkedList<GridCell> activeAdjacentCells = new LinkedList<>();
+		GridCell pairPointerFound = null;
+		
 		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell currAdjCell = grid.gridCells
 					[currRow + dir[0]][currCol + dir[1]];
 
-			int currAdjCount = currAdjCell.getActiveAdjacents().size();
+			if (flowPointer.isPairFlowPointer(currAdjCell))
+				pairPointerFound = currAdjCell; 
+			
+			activeAdjacentCells = currAdjCell.getActiveAdjacents();
 
-			if (flowPointer.isPairFlowPointer(currAdjCell)){
-				cellsToConsider.add(currAdjCell);
-				return false;
-			}
-			
+			// check if it constrains an initial pointer which isn't its pair pointer
 			if (currAdjCell.isActiveCell() && currAdjCell.isInitialFlowPointer()
-					&& cellsToConsider.size() == 0 && currAdjCount == 0)
-				return true;
+					&& pairPointerFound == null && activeAdjacentCells.size() == 0)
+				return cellsToConsider.add(flowPointer.previousPointer); // shall backtrack to previous cell
 			
-			else if (currAdjCount == 1)
-				return true;			
+			// is there only one move to consider?
+			else if (activeAdjacentCells.size() == 1)
+				return cellsToConsider.add(activeAdjacentCells.getFirst());
 		}
 		
+		// if one of the active adjacent was its pair flow pointer
+		if (pairPointerFound != null)
+			return cellsToConsider.add(pairPointerFound);
+		
+		// add each found active cell that isn't constrant
+		for (GridCell activeCells : activeAdjacentCells)
+			cellsToConsider.add(activeCells);
 		return false;
 	}
 }
