@@ -139,7 +139,7 @@ public class App
 	 */
 	private void queueMostConstraintInitialPointers() {
 		HashSet<GridCell> visitedCells = new HashSet<>();
-		
+
 		// count amount of adjacent cells of each initial pointer and
 		// inserts the most constraint of each pair to the priority queue.
 		for (Pos initPos : grid.getInitialFlowPointers()) {
@@ -147,11 +147,12 @@ public class App
 			GridCell ifp = this.grid.getGridCells()[initPos.row][initPos.col];
 			int adjCount = ifp.getActiveAdjacents().size();
 
+			// 
 			if (visitedCells.contains(ifp.pairInitialFlowPointer)) {
 				int pairPointerAdjCount = ifp.pairInitialFlowPointer.getActiveAdjacents().size();
 
 				// inserts the most constraint initial pointer of this pair
-				if (adjCount >= pairPointerAdjCount)
+				if (adjCount < pairPointerAdjCount)
 					this.grid.pq.insert(adjCount, ifp);
 				else
 					this.grid.pq.insert(pairPointerAdjCount, ifp.pairInitialFlowPointer);

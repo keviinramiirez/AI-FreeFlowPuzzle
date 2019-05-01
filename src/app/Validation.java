@@ -1,42 +1,54 @@
 package app;
 
 import java.util.LinkedList;
+import java.util.Queue;
+
+import interfaces.Entry;
+import queue.ArrayQueue;
+import queue.SLLQueue;
 
 public class Validation 
 {
 	Grid grid = new Grid();
 
-	boolean causesStrandedRegions(GridCell flowPointer) {
+	boolean causesStrandedRegions() {
 //		for (int r = 0; r < Grid.ROWS; r++) {
 //			for (int c = 0; c < Grid.COLS; c++) {
 //				
 //			}
 //		}
 		
+		for (Entry<Integer, GridCell> entry : grid.pq) {
+			if (pathToPairExists(entry.getValue()))
+				;
+		}
 		
 		return true;
 	}
+	
+	/** Iterates through all possible paths and returns true if there exist 
+	 *  a path that leads to the given flow pointer's pair pointer.
+     */
+	public boolean pathToPairExists(GridCell flowPointer) {
+		ArrayQueue<GridCell> queue = new ArrayQueue<GridCell>();
+		queue.enqueue(flowPointer);
+		
+		while (!queue.isEmpty() && queue.first() != flowPointer.pairInitialFlowPointer) {
+			GridCell currFlowPointer = queue.dequeue();
+			for (GridCell activeCell : currFlowPointer.getActiveAdjacents())
+				queue.enqueue(activeCell);
+		}
+		
+		if (queue.isEmpty()) 
+			return false;
+		return queue.first() == flowPointer.pairInitialFlowPointer;
+	}
+	
 	
 	boolean puzzleIsSolved() {
 		return false;
 	}
 	
-//	/** Returns null if the given flow pointer has no forces move. If it has,
-//	 *  then returns the position to which the flow pointer is required to to move. 
-//	 */
-//	LinkedList<GridCell> cellsToConsider(GridCell flowPointer) {
-//		LinkedList<GridCell> cellsToConsider = new LinkedList<>();
-//		if (constraintsAdjacents(flowPointer, cellsToConsider))
-//			return cellsToConsider;
-//
-//		return null;
-//		// at this point, 
-////		LinkedList<GridCell> activeAdjArray = flowPointer.getActiveAdjacents();
-////		if (activeAdjArray.size() == 1) return cellsToConsider;
-////		if (activeAdjArray.size() == 0) return null;
-////
-////		return activeAdjArray;
-//	}
 	
 	/** 
 	 *  The following logic returns true:<br>
@@ -58,6 +70,7 @@ public class Validation
 		int currCol = currFlowPointer.pos.col;
 		GridCell pairPointerFound = null;
 		
+		// no adjacent
 		if (currFlowPointer.getActiveAdjacents().size() == 0)
 			return true;
 		
@@ -68,11 +81,12 @@ public class Validation
 
 			
 			LinkedList<GridCell> activeAdjacentCells = currAdjCell.getActiveAdjacents();
-
-			if (currFlowPointer.isCellPairFlowPointer(currAdjCell))
-				return cellsToConsider.add(currFlowPointer.previousPointer); // shall backtrack to previous cell
 			
-			// check if it constrains an initial pointer which isn't its pair pointer
+			// is current adjacent cell its pair pointer?
+			if (currFlowPointer.isCellPairFlowPointer(currAdjCell))
+				pairPointerFound = currAdjCell;
+			
+			// check if it constraints an initial pointer which isn't its pair pointer
 			if (currAdjCell.isActiveCell() && currAdjCell.isInitialFlowPointer()
 					&& pairPointerFound == null && activeAdjacentCells.size() == 0)
 				return cellsToConsider.add(currFlowPointer.previousPointer); // shall backtrack to previous cell
@@ -92,3 +106,28 @@ public class Validation
 		return false;
 	}
 }
+
+
+
+
+
+
+
+
+///** Returns null if the given flow pointer has no forces move. If it has,
+// *  then returns the position to which the flow pointer is required to to move. 
+// */
+//LinkedList<GridCell> cellsToConsider(GridCell flowPointer) {
+//	LinkedList<GridCell> cellsToConsider = new LinkedList<>();
+//	if (constraintsAdjacents(flowPointer, cellsToConsider))
+//		return cellsToConsider;
+//
+//	return null;
+//	// at this point, 
+////	LinkedList<GridCell> activeAdjArray = flowPointer.getActiveAdjacents();
+////	if (activeAdjArray.size() == 1) return cellsToConsider;
+////	if (activeAdjArray.size() == 0) return null;
+////
+////	return activeAdjArray;
+//}
+

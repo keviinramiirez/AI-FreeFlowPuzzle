@@ -91,14 +91,27 @@ public class GridCell
 				: grid.gridCells[pos.row + incrRow][pos.col + incrCol];
 	}
 	
-	/** Counts amount of Active Adjacent this Grid Cell has. */
+	/** Returns this Grid Cell's Active Adjacent. */
 	public LinkedList<GridCell> getActiveAdjacents() {
 		LinkedList<GridCell> activeCells = new LinkedList<>();
+		
 		for (int[] dir : Grid.DIRECTIONS) {
-			GridCell adjCell = getAdjacentCell(dir[0], dir[1]);
+			GridCell adjCell = this.getAdjacentCell(dir[0], dir[1]);
 			if (adjCell != null && adjCell.isActiveCell())
 				activeCells.add(adjCell);
 		}
+		
+		return activeCells;
+	}
+	
+	
+	/** Returns this Grid Cell's Adjacent. */
+	public LinkedList<GridCell> getEachAdjacents() {
+		LinkedList<GridCell> activeCells = new LinkedList<>();
+		
+		for (int[] dir : Grid.DIRECTIONS)
+			activeCells.add(this.getAdjacentCell(dir[0], dir[1]));
+		
 		return activeCells;
 	}
 	

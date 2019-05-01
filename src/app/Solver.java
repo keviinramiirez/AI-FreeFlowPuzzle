@@ -30,12 +30,10 @@ public class Solver
 				System.out.println("backtrack to previous cell");
 				return;
 			}
-			
-			if (validation.causesStrandedRegions(currFlowPointer)) {
+
+			if (validation.causesStrandedRegions()) {
 				
 			}
-			
-			
 		}
 	}
 
