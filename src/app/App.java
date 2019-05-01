@@ -93,8 +93,11 @@ public class App
 		
 		// Hard Coded Flow Pointers
 		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
-//		this.initializeInitialPointers(hardCodedPointers.generateInitFlowPointers1());
-		this.initializeInitialPointers(hardCodedPointers.generateStrandedRegion1());
+		this.initializeInitialPointers(hardCodedPointers.generateInitFlowPointers1());
+//		this.initializeInitialPointers(hardCodedPointers.generateStrandedRegion1());
+		
+		Validation validation = new Validation(grid);
+		System.out.println(validation.strandedRegion());
 		
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
@@ -106,6 +109,7 @@ public class App
 	 */
 	private void initializeInitialPointers(ArrayList<GridCell> initialFlowPointers) {
 		HashMap<Color, GridCell> cellPainted = new HashMap<>();
+		this.grid.nEmptyCells -= initialFlowPointers.size();
 
 		// paints UI grid and sets each pairFlowPointer property of the Initial Pointers
 		for (GridCell currInitPointer : initialFlowPointers) {
@@ -145,11 +149,11 @@ public class App
 		for (Pos initPos : grid.getInitialFlowPointers()) {
 			// Initial Flow Pointers
 			GridCell ifp = this.grid.getGridCells()[initPos.row][initPos.col];
-			int adjCount = ifp.getActiveAdjacents().size();
+			int adjCount = ifp.getColoredAdjacents().size();
 
 			// 
 			if (visitedCells.contains(ifp.pairInitialFlowPointer)) {
-				int pairPointerAdjCount = ifp.pairInitialFlowPointer.getActiveAdjacents().size();
+				int pairPointerAdjCount = ifp.pairInitialFlowPointer.getColoredAdjacents().size();
 
 				// inserts the most constraint initial pointer of this pair
 				if (adjCount < pairPointerAdjCount)

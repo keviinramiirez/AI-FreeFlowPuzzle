@@ -61,23 +61,23 @@ public class GridCell
 	}
 	
 	/** Returns true if this cell is a non empty cell. */
-	public boolean isActiveCell() {
+	public boolean isColoredCell() {
 		return !color.equals(Grid.EMPTY_COLOR);
 	}
 	
 	/** Returns true if this is an INTITIAL Flow Pointer. */
 	public boolean isInitialFlowPointer() {
-		return this.isActiveCell() && grid.initialFlowPointers.contains(this);
+		return this.isColoredCell() && grid.initialFlowPointers.contains(this);
 	}
 	
 	/** Return true if given cell is the pair of this FlowPointer. */
-	public boolean isCellPairFlowPointer(GridCell cell) {
-		return cell.isActiveCell() && cell == this.pairInitialFlowPointer;
+	public boolean isPairPointer(GridCell cell) {
+		return cell.isColoredCell() && cell == this.pairInitialFlowPointer;
 	}
 	
 	/** Returns true if the given cell is the previous cell of this FlowPointer. */
 	public boolean isCellPreviousPointer(GridCell cell) {
-		return cell.isActiveCell() && cell == this.previousPointer;
+		return cell.isColoredCell() && cell == this.previousPointer;
 	}
 	
 	/** Returns null if row index or column index is out of bounds of the game matrix.
@@ -91,28 +91,28 @@ public class GridCell
 				: grid.gridCells[pos.row + incrRow][pos.col + incrCol];
 	}
 	
-	/** Returns this Grid Cell's Active Adjacent. */
-	public LinkedList<GridCell> getActiveAdjacents() {
-		LinkedList<GridCell> activeCells = new LinkedList<>();
+	/** Returns this grid cell's active adjacent cells. */
+	public LinkedList<GridCell> getColoredAdjacents() {
+		LinkedList<GridCell> activeAdjCells = new LinkedList<>();
 		
 		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell adjCell = this.getAdjacentCell(dir[0], dir[1]);
-			if (adjCell != null && adjCell.isActiveCell())
-				activeCells.add(adjCell);
+			if (adjCell != null && adjCell.isColoredCell())
+				activeAdjCells.add(adjCell);
 		}
 		
-		return activeCells;
+		return activeAdjCells;
 	}
 	
 	
-	/** Returns this Grid Cell's Adjacent. */
-	public LinkedList<GridCell> getEachAdjacents() {
-		LinkedList<GridCell> activeCells = new LinkedList<>();
+	/** Returns this grid cell's adjacent cells. */
+	public LinkedList<GridCell> getAllAdjacents() {
+		LinkedList<GridCell> adjacentCells = new LinkedList<>();
 		
 		for (int[] dir : Grid.DIRECTIONS)
-			activeCells.add(this.getAdjacentCell(dir[0], dir[1]));
+			adjacentCells.add(this.getAdjacentCell(dir[0], dir[1]));
 		
-		return activeCells;
+		return adjacentCells;
 	}
 	
 	
