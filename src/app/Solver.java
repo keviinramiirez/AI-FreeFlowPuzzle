@@ -31,7 +31,9 @@ public class Solver
 				return;
 			}
 			
-			
+			if (validation.causesStrandedRegions(currFlowPointer)) {
+				
+			}
 			
 			
 		}

@@ -81,7 +81,7 @@ public class GridCell
 	}
 	
 	/** Returns null if row index or column index is out of bounds of the game matrix.
-	 *  Otherwise, returns the Grid Cell that is <i>incrRow</i> far horizontally
+	 *  Otherwise, returns the valid Grid Cell that is <i>incrRow</i> far horizontally
 	 *  and <i>incrCol</i> far vertically.
 	 */
 	private GridCell getAdjacentCell(int incrRow, int incrCol) {
