@@ -94,6 +94,9 @@ public class Validation
 		LinkedList<GridCell> cellsToConsider = new LinkedList<>();
 		GridCell pairPointerFound = null;
 		
+		if (currFlowPointer == grid.gridCells[2][6])
+			System.out.println();
+		
 		LinkedList<GridCell> emptyAdjacents = currFlowPointer.getEmptyAdjacents();
 		
 		// if no empty adjacent (backtrack)
@@ -130,13 +133,14 @@ public class Validation
 					return cellsToConsider;
 				}
 				
-				
 				// if it's an empty cell && it has only one move to consider && 
 				// at least one of the other three colored cells isn't an initial pointer.
 				else if (!currAdjCell.isColoredCell()) {
+					// add out bound 'initial pointers' if any
 					coloredAdjacentCells.addAll(this.getOutBoundAdjacents(currAdjCell));
-					if (coloredAdjacentCells.size() >= 3 
-						&& !this.allInitialPointers(coloredAdjacentCells)) {
+					if (coloredAdjacentCells.size() == 4 || (coloredAdjacentCells.size() == 3 
+						&& !this.AtLeastOneInitialPointers(coloredAdjacentCells))) 
+					{
 						cellsToConsider.add(currFlowPointer.previousCell);
 						return cellsToConsider;
 					}
@@ -157,80 +161,37 @@ public class Validation
 	
 	/** method used only within the validation  */
 	private LinkedList<GridCell> getOutBoundAdjacents(GridCell cell) {
+		// I assign dummy out bound adjs as initial pointer, for the purpose of validation
 		LinkedList<GridCell> outBoundAdjs = new LinkedList<>();
 		for (int[] dir : Grid.DIRECTIONS)
-			if (!grid.validPosition(cell.pos.row + dir[0], cell.pos.col + dir[1])) {
-				GridCell dummyOutCell = new GridCell(null, new Pos(cell.pos.row+dir[0], cell.pos.col+dir[1]));
-				dummyOutCell.pairInitialFlowPointer = grid.initialFlowPointers.getFirst(); // assign whatever initial pointer
-				outBoundAdjs.add(dummyOutCell);
-			}
+			if (!grid.validPosition(cell.pos.row + dir[0], cell.pos.col + dir[1]))
+				outBoundAdjs.add(grid.initialFlowPointers.getFirst()); // assign whatever initial pointer);
 		return outBoundAdjs;
 	}
 	
 	
-	private boolean allInitialPointers(LinkedList<GridCell> cells) {
+	private boolean AtLeastOneInitialPointers(LinkedList<GridCell> cells) {
 		for (GridCell cell : cells)
-			if (!cell.isInitialFlowPointer())
-				return false;
-		return true;
+			if (cell.isInitialFlowPointer())
+				return true;
+		return false;
 	}
 	
 	
 	/** 
-	 *  The following logic returns true:<br>
 	 *  <ul>
 	 *  	<li>if <i>currFlowPointer</i> doesn't have any adjacent, or</li>
 	 *  	<li>If the given flow pointer constraints an adjacent <b>initial</b> pointer which
-	 *  	isn't its own pair initial pointer, then add its previous active cell to given list.</li>
+	 *  	isn't its own pair initial pointer, then add its previous colored cell to given list.</li>
 	 *  	<li>Else, if there is only one adjacent cell (forced move), then only add that cell to given list.</li>
-	 *  	<li>Else, if there is no constraint and one of the active adjacent was its pair 
+	 *  	<li>Else, if there is no constraint and one of the colored adjacent was its pair 
 	 *  	pointer, then only add its pair to given list.</li>
 	 *  </ul>
-	 *  Returns false is there isn't any constraint adjacent cells, 
+	 *  is there isn't any constraint adjacent cells, 
 	 *  and adds its active adjacent cells to the given list.
 	 *  @param currFlowPointer current flow pointer to analyze.
 	 *  @param cellsToConsider cells to consider move toward to.
 	 */
-	public boolean constraintsPointerOrAdjacents(GridCell currFlowPointer, LinkedList<GridCell> cellsToConsider) {
-		int currRow = currFlowPointer.pos.row;
-		int currCol = currFlowPointer.pos.col;
-		GridCell pairPointerFound = null;
-		
-		// if no empty adjacent 
-		if (currFlowPointer.getEmptyAdjacents().size() == 0)
-			return true;
-		
-		for (int[] dir : Grid.DIRECTIONS) {
-			// current ADJACENT cell of the current flow pointer
-			GridCell currAdjCell = grid.gridCells
-					[currRow + dir[0]][currCol + dir[1]];
-
-			
-			LinkedList<GridCell> coloredAdjacentCells = currAdjCell.getColoredAdjacents();
-			
-			// is current adjacent cell its pair pointer?
-			if (currFlowPointer.isPairPointer(currAdjCell))
-				pairPointerFound = currAdjCell;
-			
-			// check if it constraints an initial pointer which isn't its pair pointer
-			if (currAdjCell.isColoredCell() && currAdjCell.isInitialFlowPointer()
-					&& pairPointerFound == null && coloredAdjacentCells.size() == 0)
-				return cellsToConsider.add(currFlowPointer.previousCell); // shall backtrack to previous cell
-			
-			// is there only one move to consider?
-			else if (currAdjCell.isColoredCell() && coloredAdjacentCells.size() == 3)
-				return cellsToConsider.add(coloredAdjacentCells.getFirst());
-		}
-		
-		// if one of the colored adjacent was its pair flow pointer
-		if (pairPointerFound != null)
-			return cellsToConsider.add(pairPointerFound);
-		
-		// add each found colored cell that isn't constraint
-		for (GridCell coloredAdj : currFlowPointer.getEmptyAdjacents())
-			cellsToConsider.add(coloredAdj);
-		return false;
-	}
 }
 
 

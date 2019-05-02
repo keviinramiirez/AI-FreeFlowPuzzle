@@ -54,9 +54,8 @@ public class Solver
 				GridCell cellToMoveInto = cellsToConsider.getFirst();
 				
 				// constraint: if current Flow Pointer is at an invalid position (backtrack)
-				if (cellToMoveInto == currFlowPointer.previousCell) {
+				if (cellToMoveInto == currFlowPointer.previousCell)
 					currFlowPointer = this.backtrackToPrevious(currFlowPointer);
-				}
 				
 				// if arrived at goal pair pointer
 				else if (cellToMoveInto == currFlowPointer.pairInitialFlowPointer) {
