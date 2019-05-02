@@ -142,15 +142,6 @@ public class GridCell
 		return adjacentCells;
 	}
 	
-	
-	public int countOutBoundAdjacents() {
-		int count = 0;
-		for (int[] dir : Grid.DIRECTIONS)
-			if (getAdjacentCell(dir[0], dir[1]) == null)
-				count++;
-		return count;
-	}
-	
 	public String toString() {
 		return "Pos="+ pos;
 //		return "Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairInitialFlowPointer.pos 

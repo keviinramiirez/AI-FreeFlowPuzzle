@@ -40,13 +40,15 @@ public class Solver
 			alreadyAnalysedInitial = false;
 			
 			
-
-			// cellsToConsider may contain the force-move cell, 
-			// the previous cell, or the various cells to move into.
+			/* 
+			   If 'nextAdjCells' isn't empty, it means that we have backtracked and
+			   we are now considering the valid cells that we haven't moved into yet.
+			   'cellsToConsider' may contain the force-move cell, 
+			   the previous cell, or the various cells to move into.
+			 */
 			LinkedList<GridCell> cellsToConsider = (currFlowPointer.nextAdjCells.isEmpty())
 					? validation.cellsToConsiderMovingInto(currFlowPointer)
 							: currFlowPointer.nextAdjCells;
-			
 			
 			if (cellsToConsider.size() == 1) {
 				GridCell cellToMoveInto = cellsToConsider.getFirst();

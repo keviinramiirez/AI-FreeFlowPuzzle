@@ -133,11 +133,13 @@ public class Validation
 				
 				// if it's an empty cell && it has only one move to consider && 
 				// at least one of the other three colored cells isn't an initial pointer.
-				else if (!currAdjCell.isColoredCell() && 
-						(coloredAdjacentCells.size() + currAdjCell.countOutBoundAdjacents() >= 3) 
+				else if (!currAdjCell.isColoredCell()) {
+					coloredAdjacentCells.addAll(this.getOutBoundAdjacents(currAdjCell));
+					if (coloredAdjacentCells.size() >= 3 
 						&& !this.allInitialPointers(coloredAdjacentCells)) {
-					cellsToConsider.add(currFlowPointer.previousCell);
-					return cellsToConsider;
+						cellsToConsider.add(currFlowPointer.previousCell);
+						return cellsToConsider;
+					}
 				}
 			}
 		}
@@ -152,6 +154,19 @@ public class Validation
 		
 		return cellsToConsider;
 	}
+	
+	/** method used only within the validation  */
+	private LinkedList<GridCell> getOutBoundAdjacents(GridCell cell) {
+		LinkedList<GridCell> outBoundAdjs = new LinkedList<>();
+		for (int[] dir : Grid.DIRECTIONS)
+			if (!grid.validPosition(cell.pos.row + dir[0], cell.pos.col + dir[1])) {
+				GridCell dummyOutCell = new GridCell(null, new Pos(cell.pos.row+dir[0], cell.pos.col+dir[1]));
+				dummyOutCell.pairInitialFlowPointer = grid.initialFlowPointers.getFirst(); // assign whatever initial pointer
+				outBoundAdjs.add(dummyOutCell);
+			}
+		return outBoundAdjs;
+	}
+	
 	
 	private boolean allInitialPointers(LinkedList<GridCell> cells) {
 		for (GridCell cell : cells)
@@ -217,6 +232,10 @@ public class Validation
 		return false;
 	}
 }
+
+
+
+
 
 
 
