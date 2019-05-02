@@ -9,9 +9,11 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import javax.swing.border.LineBorder;
 
+import interfaces.Entry;
 import util.HardCodedFlowPointers;
 
 import javax.swing.JComboBox;
@@ -93,8 +95,8 @@ public class App
 		
 		// Hard Coded Flow Pointers
 		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
-		this.initializeInitialPointers(hardCodedPointers.generateInitFlowPointers1());
-//		this.initializeInitialPointers(hardCodedPointers.generateStrandedRegion1());
+//		this.initializeInitialPointers(hardCodedPointers.generateInitFlowPointers1());
+		this.initializeInitialPointers(hardCodedPointers.generateStrandedRegion1());
 		
 		Validation validation = new Validation(grid);
 		System.out.println(validation.strandedRegion());
@@ -107,6 +109,7 @@ public class App
 	/** Updates and repaints the grid cells with the given Initial Flow Pointers.
 	 *  Also, pairs (pairFlowPointer property) the initial flow pointers that have same colors.
 	 */
+	@SuppressWarnings("unchecked")
 	private void initializeInitialPointers(ArrayList<GridCell> initialFlowPointers) {
 		HashMap<Color, GridCell> cellPainted = new HashMap<>();
 		this.grid.nEmptyCells -= initialFlowPointers.size();
@@ -132,6 +135,8 @@ public class App
 			}
 			else cellPainted.put(currInitPointer.color, currInitPointer);
 		}
+
+//		grid.finishedPaths = new LinkedList[grid.initialFlowPointers.size()];
 		
 		// repaints the grid panel with the updated cells
 		gridComponent.revalidate();
@@ -164,6 +169,11 @@ public class App
 			else
 				visitedCells.add(ifp);
 		}
+		
+		for (Entry<Integer, GridCell> entry : this.grid.pq)
+			entry.setKey(this.grid.nEmptyCells);
+		
+		System.out.println();
 	}
 	
 	public void solvePuzzle() {

@@ -109,7 +109,7 @@ public class Validation
 		int currCol = currFlowPointer.pos.col;
 		GridCell pairPointerFound = null;
 		
-		// no adjacent
+		// no adjacent 
 		if (currFlowPointer.getColoredAdjacents().size() == 0)
 			return true;
 		

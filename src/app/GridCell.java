@@ -31,15 +31,18 @@ public class GridCell
 	/** This Grid Cell's Pair Initial Flow Pointer. */
 	public GridCell pairInitialFlowPointer;
 	
+	/** Adjacent cells to consider moving towards to. */
+	public LinkedList<GridCell> nextAdjCells;
+	
 	/** Tells us if this Grid Cell was forced to move to this position. */
 	public boolean wasMoveForced;
-	
+		
 	
 	public GridCell(Grid grid, Pos pos) {
-		this(grid, pos, Grid.EMPTY_COLOR, 0, null, null);
+		this(grid, pos, Grid.EMPTY_COLOR, 0, null, null, new LinkedList<GridCell>());
 	}
 	public GridCell(Grid grid, Pos pos, Color color, int heuristic) {
-		this(grid, pos, color, heuristic, null, null);
+		this(grid, pos, color, heuristic, null, null, new LinkedList<GridCell>());
 	}
 	/** 
 	 *  @param pos position of this cell
@@ -47,9 +50,11 @@ public class GridCell
 	 *  @param heuristic
 	 *  @param pairFlowPointer this cell's pair color pointer. Null if this cell is non empty.
 	 *  @param previousPointer reference to the previous pointer, tracked to move backwards to it.
+	 *  @param nextAdjCells
+	 *  @param wasMoveForced tells us if this grid cell was forced to move to this position.
 	 */
-	public GridCell(Grid grid, Pos pos, Color color, int heuristic,
-			GridCell pairFlowPointer, GridCell previousPointer) {
+	public GridCell(Grid grid, Pos pos, Color color, int heuristic, GridCell pairFlowPointer, 
+			GridCell previousPointer, LinkedList<GridCell> nextAdjCells) {
 		this.grid = grid;
 		this.pos = pos;
 		this.color = color;
@@ -57,6 +62,7 @@ public class GridCell
 
 		this.previousPointer = previousPointer;
 		this.pairInitialFlowPointer = pairFlowPointer;
+		this.nextAdjCells = nextAdjCells;
 		this.wasMoveForced = false;
 	}
 	
@@ -69,7 +75,7 @@ public class GridCell
 	public boolean isInitialFlowPointer() {
 		return this.isColoredCell() && grid.initialFlowPointers.contains(this);
 	}
-	
+
 	/** Return true if given cell is the pair of this FlowPointer. */
 	public boolean isPairPointer(GridCell cell) {
 		return cell.isColoredCell() && cell == this.pairInitialFlowPointer;
@@ -115,10 +121,8 @@ public class GridCell
 		return adjacentCells;
 	}
 	
-	
 	public String toString() {
-		return (this == null) ? "null" :
-			"Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairInitialFlowPointer.pos 
+		return "Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairInitialFlowPointer.pos 
 			+" : previousPointerPos="+ previousPointer.pos +" : forced="+ wasMoveForced;
 	}
 }

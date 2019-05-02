@@ -57,7 +57,8 @@ public class HardCodedFlowPointers
 		initialFlowPointers.add(green36);
 		initialFlowPointers.add(green72);
 		initialFlowPointers.add(yellow42);
-		initialFlowPointers.add(yellow94);	
+		initialFlowPointers.add(yellow94);
+		
 		return initialFlowPointers;
 	}
 	

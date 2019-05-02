@@ -16,43 +16,66 @@ public class Solver
 		this.validation = new Validation(grid);
 	}
 	
+	
 	public void solve() {
 		HeapPriorityQueue<Integer, GridCell> pq = this.grid.pq;
 		GridCell[][] gridCells = this.grid.gridCells;
 		HashSet<Pos> initialFlowPointers = this.grid.initialFlowPointers;
-		Stack<GridCell> stack = new Stack<>();
 		
-		while (!validation.puzzleIsSolved() && !stack.isEmpty()) {
-			GridCell currFlowPointer = pq.min().getValue();
-
+//		Stack<GridCell> stack = new Stack<>();
+//		stack.push(pq.min().getValue());
+		
+		GridCell currFlowPointer = pq.min().getValue();
+		GridCell initialFlowPointer = currFlowPointer;
+		
+		while (!validation.puzzleIsSolved()) {
 			// cellsToConsider can contain the forced move or the previous move
 			LinkedList<GridCell> cellsToConsider = new LinkedList<>();
 			
+			if (currFlowPointer == initialFlowPointer) {
+				System.out.println("Bring back the last path, and start over with its initial Pointer");
+			}
+			
 			// is current pointer or its adjacent cells constraint?
 			if (!validation.constraintsPointerOrAdjacents(currFlowPointer, cellsToConsider)) {
-				
 				System.out.println("backtrack to previous cell");
-				return;
+				this.grid.nEmptyCells++;
 			}
 			// if no constraints, then cellsToConsider should 
 			// contains the valid grid cells to move towards to.
 
-
-			if (validation.causesStrandedColorOrRegion()) {
-				cellsToConsider.removeAll(cellsToConsider);
+			else if (validation.causesStrandedColorOrRegion()) {
+//				cellsToConsider.removeAll(cellsToConsider);
 				cellsToConsider.add(currFlowPointer.previousPointer);
 				System.out.println("backtrack to previous cell");
-				return;
+				this.grid.nEmptyCells++;
 			}
-
-			for (GridCell nextCell : cellsToConsider)
-				stack.push(nextCell);
 			
+			else if (cellsToConsider.getFirst() == initialFlowPointer.pairInitialFlowPointer) {
+				LinkedList<GridCell> path = new LinkedList<GridCell>();
+				while (currFlowPointer != initialFlowPointer) {
+					path.addLast(currFlowPointer);
+					currFlowPointer = currFlowPointer.previousPointer;
+				}
+				grid.finishedPaths.add(path);
+				
+				currFlowPointer = pq.removeMin().getValue();
+				initialFlowPointer = currFlowPointer;
+				
+			}
+			else {
+				for (GridCell nextCell : cellsToConsider)
+					currFlowPointer.nextAdjCells.add(nextCell);
+
+				currFlowPointer = currFlowPointer.nextAdjCells.removeFirst();
+			}
+//			stack.push(currFlowPointer.nextAdjCells.removeFirst());
+
 			this.grid.nEmptyCells--;
 		}
 		
-		if (stack.isEmpty())
-			System.out.println("Solution is not found");
+//		if (stack.isEmpty())
+//			System.out.println("Solution is not found");
 		
 	}
 
