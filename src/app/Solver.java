@@ -1,88 +1,152 @@
 package app;
 
+import java.awt.Color;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Stack;
+
+import javax.swing.JPanel;
 
 import priorityQueue.HeapPriorityQueue;
 
 public class Solver 
 {
 	Grid grid;
+	JPanel[][] gridPanel;
 	Validation validation;
 
-	public Solver(Grid grid) {
+	public Solver(Grid grid, JPanel[][] gridPanel) {
 		this.grid = grid;
 		this.validation = new Validation(grid);
+		this.gridPanel = gridPanel;
 	}
 	
 	
+	
 	public void solve() {
+		HashSet<GridCell> visitedCells = new HashSet<GridCell>();
 		HeapPriorityQueue<Integer, GridCell> pq = this.grid.pq;
-		GridCell[][] gridCells = this.grid.gridCells;
-		HashSet<Pos> initialFlowPointers = this.grid.initialFlowPointers;
-		
-//		Stack<GridCell> stack = new Stack<>();
-//		stack.push(pq.min().getValue());
-		
-		GridCell currFlowPointer = pq.min().getValue();
+//		GridCell currFlowPointer = pq.removeMin().getValue();
+		GridCell currFlowPointer = this.grid.gridCells[2][8];
+
 		GridCell initialFlowPointer = currFlowPointer;
+		boolean alreadyAnalysedInitial = true;
 		
 		while (!validation.puzzleIsSolved()) {
-			// cellsToConsider can contain the forced move or the previous move
-			LinkedList<GridCell> cellsToConsider = new LinkedList<>();
-			
-			if (currFlowPointer == initialFlowPointer) {
+			// if arrived to initial pointer, after backtracking because of invalid path
+			if (!alreadyAnalysedInitial && currFlowPointer == initialFlowPointer) {
+				currFlowPointer = currFlowPointer.nextAdjCells.removeFirst();
 				System.out.println("Bring back the last path, and start over with its initial Pointer");
 			}
+			alreadyAnalysedInitial = false;
 			
-			// is current pointer or its adjacent cells constraint?
-			if (!validation.constraintsPointerOrAdjacents(currFlowPointer, cellsToConsider)) {
-				System.out.println("backtrack to previous cell");
-				this.grid.nEmptyCells++;
-			}
-			// if no constraints, then cellsToConsider should 
-			// contains the valid grid cells to move towards to.
+			
 
-			else if (validation.causesStrandedColorOrRegion()) {
-//				cellsToConsider.removeAll(cellsToConsider);
-				cellsToConsider.add(currFlowPointer.previousPointer);
-				System.out.println("backtrack to previous cell");
-				this.grid.nEmptyCells++;
-			}
+			// cellsToConsider may contain the force-move cell, 
+			// the previous cell, or the various cells to move into.
+			LinkedList<GridCell> cellsToConsider = (currFlowPointer.nextAdjCells.isEmpty())
+					? validation.cellsToConsiderMovingInto(currFlowPointer)
+							: currFlowPointer.nextAdjCells;
 			
-			else if (cellsToConsider.getFirst() == initialFlowPointer.pairInitialFlowPointer) {
-				LinkedList<GridCell> path = new LinkedList<GridCell>();
-				while (currFlowPointer != initialFlowPointer) {
-					path.addLast(currFlowPointer);
-					currFlowPointer = currFlowPointer.previousPointer;
+			
+			if (cellsToConsider.size() == 1) {
+				GridCell cellToMoveInto = cellsToConsider.getFirst();
+				
+				// constraint: if current Flow Pointer is at an invalid position (backtrack)
+				if (cellToMoveInto == currFlowPointer.previousCell) {
+					currFlowPointer = this.backtrackToPrevious(currFlowPointer);
 				}
-				grid.finishedPaths.add(path);
 				
-				currFlowPointer = pq.removeMin().getValue();
-				initialFlowPointer = currFlowPointer;
-				
+				// if arrived at goal pair pointer
+				else if (cellToMoveInto == currFlowPointer.pairInitialFlowPointer) {
+					System.out.println("arrived at goal");
+				}
+				// only one valid move to consider moving into (force move)
+				else {
+					currFlowPointer.hasForcedMove = true;
+					currFlowPointer = this.moveTowardsCell(currFlowPointer, 
+							cellsToConsider.removeFirst());
+				}
 			}
 			else {
 				for (GridCell nextCell : cellsToConsider)
 					currFlowPointer.nextAdjCells.add(nextCell);
-
-				currFlowPointer = currFlowPointer.nextAdjCells.removeFirst();
+				
+				currFlowPointer = this.moveTowardsCell(currFlowPointer, 
+						currFlowPointer.nextAdjCells.removeFirst());
 			}
-//			stack.push(currFlowPointer.nextAdjCells.removeFirst());
-
-			this.grid.nEmptyCells--;
-		}
-		
-//		if (stack.isEmpty())
-//			System.out.println("Solution is not found");
-		
+		}		
 	}
+	
+	/** Connects the properties of <i>currFlowPointer</i> and <i>nextToMoveInto</i>   */
+	public GridCell moveTowardsCell(GridCell currFlowPointer, GridCell nextToMoveInto) {
+		// move towards next cell
+		nextToMoveInto.color = currFlowPointer.color;
+		nextToMoveInto.previousCell = currFlowPointer;
+		nextToMoveInto.pairInitialFlowPointer = currFlowPointer.pairInitialFlowPointer;				
+		currFlowPointer = nextToMoveInto;
+		this.gridPanel[nextToMoveInto.pos.row][nextToMoveInto.pos.col]
+				.setBackground(nextToMoveInto.color);
 
-	public boolean validate(GridCell flowPointer) {
-//		if (validation.cellsToConsider(flowPointer) || validation.causesStrandedRegions(flowPointer))
-//			return false;
-		
-		return true;
+		this.grid.nEmptyCells--;
+		return nextToMoveInto;
+	}
+	
+	/** Backtracks to the previous non force-moved cell, resetting each backtracked cell.
+	 *  @return the given flow pointer's previous cell */
+	public GridCell backtrackToPrevious(GridCell flowPointer) {
+		GridCell currCell = flowPointer;
+		GridCell prevCell = flowPointer.previousCell;
+		do {
+			currCell.color = Grid.EMPTY_COLOR;
+			currCell.pairInitialFlowPointer = null;
+			currCell.hasForcedMove = false;
+			this.gridPanel[currCell.pos.row][currCell.pos.col]
+					.setBackground(Grid.EMPTY_COLOR);
+			
+			prevCell = currCell.previousCell;
+			currCell.previousCell = null;
+			currCell = prevCell;
+			this.grid.nEmptyCells++;
+		}
+		while (currCell.hasForcedMove);
+
+		return prevCell;
 	}
 }
+
+
+
+
+
+//if (cellsToConsider.size() == 1 && cellsToConsider.getFirst() == currFlowPointer.previousPointer)
+//visitedCells.add(cellsToConsider.getFirst());
+//
+////constraint: if there is only one move to consider (force move)
+//else if (cellsToConsider.size() == 1 
+//	&& cellsToConsider.getFirst() != initialFlowPointer.pairInitialFlowPointer)
+//System.out.println("");
+
+////if no constraints on current or its adjacent cells, then skip to other conditions.
+////if there are constrain colors/regions then only add previous pointer to list
+//else if (!validation.constraintsPointerOrAdjacents(currFlowPointer, cellsToConsider) 
+//	&& validation.causesStrandedColorOrRegion()) {
+//cellsToConsider.removeAll(cellsToConsider);
+//cellsToConsider.add(currFlowPointer.previousPointer);
+//}
+
+////if arrived at goal pair pointer
+//else if (cellsToConsider.getFirst() == initialFlowPointer.pairInitialFlowPointer) {
+//// create list of cells leading to goal pointer (path)
+//LinkedList<GridCell> path = new LinkedList<GridCell>();
+//while (currFlowPointer != initialFlowPointer) {
+//	path.addLast(currFlowPointer);
+//	currFlowPointer = currFlowPointer.previousPointer;
+//}
+//// add path to list of paths
+//grid.finishedPaths.add(path);
+//
+//// now, consider next initial pointer within priority queue
+//currFlowPointer = pq.removeMin().getValue();
+//initialFlowPointer = currFlowPointer;
+//
+//}

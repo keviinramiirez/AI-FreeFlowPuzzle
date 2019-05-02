@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.util.LinkedList;
 
 /** This class represents each Grid Cell.  Can either be an Empty Cell 
- *  or an Active Cell (colored cell). 
+ *  or colored Cell.
  *  
- *  *Note: a Flow Pointer is the peek (or the initial point) of a flow of active cells
+ *  *Note: a Flow Pointer is the peek (or the initial point) of a flow of colored cells
  */
 public class GridCell 
 {
@@ -26,7 +26,7 @@ public class GridCell
 	public int heuristic = 0;
 	
 	/** The previous pointer to backtrack to. */
-	public GridCell previousPointer;
+	public GridCell previousCell;
 	
 	/** This Grid Cell's Pair Initial Flow Pointer. */
 	public GridCell pairInitialFlowPointer;
@@ -34,8 +34,8 @@ public class GridCell
 	/** Adjacent cells to consider moving towards to. */
 	public LinkedList<GridCell> nextAdjCells;
 	
-	/** Tells us if this Grid Cell was forced to move to this position. */
-	public boolean wasMoveForced;
+	/** This Grid Cell had one cell to move into. */
+	public boolean hasForcedMove;
 		
 	
 	public GridCell(Grid grid, Pos pos) {
@@ -51,7 +51,7 @@ public class GridCell
 	 *  @param pairFlowPointer this cell's pair color pointer. Null if this cell is non empty.
 	 *  @param previousPointer reference to the previous pointer, tracked to move backwards to it.
 	 *  @param nextAdjCells
-	 *  @param wasMoveForced tells us if this grid cell was forced to move to this position.
+	 *  @param hasForcedMove tells us if this grid cell was forced to move to this position.
 	 */
 	public GridCell(Grid grid, Pos pos, Color color, int heuristic, GridCell pairFlowPointer, 
 			GridCell previousPointer, LinkedList<GridCell> nextAdjCells) {
@@ -60,10 +60,18 @@ public class GridCell
 		this.color = color;
 		this.heuristic = heuristic;
 
-		this.previousPointer = previousPointer;
+		this.previousCell = previousPointer;
 		this.pairInitialFlowPointer = pairFlowPointer;
 		this.nextAdjCells = nextAdjCells;
-		this.wasMoveForced = false;
+		this.hasForcedMove = false;
+	}
+	
+	/** Resets this color, nextAdjCells, and previousPointer properties */
+	public void clearBacktrackingCell(javax.swing.JPanel[][] gridPanel) {
+		this.color = Grid.EMPTY_COLOR;
+		this.nextAdjCells = new LinkedList<GridCell>();
+		this.previousCell = null;
+		gridPanel[pos.row][pos.col].setBackground(Grid.EMPTY_COLOR);
 	}
 	
 	/** Returns true if this cell is a non empty cell. */
@@ -83,7 +91,7 @@ public class GridCell
 	
 	/** Returns true if the given cell is the previous cell of this FlowPointer. */
 	public boolean isCellPreviousPointer(GridCell cell) {
-		return cell.isColoredCell() && cell == this.previousPointer;
+		return cell.isColoredCell() && cell == this.previousCell;
 	}
 	
 	/** Returns null if row index or column index is out of bounds of the game matrix.
@@ -91,23 +99,36 @@ public class GridCell
 	 *  and <i>incrCol</i> far vertically.
 	 */
 	private GridCell getAdjacentCell(int incrRow, int incrCol) {
-		return (pos.row+incrRow >= Grid.ROWS || pos.col+incrCol >= Grid.COLS 
-				|| pos.row+incrRow < 0 || pos.col+incrCol < 0)
-				? null 
-				: grid.gridCells[pos.row + incrRow][pos.col + incrCol];
+		return grid.validPosition(pos.row +incrRow, pos.col +incrCol)
+				? grid.gridCells[pos.row  + incrRow][pos.col + incrCol] 
+				: null;
 	}
 	
-	/** Returns this grid cell's active adjacent cells. */
+	/** Returns this grid cell's colored adjacent cells. */
 	public LinkedList<GridCell> getColoredAdjacents() {
-		LinkedList<GridCell> activeAdjCells = new LinkedList<>();
+		LinkedList<GridCell> coloredAdjCells = new LinkedList<>();
 		
 		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell adjCell = this.getAdjacentCell(dir[0], dir[1]);
 			if (adjCell != null && adjCell.isColoredCell())
-				activeAdjCells.add(adjCell);
+				coloredAdjCells.add(adjCell);
 		}
 		
-		return activeAdjCells;
+		return coloredAdjCells;
+	}
+	
+	
+	/** Returns this grid cell's empty adjacent cells. */
+	public LinkedList<GridCell> getEmptyAdjacents() {
+		LinkedList<GridCell> coloredAdjCells = new LinkedList<>();
+		
+		for (int[] dir : Grid.DIRECTIONS) {
+			GridCell adjCell = this.getAdjacentCell(dir[0], dir[1]);
+			if (adjCell != null && !adjCell.isColoredCell())
+				coloredAdjCells.add(adjCell);
+		}
+		
+		return coloredAdjCells;
 	}
 	
 	
@@ -121,69 +142,18 @@ public class GridCell
 		return adjacentCells;
 	}
 	
+	
+	public int countOutBoundAdjacents() {
+		int count = 0;
+		for (int[] dir : Grid.DIRECTIONS)
+			if (getAdjacentCell(dir[0], dir[1]) == null)
+				count++;
+		return count;
+	}
+	
 	public String toString() {
-		return "Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairInitialFlowPointer.pos 
-			+" : previousPointerPos="+ previousPointer.pos +" : forced="+ wasMoveForced;
+		return "Pos="+ pos;
+//		return "Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairInitialFlowPointer.pos 
+//			+" : previousPointerPos="+ previousPointer.pos +" : forced="+ wasMoveForced;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
-//
-//
-//
-//
-///** Counts the amount of Active Cells that are adjacent to the given position*/
-//public static int countActiveAdjacent(Grid grid, Pos pos) {
-//	int count = 0;
-//	for (int[] dir : Grid.DIRECTIONS) {
-//		if (pos.row + dir[0] >= Grid.ROWS || pos.col + dir[1] >= Grid.COLS)
-//			
-////			(pos.row+incrRow >= Grid.ROWS || pos.col+incrCol >= Grid.COLS)
-//		GridCell currAdjCell = getAdjacentCell(dir[0], dir[1]);
-////		grid.gridCells
-////				[pos.row + dir[0]][pos.col + dir[1]];
-//		if (currAdjCell != null && currAdjCell.isActiveCell())
-//			count++;
-//	}
-//	return count;
-//}
-//
-///** Counts this Grid Cell's amount of Active Adjacent. */
-//public int countActiveAdjacent() {
-//	return GridCell.countActiveAdjacent(grid, this.pos);
-//}
-//
-///** Returns null if row index or column index is out of bounds of the game matrix.
-// *  Otherwise, returns the Grid Cell that is <i>incrRow</i> away horizontally
-// *  and <i>incrCol</i> away vertically.
-// */
-//private GridCell getAdjacentCell(int incrRow, int incrCol) {
-//	return (pos.row+incrRow >= Grid.ROWS || pos.col+incrCol >= Grid.COLS)
-//			? null 
-//			: grid.gridCells[pos.row + incrRow][pos.col + incrCol];
-//}
-//
-//
-//public String toString() {
-//	return (this == null) ? "null" :
-//		"Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairInitialFlowPointer.pos 
-//		+" : previousPointerPos="+ previousPointer.pos +" : forced="+ wasMoveForced;
-//}
-
-

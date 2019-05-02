@@ -21,8 +21,8 @@ public class HardCodedFlowPointers
 		GridCell red53 = new GridCell(grid, new Pos(5, 3), Color.red, 0);
 
 		// BLUE
-		GridCell blue78 = new GridCell(grid, new Pos(7, 8), Color.blue, 0);
 		GridCell blue81 = new GridCell(grid, new Pos(8, 1), Color.blue, 0);
+		GridCell blue88 = new GridCell(grid, new Pos(8, 8), Color.blue, 0);
 
 		
 		// CYAN
@@ -48,7 +48,7 @@ public class HardCodedFlowPointers
 
 		initialFlowPointers.add(red28);
 		initialFlowPointers.add(red53);
-		initialFlowPointers.add(blue78);
+		initialFlowPointers.add(blue88);
 		initialFlowPointers.add(blue81);
 		initialFlowPointers.add(cyan33);
 		initialFlowPointers.add(cyan77);
@@ -83,7 +83,7 @@ public class HardCodedFlowPointers
 	public GridCell cellToModify(Pos pos, Color color, GridCell previous, GridCell pairPointer, ArrayList<GridCell> toAddTo) {
 		GridCell cell = grid.gridCells[pos.row][pos.col];
 		cell.color = color;
-		cell.previousPointer = previous;
+		cell.previousCell = previous;
 		cell.pairInitialFlowPointer = pairPointer;
 		toAddTo.add(cell);
 		return cell;
