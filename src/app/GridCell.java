@@ -170,6 +170,17 @@ public class GridCell
 		return initAdjs;
 	}
 	
+	public int heuristic() {
+		int adjacents = 0;
+		
+		for (int[] dir : Grid.DIRECTIONS) {
+			GridCell adj_cell = this.getDistantCell(dir[0], dir[1]);
+			if (adj_cell != null && !adj_cell.isColoredCell()) adjacents++;
+		}
+		
+		return adjacents;
+	}
+	
 	public String toString() {
 		return "Pos:"+ pos;
 //		return "Pos:"+ pos +", "+ color.toString().substring(9);
