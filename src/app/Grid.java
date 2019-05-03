@@ -2,7 +2,8 @@ package app;
 
 import java.awt.Color;
 import java.util.LinkedList;
-import priorityQueue.HeapPriorityQueue;
+
+import priorityQueue.HeapListPriorityQueue;
 import util.HeuristicComparator;
 
 public class Grid 
@@ -10,7 +11,7 @@ public class Grid
 	public static Color EMPTY_COLOR = new Color(240, 240, 240);
 	public static int[][] DIRECTIONS = 
 		{{ 0, 1 }, { -1, 0 }, { 0, -1 }, { 1, 0 }};// right, up, left, down
-	public static int ROWS = 10, COLS = 10;
+	public static int ROWS = 7, COLS = 7;
 	public int nEmptyCells = ROWS*COLS;
 
 	/* Matrix containing grid cell elements */
@@ -20,8 +21,7 @@ public class Grid
 	public LinkedList<GridCell> initialFlowPointers = new LinkedList<>();
 	
 	/* Contains current pointers that will be moved through the grid. Key: heuristic function value, Value: Grid Cell */
-	public HeapPriorityQueue<Integer, GridCell> pq = new HeapPriorityQueue<>(new HeuristicComparator());
-	
+	public HeapListPriorityQueue<Integer, GridCell> pq = new HeapListPriorityQueue<>(new HeuristicComparator());
 	public LinkedList<LinkedList<GridCell>> finishedPaths = new LinkedList<LinkedList<GridCell>>();
 	
 	public GridCell[][] getGridCells() { return gridCells; }

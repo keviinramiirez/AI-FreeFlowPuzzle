@@ -14,7 +14,7 @@ public class Validation
 		this.grid = grid;
 	}
 
-	public boolean isThereStrandedColorOrRegion() {	
+	public boolean isThereStrandedColorOrRegion() {
 		for (Entry<Integer, GridCell> entry : grid.pq) {
 			// Stranded Color Validation
 			if (!pathToPairExists(entry.getValue()))
