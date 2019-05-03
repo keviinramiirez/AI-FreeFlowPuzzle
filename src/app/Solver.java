@@ -45,6 +45,7 @@ public class Solver
 					? validation.cellsToConsiderMovingInto(currFlowPointer)
 							: currFlowPointer.nextAdjCells;
 			
+			// dead-end
 			// if no cells to consider (backtrack)
 			if (cellsToConsider.isEmpty())
 				currFlowPointer = this.backtrackToPrevious(currFlowPointer);
@@ -90,14 +91,18 @@ public class Solver
 	 *    */
 	public GridCell moveTowardsCell(GridCell currFlowPointer, GridCell nextToMoveInto) {
 		// move towards next cell
+		// set next to move to cell the same color as current cell to follow color flow
 		nextToMoveInto.color = currFlowPointer.color;
+		// set the next cell's parent as current cell to save reference
 		nextToMoveInto.previousCell = currFlowPointer;
-		nextToMoveInto.pairFlowPointer = currFlowPointer.pairFlowPointer;				
-		currFlowPointer = nextToMoveInto;
+		// set pair flow pointer same as current cell to know which cell it needs to get to
+		nextToMoveInto.pairFlowPointer = currFlowPointer.pairFlowPointer;
+		// change cell's color in panel
 		this.gridPanel[nextToMoveInto.pos.row][nextToMoveInto.pos.col]
 				.setBackground(nextToMoveInto.color);
-
+		// decrease number of empty cells
 		this.grid.nEmptyCells--;
+		// return the next cell to move to
 		return nextToMoveInto;
 	}
 	
@@ -123,6 +128,12 @@ public class Solver
 		while (currCell.hasForcedMove);
 
 		return prevCell;
+	}
+	
+	public void updatePQ(GridCell curr_flow_pointer) {
+		LinkedList<GridCell> adj = curr_flow_pointer.getColoredAdjs();
+		int newHeuristic = curr_flow_pointer.heuristic();
+//		this.grid.pq.
 	}
 	
 	
