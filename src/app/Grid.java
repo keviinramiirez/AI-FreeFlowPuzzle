@@ -22,11 +22,21 @@ public class Grid
 	public LinkedList<GridCell> getInitialFlowPointers() { return initialFlowPointers; }
 	public Grid() {}
 	
+	/**
+	 * @param pos: position of a cell
+	 * @return boolean if cell is within dimensions of grid
+	 */
 	public boolean validPosition(Pos pos) {
 		return (pos.row < Grid.ROWS && pos.col < Grid.COLS) 
 				&& (pos.row >= 0 && pos.col >= 0);
 	}
 	
+	/**
+	 * Receives row and col as parameters, converts to Pos type and checks whether it is valid or not
+	 * @param row: int, row of cell
+	 * @param col: int, col of cell
+	 * @return boolean
+	 */
 	public boolean validPosition(int row, int col) {
 		return validPosition(new Pos(row, col));
 	}
