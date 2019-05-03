@@ -51,6 +51,7 @@ public class Solver
 					? validation.cellsToConsiderMovingInto(currFlowPointer)
 							: currFlowPointer.nextAdjCells;
 			
+			// if no cells to consider (backtrack)
 			if (cellsToConsider.isEmpty())
 				currFlowPointer = this.backtrackToPrevious(currFlowPointer);
 
@@ -58,11 +59,11 @@ public class Solver
 				GridCell cellToMoveInto = cellsToConsider.getFirst();
 				
 				// constraint: if current Flow Pointer is at an invalid position (backtrack)
-				if (cellToMoveInto == currFlowPointer.previousCell)
+				if (cellToMoveInto.isPreviousPointerOf(currFlowPointer))
 					currFlowPointer = this.backtrackToPrevious(currFlowPointer);
 				
 				// if arrived at goal pair pointer
-				else if (cellToMoveInto == currFlowPointer.pairInitialFlowPointer) {
+				else if (cellToMoveInto.isPairPointerOf(currFlowPointer)) {
 					this.grid.pq.removeMin();
 					System.out.println("arrived at goal");
 				}
@@ -73,9 +74,13 @@ public class Solver
 							cellsToConsider.removeFirst());
 				}
 			}
+			
+			// validate for stranded colors or regions (backtrack)
 			else if (validation.isThereStrandedColorOrRegion())
 				currFlowPointer = this.backtrackToPrevious(currFlowPointer);
-			else {// If 'nextAdjCells' property is empty, then add the cells to consider
+			
+			// If 'nextAdjCells' property is empty, then add the cells to consider
+			else {
 				if (currFlowPointer.nextAdjCells.isEmpty())
 					for (GridCell nextCell : cellsToConsider)
 						currFlowPointer.nextAdjCells.add(nextCell);
@@ -86,12 +91,13 @@ public class Solver
 		}		
 	}
 	
-	/** Connects the properties of <i>currFlowPointer</i> and <i>nextToMoveInto</i>   */
+	/** Connects the properties of <i>currFlowPointer</i> and <i>nextToMoveInto</i>, and
+	 *    */
 	public GridCell moveTowardsCell(GridCell currFlowPointer, GridCell nextToMoveInto) {
 		// move towards next cell
 		nextToMoveInto.color = currFlowPointer.color;
 		nextToMoveInto.previousCell = currFlowPointer;
-		nextToMoveInto.pairInitialFlowPointer = currFlowPointer.pairInitialFlowPointer;				
+		nextToMoveInto.pairFlowPointer = currFlowPointer.pairFlowPointer;				
 		currFlowPointer = nextToMoveInto;
 		this.gridPanel[nextToMoveInto.pos.row][nextToMoveInto.pos.col]
 				.setBackground(nextToMoveInto.color);
@@ -109,7 +115,7 @@ public class Solver
 		GridCell prevCell = flowPointer.previousCell;
 		do {
 			currCell.color = Grid.EMPTY_COLOR;
-			currCell.pairInitialFlowPointer = null;
+			currCell.pairFlowPointer = null;
 			currCell.hasForcedMove = false;
 			this.gridPanel[currCell.pos.row][currCell.pos.col]
 					.setBackground(Grid.EMPTY_COLOR);

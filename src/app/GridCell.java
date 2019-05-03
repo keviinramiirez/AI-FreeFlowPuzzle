@@ -29,7 +29,7 @@ public class GridCell
 	public GridCell previousCell;
 	
 	/** This Grid Cell's Pair Initial Flow Pointer. */
-	public GridCell pairInitialFlowPointer;
+	public GridCell pairFlowPointer;
 	
 	/** Adjacent cells to consider moving towards to. */
 	public LinkedList<GridCell> nextAdjCells;
@@ -61,7 +61,7 @@ public class GridCell
 		this.heuristic = heuristic;
 
 		this.previousCell = previousPointer;
-		this.pairInitialFlowPointer = pairFlowPointer;
+		this.pairFlowPointer = pairFlowPointer;
 		this.nextAdjCells = nextAdjCells;
 		this.hasForcedMove = false;
 	}
@@ -84,14 +84,14 @@ public class GridCell
 		return this.isColoredCell() && grid.initialFlowPointers.contains(this);
 	}
 
-	/** Return true if given cell is the pair of this FlowPointer. */
-	public boolean isPairPointerOf(GridCell cell) {
-		return cell.isColoredCell() && this == cell;
+	/** Returns true if this grid cell is the pair of the given FlowPointer. */
+	public boolean isPairPointerOf(GridCell flowPointer) {
+		return flowPointer.isColoredCell() && this == flowPointer.pairFlowPointer;
 	}
 	
-	/** Returns true if the given cell is the previous cell of this FlowPointer. */
-	public boolean isCellPreviousPointer(GridCell cell) {
-		return cell.isColoredCell() && cell == this.previousCell;
+	/** Returns true if this grid cell is the previous cell of the one given. */
+	public boolean isPreviousPointerOf(GridCell cell) {
+		return cell.isColoredCell() && this == cell.previousCell;
 	}
 	
 	/** If the grid cell in <b>[</b>row<b>+incrRow</b>, col<b>+incrCol</b><b>]</b> is 
@@ -103,11 +103,14 @@ public class GridCell
 				: null;
 	}
 	
-	
+	/** 
+	 *  @return if one of the adjacents is this grid cell's pair 
+	 *  		pointer, then returns it. Otherwise returns null.  
+	 */
 	public GridCell getPairAdjPointer() {
 		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
-			if (adjCell != null && adjCell.isPairPointerOf(this.pairInitialFlowPointer))
+			if (adjCell != null && adjCell.isPairPointerOf(this))
 				return adjCell;
 		}
 		return null;
@@ -154,6 +157,7 @@ public class GridCell
 		return adjacentCells;
 	}
 	
+	/** */
 	public LinkedList<GridCell> getInitialPointerAdjs() {
 		LinkedList<GridCell> initAdjs = new LinkedList<>();
 		

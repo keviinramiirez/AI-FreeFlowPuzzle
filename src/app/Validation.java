@@ -94,7 +94,7 @@ public class Validation
 		LinkedList<GridCell> cellsToConsider = new LinkedList<>();
 		GridCell pairPointerFound = currFlowPointer.getPairAdjPointer();
 		
-		if (currFlowPointer == grid.gridCells[5][5])
+		if (currFlowPointer == grid.gridCells[6][6])
 			System.out.println("for debugging purposes");
 		
 //		if (pairPointerFound != null) {
@@ -104,8 +104,8 @@ public class Validation
 		
 		LinkedList<GridCell> emptyAdjacents = currFlowPointer.getEmptyAdjs();
 		
-		// consider these if an adjacent 
-//		if (pairPointerFound != null) {
+		// don't go within this if statement if we've reached the pair pointer
+		if (pairPointerFound == null) {
 			// if no empty adjacent (backtrack)
 			if (emptyAdjacents.isEmpty()) {
 				cellsToConsider.add(currFlowPointer.previousCell);
@@ -117,7 +117,7 @@ public class Validation
 				cellsToConsider.add(emptyAdjacents.getFirst());
 				return cellsToConsider;
 			}
-//		}
+		}
 
 		// analyze each adjacent
 		for (int[] dir : Grid.DIRECTIONS) {
@@ -127,9 +127,10 @@ public class Validation
 				currAdj = grid.gridCells[currRow + dir[0]][currCol + dir[1]];
 			
 			// if current adjacent is not out of bounds
-			if (currAdj != null && currAdj != currFlowPointer.previousCell) {
+//			if (currAdj != null && currAdj != currFlowPointer.previousCell) {
+			if (currAdj != null && !currAdj.isPreviousPointerOf(currFlowPointer)) {
 				// if current adjacent cell is its pair pointer
-				if (currAdj.isPairPointerOf(currFlowPointer.pairInitialFlowPointer))
+				if (currAdj.isPairPointerOf(currFlowPointer))
 					pairPointerFound = currAdj;
 				
 				LinkedList<GridCell> currAdj_coloredAdjs = currAdj.getColoredAdjs();

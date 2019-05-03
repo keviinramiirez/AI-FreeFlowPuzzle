@@ -126,8 +126,8 @@ public class App
 			// process to set pairFlowPointer property of each pair of FlowPointers
 			if (cellPainted.containsKey(currInitPointer.color)) {
 				GridCell pairPointer = cellPainted.get(currInitPointer.color);
-				currInitPointer.pairInitialFlowPointer = pairPointer;
-				pairPointer.pairInitialFlowPointer = currInitPointer;
+				currInitPointer.pairFlowPointer = pairPointer;
+				pairPointer.pairFlowPointer = currInitPointer;
 				cellPainted.remove(currInitPointer.color);
 			}
 			else cellPainted.put(currInitPointer.color, currInitPointer);
@@ -154,14 +154,14 @@ public class App
 			int adjCount = ifp.getColoredAdjs().size();
 
 			// 
-			if (visitedCells.contains(ifp.pairInitialFlowPointer)) {
-				int pairPointerAdjCount = ifp.pairInitialFlowPointer.getColoredAdjs().size();
+			if (visitedCells.contains(ifp.pairFlowPointer)) {
+				int pairPointerAdjCount = ifp.pairFlowPointer.getColoredAdjs().size();
 
 				// inserts the most constraint initial pointer of this pair
 				if (adjCount < pairPointerAdjCount)
 					this.grid.pq.insert(adjCount, ifp);
 				else
-					this.grid.pq.insert(pairPointerAdjCount, ifp.pairInitialFlowPointer);
+					this.grid.pq.insert(pairPointerAdjCount, ifp.pairFlowPointer);
 			}
 			else
 				visitedCells.add(ifp);
