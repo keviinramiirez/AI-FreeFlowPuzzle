@@ -54,12 +54,23 @@ public class HeapListPriorityQueue<K, V> extends AbstractListPriorityQueue<K, V>
 		return etr; 
 	}
 	
+	public void changeKey(V value, K newKey) {
+		for (Entry<K,V> entry : this.list) {
+			if (entry.getValue().equals(value)) {
+				this.list.remove(entry);
+//				entry.setKey(newKey);
+				this.insert(newKey, entry.getValue());
+				break;
+			}
+		}
+	}
+	
 	@Override
 	protected int minEntryIndex() {
 		return 0;
 	}
 	
-	private void downHeap(int r) { 
+	private void downHeap(int r) {
 		while (hasLeft(r)) { 
 			int mcIndex = left(r); 
 			if (hasRight(r)) 
