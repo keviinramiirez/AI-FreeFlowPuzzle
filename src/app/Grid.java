@@ -2,7 +2,6 @@ package app;
 
 import java.awt.Color;
 import java.util.LinkedList;
-
 import priorityQueue.HeapPriorityQueue;
 import util.HeuristicComparator;
 

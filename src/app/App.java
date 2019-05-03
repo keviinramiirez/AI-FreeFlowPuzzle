@@ -98,8 +98,6 @@ public class App
 		this.initializeInitialPointers(hardCodedPointers.generateInitFlowPointers1());
 //		this.initializeInitialPointers(hardCodedPointers.generateStrandedRegion1());
 		
-		Validation validation = new Validation(grid);
-		System.out.println(validation.strandedRegion());
 		
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
@@ -153,11 +151,11 @@ public class App
 		for (GridCell initGridCell : grid.getInitialFlowPointers()) {
 			// Initial Flow Pointers
 			GridCell ifp = this.grid.getGridCells()[initGridCell.pos.row][initGridCell.pos.col];
-			int adjCount = ifp.getColoredAdjacents().size();
+			int adjCount = ifp.getColoredAdjs().size();
 
 			// 
 			if (visitedCells.contains(ifp.pairInitialFlowPointer)) {
-				int pairPointerAdjCount = ifp.pairInitialFlowPointer.getColoredAdjacents().size();
+				int pairPointerAdjCount = ifp.pairInitialFlowPointer.getColoredAdjs().size();
 
 				// inserts the most constraint initial pointer of this pair
 				if (adjCount < pairPointerAdjCount)
@@ -176,6 +174,9 @@ public class App
 	}
 	
 	public void solvePuzzle() {
+//		Validation validation = new Validation(grid);
+//		System.out.println(validation.isThereStrandedColorOrRegion());
+		
 		Solver solver = new Solver(grid, gridPanel);
 		solver.solve();
 	}

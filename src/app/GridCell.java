@@ -105,7 +105,7 @@ public class GridCell
 	}
 	
 	/** Returns this grid cell's colored adjacent cells. */
-	public LinkedList<GridCell> getColoredAdjacents() {
+	public LinkedList<GridCell> getColoredAdjs() {
 		LinkedList<GridCell> coloredAdjCells = new LinkedList<>();
 		
 		for (int[] dir : Grid.DIRECTIONS) {
@@ -119,7 +119,7 @@ public class GridCell
 	
 	
 	/** Returns this grid cell's empty adjacent cells. */
-	public LinkedList<GridCell> getEmptyAdjacents() {
+	public LinkedList<GridCell> getEmptyAdjs() {
 		LinkedList<GridCell> coloredAdjCells = new LinkedList<>();
 		
 		for (int[] dir : Grid.DIRECTIONS) {
@@ -133,17 +133,33 @@ public class GridCell
 	
 	
 	/** Returns this grid cell's adjacent cells. */
-	public LinkedList<GridCell> getAllAdjacents() {
+	public LinkedList<GridCell> getAllAdjs() {
 		LinkedList<GridCell> adjacentCells = new LinkedList<>();
 		
-		for (int[] dir : Grid.DIRECTIONS)
-			adjacentCells.add(this.getAdjacentCell(dir[0], dir[1]));
-		
+		for (int[] dir : Grid.DIRECTIONS) {
+			GridCell adjCell = this.getAdjacentCell(dir[0], dir[1]);
+			if (adjCell != null)
+				adjacentCells.add(this.getAdjacentCell(dir[0], dir[1]));
+		}
+
 		return adjacentCells;
 	}
 	
+	public LinkedList<GridCell> getInitialPointerAdjs() {
+		LinkedList<GridCell> initAdjs = new LinkedList<>();
+		
+		for (int[] dir : Grid.DIRECTIONS) {
+			GridCell adjCell = this.getAdjacentCell(dir[0], dir[1]);
+			if (adjCell != null && grid.initialFlowPointers.contains(adjCell))
+				initAdjs.add(adjCell);
+		}
+
+		return initAdjs;
+	}
+	
 	public String toString() {
-		return "Pos="+ pos;
+		return "Pos:"+ pos;
+//		return "Pos:"+ pos +", "+ color.toString().substring(9);
 //		return "Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairInitialFlowPointer.pos 
 //			+" : previousPointerPos="+ previousPointer.pos +" : forced="+ wasMoveForced;
 	}

@@ -25,8 +25,8 @@ public class Solver
 	public void solve() {
 		HashSet<GridCell> visitedCells = new HashSet<GridCell>();
 		HeapPriorityQueue<Integer, GridCell> pq = this.grid.pq;
-//		GridCell currFlowPointer = pq.removeMin().getValue();
-		GridCell currFlowPointer = this.grid.gridCells[2][8];
+//		GridCell currFlowPointer = pq.min().getValue();
+		GridCell currFlowPointer = this.grid.gridCells[3][3];
 
 		GridCell initialFlowPointer = currFlowPointer;
 		boolean alreadyAnalysedInitial = true;
@@ -59,6 +59,7 @@ public class Solver
 				
 				// if arrived at goal pair pointer
 				else if (cellToMoveInto == currFlowPointer.pairInitialFlowPointer) {
+					this.grid.pq.removeMin();
 					System.out.println("arrived at goal");
 				}
 				// only one valid move to consider moving into (force move)
@@ -68,6 +69,8 @@ public class Solver
 							cellsToConsider.removeFirst());
 				}
 			}
+			else if (validation.isThereStrandedColorOrRegion())
+				currFlowPointer = this.backtrackToPrevious(currFlowPointer);
 			else {
 				for (GridCell nextCell : cellsToConsider)
 					currFlowPointer.nextAdjCells.add(nextCell);
@@ -92,9 +95,11 @@ public class Solver
 		return nextToMoveInto;
 	}
 	
+	
 	/** Backtracks to the previous non force-moved cell, resetting each backtracked cell.
 	 *  @return the given flow pointer's previous cell */
 	public GridCell backtrackToPrevious(GridCell flowPointer) {
+		
 		GridCell currCell = flowPointer;
 		GridCell prevCell = flowPointer.previousCell;
 		do {
