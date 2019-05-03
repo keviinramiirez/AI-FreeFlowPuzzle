@@ -94,14 +94,23 @@ public class GridCell
 		return cell.isColoredCell() && cell == this.previousCell;
 	}
 	
-	/** Returns null if row index or column index is out of bounds of the game matrix.
-	 *  Otherwise, returns the valid Grid Cell that is <i>incrRow</i> far horizontally
-	 *  and <i>incrCol</i> far vertically.
+	/** If the grid cell in <b>[</b>row<b>+incrRow</b>, col<b>+incrCol</b><b>]</b> is 
+	 *  out of bounds, then it returns null.  Otherwise, returns the mentioned grid cell.
 	 */
-	private GridCell getAdjacentCell(int incrRow, int incrCol) {
+	private GridCell getDistantCell(int incrRow, int incrCol) {
 		return grid.validPosition(pos.row +incrRow, pos.col +incrCol)
 				? grid.gridCells[pos.row  + incrRow][pos.col + incrCol] 
 				: null;
+	}
+	
+	
+	public GridCell getPairAdjPointer() {
+		for (int[] dir : Grid.DIRECTIONS) {
+			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
+			if (adjCell != null && adjCell.isPairPointerOf(this.pairInitialFlowPointer))
+				return adjCell;
+		}
+		return null;
 	}
 	
 	/** Returns this grid cell's colored adjacent cells. */
@@ -109,7 +118,7 @@ public class GridCell
 		LinkedList<GridCell> coloredAdjCells = new LinkedList<>();
 		
 		for (int[] dir : Grid.DIRECTIONS) {
-			GridCell adjCell = this.getAdjacentCell(dir[0], dir[1]);
+			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
 			if (adjCell != null && adjCell.isColoredCell())
 				coloredAdjCells.add(adjCell);
 		}
@@ -123,7 +132,7 @@ public class GridCell
 		LinkedList<GridCell> coloredAdjCells = new LinkedList<>();
 		
 		for (int[] dir : Grid.DIRECTIONS) {
-			GridCell adjCell = this.getAdjacentCell(dir[0], dir[1]);
+			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
 			if (adjCell != null && !adjCell.isColoredCell())
 				coloredAdjCells.add(adjCell);
 		}
@@ -137,9 +146,9 @@ public class GridCell
 		LinkedList<GridCell> adjacentCells = new LinkedList<>();
 		
 		for (int[] dir : Grid.DIRECTIONS) {
-			GridCell adjCell = this.getAdjacentCell(dir[0], dir[1]);
+			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
 			if (adjCell != null)
-				adjacentCells.add(this.getAdjacentCell(dir[0], dir[1]));
+				adjacentCells.add(this.getDistantCell(dir[0], dir[1]));
 		}
 
 		return adjacentCells;
@@ -149,7 +158,7 @@ public class GridCell
 		LinkedList<GridCell> initAdjs = new LinkedList<>();
 		
 		for (int[] dir : Grid.DIRECTIONS) {
-			GridCell adjCell = this.getAdjacentCell(dir[0], dir[1]);
+			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
 			if (adjCell != null && grid.initialFlowPointers.contains(adjCell))
 				initAdjs.add(adjCell);
 		}
