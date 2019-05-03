@@ -64,6 +64,7 @@ public class Solver
 				
 				// if arrived at goal pair pointer
 				else if (cellToMoveInto.isPairPointerOf(currFlowPointer)) {
+					
 					this.grid.pq.removeMin();
 					System.out.println("arrived at goal");
 				}
