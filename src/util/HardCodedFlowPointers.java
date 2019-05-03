@@ -86,12 +86,12 @@ public class HardCodedFlowPointers
 		Grid.COLS = 7;
 
 		// RED
-		GridCell red63 = new GridCell(grid, new Pos(6, 3), Color.red, 0);
+		GridCell red33 = new GridCell(grid, new Pos(3, 3), Color.red, 0);
 		GridCell red64 = new GridCell(grid, new Pos(6, 4), Color.red, 0);
 
 		// BLUE
 		GridCell blue24 = new GridCell(grid, new Pos(2, 4), Color.blue, 0);
-		GridCell blue64 = new GridCell(grid, new Pos(6, 4), Color.blue, 0);
+		GridCell blue52 = new GridCell(grid, new Pos(5, 2), Color.blue, 0);
 		
 		// GREEN
 		GridCell green01 = new GridCell(grid, new Pos(0, 1), Color.green, 0);
@@ -104,10 +104,10 @@ public class HardCodedFlowPointers
 		// NEED A 10x10 GRID
 		ArrayList<GridCell> initialFlowPointers = new ArrayList<GridCell>();
 
-		initialFlowPointers.add(red63);
+		initialFlowPointers.add(red33);
 		initialFlowPointers.add(red64);
 		initialFlowPointers.add(blue24);
-		initialFlowPointers.add(blue64);
+		initialFlowPointers.add(blue52);
 		initialFlowPointers.add(green01);
 		initialFlowPointers.add(green51);
 		initialFlowPointers.add(yellow22);
