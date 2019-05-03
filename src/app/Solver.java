@@ -83,6 +83,10 @@ public class Solver
 
 				currFlowPointer = this.moveTowardsCell(currFlowPointer, 
 						currFlowPointer.nextAdjCells.removeFirst());
+				
+				this.updatePQ(currFlowPointer);
+				
+				currFlowPointer = this.grid.pq.min().getValue();
 			}
 		}		
 	}
@@ -131,11 +135,14 @@ public class Solver
 	}
 	
 	public void updatePQ(GridCell curr_flow_pointer) {
-		LinkedList<GridCell> adj = curr_flow_pointer.getColoredAdjs();
 		int newHeuristic = curr_flow_pointer.heuristic();
-//		this.grid.pq.
+		this.grid.pq.changeKey(curr_flow_pointer, newHeuristic);
+		for (GridCell adj : curr_flow_pointer.getColoredAdjs()) {
+			int new_heuristic = adj.heuristic();
+			this.grid.pq.changeKey(adj, new_heuristic);
+		}
 	}
-	
+
 	
 	public String toString() {
 		return grid.toString();
