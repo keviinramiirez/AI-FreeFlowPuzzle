@@ -1,12 +1,8 @@
 package app;
 
-import java.awt.Color;
-import java.util.HashSet;
 import java.util.LinkedList;
-
 import javax.swing.JPanel;
 
-import priorityQueue.HeapPriorityQueue;
 
 public class Solver 
 {
@@ -21,17 +17,15 @@ public class Solver
 	}
 	
 	
-	
+
 	public void solve() {
-		HashSet<GridCell> visitedCells = new HashSet<GridCell>();
-		HeapPriorityQueue<Integer, GridCell> pq = this.grid.pq;
-//		GridCell currFlowPointer = pq.min().getValue();
+		GridCell currFlowPointer = this.grid.pq.min().getValue();
 //		GridCell currFlowPointer = this.grid.gridCells[7][4];
-		GridCell currFlowPointer = this.grid.gridCells[3][3];
+//		GridCell currFlowPointer = this.grid.gridCells[3][3];
 
 		GridCell initialFlowPointer = currFlowPointer;
 		boolean alreadyAnalysedInitial = true;
-		
+
 		while (!validation.puzzleIsSolved()) {
 			// if arrived to initial pointer, after backtracking because of invalid path
 			if (!alreadyAnalysedInitial && currFlowPointer == initialFlowPointer) {
@@ -85,13 +79,13 @@ public class Solver
 				if (currFlowPointer.nextAdjCells.isEmpty())
 					for (GridCell nextCell : cellsToConsider)
 						currFlowPointer.nextAdjCells.add(nextCell);
-				
+
 				currFlowPointer = this.moveTowardsCell(currFlowPointer, 
 						currFlowPointer.nextAdjCells.removeFirst());
 			}
 		}		
 	}
-	
+
 	/** Connects the properties of <i>currFlowPointer</i> and <i>nextToMoveInto</i>, and
 	 *    */
 	public GridCell moveTowardsCell(GridCell currFlowPointer, GridCell nextToMoveInto) {

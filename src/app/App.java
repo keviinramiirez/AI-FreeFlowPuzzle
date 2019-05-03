@@ -8,7 +8,6 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 
 import javax.swing.border.LineBorder;
@@ -75,8 +74,8 @@ public class App
 
 	
 	public void createGrid() {
-		Grid.ROWS = 10;
-		Grid.COLS = 10;
+//		Grid.ROWS = 10;
+//		Grid.COLS = 10;
 
 		frame.getContentPane().remove(gridComponent);
 		gridComponent = new JPanel();
@@ -95,7 +94,9 @@ public class App
 		
 		// Hard Coded Flow Pointers
 		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
-		this.initializeInitialPointers(hardCodedPointers.generateInitFlowPointers1());
+//		this.initGridFlowPointers(hardCodedPointers.generateInitFlowPointers1());
+		this.initGridFlowPointers(hardCodedPointers.generate2());
+
 //		this.initializeInitialPointers(hardCodedPointers.generateStrandedRegion1());
 		
 		
@@ -104,10 +105,10 @@ public class App
 	}
 	
 	
-	/** Updates and repaints the grid cells with the given Initial Flow Pointers.
-	 *  Also, pairs (pairFlowPointer property) the initial flow pointers that have same colors.
+	/** initializes the grid with given flow pointer and repaints the grid panel.
+	 *  Also, connects each pointer with its pair pairPointer property of the flow pointers that have same colors.
 	 */
-	private void initializeInitialPointers(ArrayList<GridCell> genInitialFlowPointers) {
+	private void initGridFlowPointers(ArrayList<GridCell> genInitialFlowPointers) {
 		HashMap<Color, GridCell> cellPainted = new HashMap<>();
 		this.grid.nEmptyCells -= genInitialFlowPointers.size();
 
@@ -144,7 +145,7 @@ public class App
 	 *  *Note: The more non-empty adjacent cells, the more constraint it is.
 	 */
 	private void queueMostConstraintInitialPointers() {
-		HashSet<GridCell> visitedCells = new HashSet<>();
+		LinkedList<GridCell> visitedCells = new LinkedList<>();
 
 		// count amount of adjacent cells of each initial pointer and
 		// inserts the most constraint of each pair to the priority queue.
@@ -158,7 +159,7 @@ public class App
 				int pairPointerAdjCount = ifp.pairFlowPointer.getColoredAdjs().size();
 
 				// inserts the most constraint initial pointer of this pair
-				if (adjCount < pairPointerAdjCount)
+				if (adjCount > pairPointerAdjCount)
 					this.grid.pq.insert(adjCount, ifp);
 				else
 					this.grid.pq.insert(pairPointerAdjCount, ifp.pairFlowPointer);
@@ -168,9 +169,7 @@ public class App
 		}
 		
 		for (Entry<Integer, GridCell> entry : this.grid.pq)
-			entry.setKey(this.grid.nEmptyCells);
-		
-		System.out.println();
+			entry.setKey(this.grid.nEmptyCells);		
 	}
 	
 	public void solvePuzzle() {
@@ -211,6 +210,9 @@ public class App
 //	}
 
 	
+	public String toString() {
+		return this.grid.toString();
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
