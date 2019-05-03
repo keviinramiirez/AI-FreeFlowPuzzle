@@ -92,10 +92,12 @@ public class App
 			}
 		}
 		
+		grid.initializeEdges();
+		
 		// Hard Coded Flow Pointers
 		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
-//		this.initGridFlowPointers(hardCodedPointers.generateInitFlowPointers1());
-		this.initGridFlowPointers(hardCodedPointers.generate2());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
+		this.initGridFlowPointers(hardCodedPointers.initialPointers2_7x7());
 
 //		this.initializeInitialPointers(hardCodedPointers.generateStrandedRegion1());
 		
@@ -134,7 +136,6 @@ public class App
 			else cellPainted.put(currInitPointer.color, currInitPointer);
 		}
 
-//		grid.finishedPaths = new LinkedList[grid.initialFlowPointers.size()];
 		
 		// repaints the grid panel with the updated cells
 		gridComponent.revalidate();
@@ -152,24 +153,26 @@ public class App
 		for (GridCell initGridCell : grid.getInitialFlowPointers()) {
 			// Initial Flow Pointers
 			GridCell ifp = this.grid.getGridCells()[initGridCell.pos.row][initGridCell.pos.col];
-			int adjCount = ifp.getColoredAdjs().size();
+			int emptydjCount = ifp.getEmptyAdjs().size();
 
 			// 
 			if (visitedCells.contains(ifp.pairFlowPointer)) {
-				int pairPointerAdjCount = ifp.pairFlowPointer.getColoredAdjs().size();
+				int pairPointer_emptyAdjCount = ifp.pairFlowPointer.getEmptyAdjs().size();
 
 				// inserts the most constraint initial pointer of this pair
-				if (adjCount > pairPointerAdjCount)
-					this.grid.pq.insert(adjCount, ifp);
+				if (emptydjCount < pairPointer_emptyAdjCount)
+					this.grid.pq.insert(emptydjCount, ifp);
 				else
-					this.grid.pq.insert(pairPointerAdjCount, ifp.pairFlowPointer);
+					this.grid.pq.insert(pairPointer_emptyAdjCount, ifp.pairFlowPointer);
 			}
 			else
 				visitedCells.add(ifp);
 		}
 		
-		for (Entry<Integer, GridCell> entry : this.grid.pq)
-			entry.setKey(this.grid.nEmptyCells);		
+//		this.grid.pq.removeMin()
+		
+//		for (Entry<Integer, GridCell> entry : this.grid.pq)
+//			entry.setKey(this.grid.nEmptyCells);		
 	}
 	
 	public void solvePuzzle() {

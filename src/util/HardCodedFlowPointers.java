@@ -15,33 +15,33 @@ public class HardCodedFlowPointers
 		this.grid = grid;
 	}
 	
-	public ArrayList<GridCell> generateInitFlowPointers1() {
+	public ArrayList<GridCell> initialPointers1_10x10() {
 		// RED
-		GridCell red28 = new GridCell(grid, new Pos(2, 8), Color.red, 0);
-		GridCell red53 = new GridCell(grid, new Pos(5, 3), Color.red, 0);
+		GridCell red28 = new GridCell(grid, new Pos(2, 8), Color.red);
+		GridCell red53 = new GridCell(grid, new Pos(5, 3), Color.red);
 
 		// BLUE
-		GridCell blue81 = new GridCell(grid, new Pos(8, 1), Color.blue, 0);
-		GridCell blue88 = new GridCell(grid, new Pos(8, 8), Color.blue, 0);
+		GridCell blue81 = new GridCell(grid, new Pos(8, 1), Color.blue);
+		GridCell blue88 = new GridCell(grid, new Pos(8, 8), Color.blue);
 
 		
 		// CYAN
-		GridCell cyan33 = new GridCell(grid, new Pos(3, 3), Color.cyan, 0);
-		GridCell cyan77 = new GridCell(grid, new Pos(7, 7), Color.cyan, 0);
+		GridCell cyan33 = new GridCell(grid, new Pos(3, 3), Color.cyan);
+		GridCell cyan77 = new GridCell(grid, new Pos(7, 7), Color.cyan);
 
 		
 		// ORANGE
-		GridCell orange34 = new GridCell(grid, new Pos(3, 4), Color.orange, 0);
-		GridCell orange68 = new GridCell(grid, new Pos(6, 8), Color.orange, 0);
+		GridCell orange34 = new GridCell(grid, new Pos(3, 4), Color.orange);
+		GridCell orange68 = new GridCell(grid, new Pos(6, 8), Color.orange);
 
 		
 		// GREEN
-		GridCell green36 = new GridCell(grid, new Pos(3, 6), Color.green, 0);
-		GridCell green72 = new GridCell(grid, new Pos(7, 2), Color.green, 0);
+		GridCell green36 = new GridCell(grid, new Pos(3, 6), Color.green);
+		GridCell green72 = new GridCell(grid, new Pos(7, 2), Color.green);
 
 		// YELLOW
-		GridCell yellow42 = new GridCell(grid, new Pos(4, 2), Color.yellow, 0);
-		GridCell yellow94 = new GridCell(grid, new Pos(9, 4), Color.yellow, 0);
+		GridCell yellow42 = new GridCell(grid, new Pos(4, 2), Color.yellow);
+		GridCell yellow94 = new GridCell(grid, new Pos(9, 4), Color.yellow);
 		
 		// NEED A 10x10 GRID
 		ArrayList<GridCell> initialFlowPointers = new ArrayList<GridCell>();
@@ -63,7 +63,7 @@ public class HardCodedFlowPointers
 	}
 	
 	public ArrayList<GridCell> generateStrandedRegion1() {
-		ArrayList<GridCell> generatedCells = generateInitFlowPointers1();
+		ArrayList<GridCell> generatedCells = initialPointers1_10x10();
 		
 		GridCell orange34 = generatedCells.get(6);
 		GridCell orange24 = cellToModify(new Pos(2, 4), Color.orange, orange34, orange34.pairFlowPointer, generatedCells);
@@ -81,25 +81,25 @@ public class HardCodedFlowPointers
 	}
 	
 	
-	public ArrayList<GridCell> generate2() {
+	public ArrayList<GridCell> initialPointers2_7x7() {
 		Grid.ROWS = 7;
 		Grid.COLS = 7;
 
 		// RED
-		GridCell red33 = new GridCell(grid, new Pos(3, 3), Color.red, 0);
-		GridCell red64 = new GridCell(grid, new Pos(6, 4), Color.red, 0);
+		GridCell red33 = new GridCell(grid, new Pos(3, 3), Color.red);
+		GridCell red64 = new GridCell(grid, new Pos(6, 4), Color.red);
 
 		// BLUE
-		GridCell blue24 = new GridCell(grid, new Pos(2, 4), Color.blue, 0);
-		GridCell blue52 = new GridCell(grid, new Pos(5, 2), Color.blue, 0);
+		GridCell blue24 = new GridCell(grid, new Pos(2, 4), Color.blue);
+		GridCell blue52 = new GridCell(grid, new Pos(5, 2), Color.blue);
 		
 		// GREEN
-		GridCell green01 = new GridCell(grid, new Pos(0, 1), Color.green, 0);
-		GridCell green51 = new GridCell(grid, new Pos(5, 1), Color.green, 0);
+		GridCell green01 = new GridCell(grid, new Pos(0, 1), Color.green);
+		GridCell green51 = new GridCell(grid, new Pos(5, 1), Color.green);
 
 		// YELLOW
-		GridCell yellow22 = new GridCell(grid, new Pos(2, 2), Color.yellow, 0);
-		GridCell yellow50 = new GridCell(grid, new Pos(5, 0), Color.yellow, 0);
+		GridCell yellow22 = new GridCell(grid, new Pos(2, 2), Color.yellow);
+		GridCell yellow50 = new GridCell(grid, new Pos(5, 0), Color.yellow);
 		
 		// NEED A 10x10 GRID
 		ArrayList<GridCell> initialFlowPointers = new ArrayList<GridCell>();

@@ -106,9 +106,5 @@ public class HeapListPriorityQueue<K, V> extends AbstractListPriorityQueue<K, V>
 	public Iterator<Entry<K, V>> iterator() {
 		return list.iterator();
 	}
-	
-	public String toString() {
-		return list.toString();
-	}
 }
 

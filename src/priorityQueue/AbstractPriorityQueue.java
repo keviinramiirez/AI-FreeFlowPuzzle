@@ -108,6 +108,7 @@ public abstract class AbstractPriorityQueue<K,V>
 			return value;
 		}
 
+		@Override
 		public void setKey(K key) {
 			this.key = key;
 		}

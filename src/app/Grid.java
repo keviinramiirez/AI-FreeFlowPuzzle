@@ -1,6 +1,7 @@
 package app;
 
 import java.awt.Color;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import priorityQueue.HeapListPriorityQueue;
@@ -12,10 +13,15 @@ public class Grid
 	public static int[][] DIRECTIONS = 
 		{{ 0, 1 }, { -1, 0 }, { 0, -1 }, { 1, 0 }};// right, up, left, down
 	public static int ROWS = 7, COLS = 7;
+//	public static int ROWS = 10, COLS = 10;
 	public int nEmptyCells = ROWS*COLS;
+	
 
 	/* Matrix containing grid cell elements */
 	public GridCell[][] gridCells = new GridCell[ROWS][COLS];
+	
+	
+	public LinkedList<GridCell> edges = new LinkedList<GridCell>();
 	
 	/* Unordered set of all initial flow pointers */
 	public LinkedList<GridCell> initialFlowPointers = new LinkedList<>();
@@ -24,9 +30,17 @@ public class Grid
 	public HeapListPriorityQueue<Integer, GridCell> pq = new HeapListPriorityQueue<>(new HeuristicComparator());
 	public LinkedList<LinkedList<GridCell>> finishedPaths = new LinkedList<LinkedList<GridCell>>();
 	
+	public Grid() {}
+	
+	public void initializeEdges() {
+		edges.add(gridCells[0][0]);
+		edges.add(gridCells[0][Grid.COLS-1]);
+		edges.add(gridCells[Grid.ROWS-1][0]);
+		edges.add(gridCells[Grid.ROWS-1][Grid.COLS-1]);
+	}
+	
 	public GridCell[][] getGridCells() { return gridCells; }
 	public LinkedList<GridCell> getInitialFlowPointers() { return initialFlowPointers; }
-	public Grid() {}
 	
 	/**
 	 * @param pos: position of a cell

@@ -23,7 +23,7 @@ public class GridCell
 	public Color color;
 	
 	/** This Grid Cell's heuristic value. */
-	public int heuristic = 0;
+	public int heuristic;
 	
 	/** The previous pointer to backtrack to. */
 	public GridCell previousCell;
@@ -37,12 +37,15 @@ public class GridCell
 	/** This Grid Cell had one cell to move into. */
 	public boolean hasForcedMove;
 		
+	/** This Grid Cell is part of a finished path. */
+	public boolean isFinished;
+	
 	
 	public GridCell(Grid grid, Pos pos) {
 		this(grid, pos, Grid.EMPTY_COLOR, 0, null, null, new LinkedList<GridCell>());
 	}
-	public GridCell(Grid grid, Pos pos, Color color, int heuristic) {
-		this(grid, pos, color, heuristic, null, null, new LinkedList<GridCell>());
+	public GridCell(Grid grid, Pos pos, Color color) {
+		this(grid, pos, color, 0, null, null, new LinkedList<GridCell>());
 	}
 	/** 
 	 *  @param pos position of this cell
@@ -63,7 +66,7 @@ public class GridCell
 		this.previousCell = previousPointer;
 		this.pairFlowPointer = pairFlowPointer;
 		this.nextAdjCells = nextAdjCells;
-		this.hasForcedMove = false;
+		this.hasForcedMove = this.isFinished = false;
 	}
 	
 	/** Resets this color, nextAdjCells, and previousPointer properties */
@@ -107,7 +110,7 @@ public class GridCell
 	 *  @return if one of the adjacents is this grid cell's pair 
 	 *  		pointer, then returns it. Otherwise returns null.  
 	 */
-	public GridCell getPairAdjPointer() {
+	public GridCell retrievePairAdjPointer() {
 		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
 			if (adjCell != null && adjCell.isPairPointerOf(this))
