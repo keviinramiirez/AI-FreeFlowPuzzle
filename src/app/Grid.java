@@ -14,8 +14,13 @@ public class Grid
 	public static int ROWS = 7, COLS = 7;
 	public int nEmptyCells = ROWS*COLS;
 
+	/* Matrix containing grid cell elements */
 	public GridCell[][] gridCells = new GridCell[ROWS][COLS];
+	
+	/* Unordered set of all initial flow pointers */
 	public LinkedList<GridCell> initialFlowPointers = new LinkedList<>();
+	
+	/* Contains current pointers that will be moved through the grid. Key: heuristic function value, Value: Grid Cell */
 	public HeapListPriorityQueue<Integer, GridCell> pq = new HeapListPriorityQueue<>(new HeuristicComparator());
 	public LinkedList<LinkedList<GridCell>> finishedPaths = new LinkedList<LinkedList<GridCell>>();
 	
@@ -23,11 +28,21 @@ public class Grid
 	public LinkedList<GridCell> getInitialFlowPointers() { return initialFlowPointers; }
 	public Grid() {}
 	
+	/**
+	 * @param pos: position of a cell
+	 * @return boolean if cell is within dimensions of grid
+	 */
 	public boolean validPosition(Pos pos) {
 		return (pos.row < Grid.ROWS && pos.col < Grid.COLS) 
 				&& (pos.row >= 0 && pos.col >= 0);
 	}
 	
+	/**
+	 * Receives row and col as parameters, converts to Pos type and checks whether it is valid or not
+	 * @param row: int, row of cell
+	 * @param col: int, col of cell
+	 * @return boolean
+	 */
 	public boolean validPosition(int row, int col) {
 		return validPosition(new Pos(row, col));
 	}
