@@ -26,6 +26,7 @@ public class Solver
 		HashSet<GridCell> visitedCells = new HashSet<GridCell>();
 		HeapPriorityQueue<Integer, GridCell> pq = this.grid.pq;
 //		GridCell currFlowPointer = pq.min().getValue();
+//		GridCell currFlowPointer = this.grid.gridCells[7][4];
 		GridCell currFlowPointer = this.grid.gridCells[3][3];
 
 		GridCell initialFlowPointer = currFlowPointer;
@@ -41,7 +42,7 @@ public class Solver
 			
 			
 			/* 
-			   If 'nextAdjCells' isn't empty, it means that we have backtracked and
+			   If 'nextAdjCells' is empty, it means that we have backtracked and
 			   we are now considering the valid cells that we haven't moved into yet.
 			   'cellsToConsider' may contain the force-move cell, 
 			   the previous cell, or the various cells to move into.
@@ -50,6 +51,9 @@ public class Solver
 					? validation.cellsToConsiderMovingInto(currFlowPointer)
 							: currFlowPointer.nextAdjCells;
 			
+			if (cellsToConsider.isEmpty())
+				currFlowPointer = this.backtrackToPrevious(currFlowPointer);
+
 			if (cellsToConsider.size() == 1) {
 				GridCell cellToMoveInto = cellsToConsider.getFirst();
 				
@@ -71,9 +75,10 @@ public class Solver
 			}
 			else if (validation.isThereStrandedColorOrRegion())
 				currFlowPointer = this.backtrackToPrevious(currFlowPointer);
-			else {
-				for (GridCell nextCell : cellsToConsider)
-					currFlowPointer.nextAdjCells.add(nextCell);
+			else {// If 'nextAdjCells' property is empty, then add the cells to consider
+				if (currFlowPointer.nextAdjCells.isEmpty())
+					for (GridCell nextCell : cellsToConsider)
+						currFlowPointer.nextAdjCells.add(nextCell);
 				
 				currFlowPointer = this.moveTowardsCell(currFlowPointer, 
 						currFlowPointer.nextAdjCells.removeFirst());
@@ -117,6 +122,11 @@ public class Solver
 		while (currCell.hasForcedMove);
 
 		return prevCell;
+	}
+	
+	
+	public String toString() {
+		return grid.toString();
 	}
 }
 

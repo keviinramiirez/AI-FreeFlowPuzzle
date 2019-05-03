@@ -85,8 +85,8 @@ public class GridCell
 	}
 
 	/** Return true if given cell is the pair of this FlowPointer. */
-	public boolean isPairPointer(GridCell cell) {
-		return cell.isColoredCell() && cell == this.pairInitialFlowPointer;
+	public boolean isPairPointerOf(GridCell cell) {
+		return cell.isColoredCell() && this == cell;
 	}
 	
 	/** Returns true if the given cell is the previous cell of this FlowPointer. */

@@ -30,4 +30,42 @@ public class Grid
 	public boolean validPosition(int row, int col) {
 		return validPosition(new Pos(row, col));
 	}
+	
+	public String toString() {
+		String sGrid = "[\n  [";
+		for (int r = 0; r < Grid.ROWS; r++) {
+			for (int c = 0; c < Grid.COLS; c++) {
+				String s = " ";
+				if (gridCells[r][c].isColoredCell()) {
+					s = this.colorStr(gridCells[r][c].color, 
+							gridCells[r][c].isInitialFlowPointer());
+				}
+				
+				sGrid += s + ((c == Grid.COLS-1) ? "]": ",");
+			}
+			sGrid += "\n" + ((r == Grid.ROWS-1) ? "]" : "  [");
+		}
+		return sGrid;
+	}
+	
+	
+	public String colorStr(Color color, boolean isInitialPointer) {
+		String c = "";
+		if (color.equals(Color.cyan))
+			c = "c";
+		else if (color.equals(Color.orange))
+			return "o";
+		else if (color.equals(Color.green))
+			return "g";
+		else if (color.equals(Color.red))
+			return "r";
+		else if (color.equals(Color.yellow))
+			return "y";
+		else if (color.equals(Color.blue))
+			return "b";
+		else if (color.equals(Color.magenta))
+			return "m";
+		
+		return isInitialPointer ? c.toUpperCase() : c;
+	}
 }

@@ -69,7 +69,7 @@ public class Validation
 			for (GridCell adjCell : currFlowPointer.getAllAdjs()) {
 				if (adjCell != null && !visitedPos.contains(adjCell.pos))// don't queue the already visited grid cells
 				{
-					if (flowPointer.isPairPointer(adjCell)) 
+					if (flowPointer.isPairPointerOf(adjCell)) 
 						return true;
 					if (!visitedPos.contains(adjCell)
 							&& !adjCell.isColoredCell() || adjCell.color == flowPointer.color)
@@ -94,7 +94,7 @@ public class Validation
 		LinkedList<GridCell> cellsToConsider = new LinkedList<>();
 		GridCell pairPointerFound = null;
 		
-		if (currFlowPointer == grid.gridCells[7][9])
+		if (currFlowPointer == grid.gridCells[7][6])
 			System.out.println();
 		
 		LinkedList<GridCell> emptyAdjacents = currFlowPointer.getEmptyAdjs();
@@ -121,7 +121,7 @@ public class Validation
 			// if current adjacent is not out of bounds
 			if (currAdj != null && currAdj != currFlowPointer.previousCell) {
 				// if current adjacent cell is its pair pointer
-				if (currFlowPointer.isPairPointer(currAdj))
+				if (currAdj.isPairPointerOf(currFlowPointer.pairInitialFlowPointer))
 					pairPointerFound = currAdj;
 				
 				LinkedList<GridCell> currAdj_coloredAdjs = currAdj.getColoredAdjs();
@@ -220,20 +220,24 @@ public class Validation
 	
 	
 	
-	/** 
-	 *  <ul>
-	 *  	<li>if <i>currFlowPointer</i> doesn't have any adjacent, or</li>
-	 *  	<li>If the given flow pointer constraints an adjacent <b>initial</b> pointer which
-	 *  	isn't its own pair initial pointer, then add its previous colored cell to given list.</li>
-	 *  	<li>Else, if there is only one adjacent cell (forced move), then only add that cell to given list.</li>
-	 *  	<li>Else, if there is no constraint and one of the colored adjacent was its pair 
-	 *  	pointer, then only add its pair to given list.</li>
-	 *  </ul>
-	 *  is there isn't any constraint adjacent cells, 
-	 *  and adds its active adjacent cells to the given list.
-	 *  @param currFlowPointer current flow pointer to analyze.
-	 *  @param cellsToConsider cells to consider move toward to.
-	 */
+//	/** 
+//	 *  <ul>
+//	 *  	<li>if <i>currFlowPointer</i> doesn't have any adjacent, or</li>
+//	 *  	<li>If the given flow pointer constraints an adjacent <b>initial</b> pointer which
+//	 *  	isn't its own pair initial pointer, then add its previous colored cell to given list.</li>
+//	 *  	<li>Else, if there is only one adjacent cell (forced move), then only add that cell to given list.</li>
+//	 *  	<li>Else, if there is no constraint and one of the colored adjacent was its pair 
+//	 *  	pointer, then only add its pair to given list.</li>
+//	 *  </ul>
+//	 *  is there isn't any constraint adjacent cells, 
+//	 *  and adds its active adjacent cells to the given list.
+//	 *  @param currFlowPointer current flow pointer to analyze.
+//	 *  @param cellsToConsider cells to consider move toward to.
+//	 */
+	
+	public String toString() {
+		return grid.toString();
+	}
 }
 
 
