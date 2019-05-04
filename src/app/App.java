@@ -1,4 +1,5 @@
 package app;
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -22,21 +23,20 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 
-public class App 
-{
+public class App {
 	private JFrame frame;
 	private final JButton btnCreateGrid = new JButton("Create Grid");
 	private final JPanel panel_1 = new JPanel();
 	private final JPanel panel_2 = new JPanel();
-	private final JComboBox<Integer> columnComboBox = new JComboBox<>(), rowComboBox = new JComboBox<>();
-	private JPanel gridComponent = new JPanel();
-
+	private final JComboBox<Integer> columnComboBox = new JComboBox<>(), rowComboBox = new JComboBox<>(), numberOfColorsBox = new JComboBox<>();
+	private final JComboBox<String>gridComboBox = new JComboBox<>();
+	private JPanel gridComponent = new JPanel();	
+	private String item= "6x6";
 	static int MINIMUM_DIMENSIONS = 2, MAXIMUM_DIMENSIONS = 12;
 
 	JPanel[][] gridPanel = new JPanel[Grid.ROWS][Grid.COLS];
 	public Grid grid = new Grid();
 	private final JButton btnNewButton = new JButton("Solve Now");
-
 
 	/**
 	 * Launch the application.
@@ -53,7 +53,6 @@ public class App
 			}
 		});
 	}
-	
 
 	/**
 	 * Create the application.
@@ -61,7 +60,7 @@ public class App
 	public App() {
 		initialize();
 	}
-		
+
 	public void clearPanels() {
 //		this.grid.initialFlowPointers = new HashSet<Pos>();
 //		for (int r = 0; r < nRows; r++) {
@@ -72,7 +71,6 @@ public class App
 //		}
 	}
 
-	
 	public void createGrid() {
 //		Grid.ROWS = 10;
 //		Grid.COLS = 10;
@@ -81,8 +79,7 @@ public class App
 		gridComponent = new JPanel();
 		gridComponent.setLayout(new GridLayout(Grid.ROWS, Grid.COLS));
 		frame.getContentPane().add(gridComponent, BorderLayout.CENTER);
-		
-		
+
 		for (int r = 0; r < Grid.ROWS; r++) {
 			for (int c = 0; c < Grid.COLS; c++) {
 				this.grid.getGridCells()[r][c] = new GridCell(grid, new Pos(r, c));
@@ -91,24 +88,37 @@ public class App
 				gridComponent.add(gridPanel[r][c]);
 			}
 		}
-		
+
 		grid.initializeEdges();
-		
+
 		// Hard Coded Flow Pointers
 		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
-		this.initGridFlowPointers(hardCodedPointers.initialPointers2_7x7());
+		// This doesnt work correctly because of how the Grid class is structure
+		switch(item) {
+		case "5x5":
+			this.initGridFlowPointers(hardCodedPointers.initialPointers2_5x5());
+			break;
+		case "6x6":
+			this.initGridFlowPointers(hardCodedPointers.initialPointers2_6x6());
+			break;
+		case "7x7":
+			this.initGridFlowPointers(hardCodedPointers.initialPointers2_7x7());
+			break;
+		case "10x10":
+			this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
+			break;
+		}
 
 //		this.initializeInitialPointers(hardCodedPointers.generateStrandedRegion1());
-		
-		
+
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
 	}
-	
-	
-	/** initializes the grid with given flow pointer and repaints the grid panel.
-	 *  Also, connects each pointer with its pair pairPointer property of the flow pointers that have same colors.
+
+	/**
+	 * initializes the grid with given flow pointer and repaints the grid panel.
+	 * Also, connects each pointer with its pair pairPointer property of the flow
+	 * pointers that have same colors.
 	 */
 	private void initGridFlowPointers(ArrayList<GridCell> genInitialFlowPointers) {
 		HashMap<Color, GridCell> cellPainted = new HashMap<>();
@@ -132,18 +142,18 @@ public class App
 				currInitPointer.pairFlowPointer = pairPointer;
 				pairPointer.pairFlowPointer = currInitPointer;
 				cellPainted.remove(currInitPointer.color);
-			}
-			else cellPainted.put(currInitPointer.color, currInitPointer);
+			} else
+				cellPainted.put(currInitPointer.color, currInitPointer);
 		}
 
-		
 		// repaints the grid panel with the updated cells
 		gridComponent.revalidate();
 		gridComponent.repaint();
 	}
-	
-	/** Queues the most constraint initial pointer of each pair. <br>
-	 *  *Note: The more non-empty adjacent cells, the more constraint it is.
+
+	/**
+	 * Queues the most constraint initial pointer of each pair. <br>
+	 * *Note: The more non-empty adjacent cells, the more constraint it is.
 	 */
 	private void queueMostConstraintInitialPointers() {
 		LinkedList<GridCell> visitedCells = new LinkedList<>();
@@ -155,7 +165,7 @@ public class App
 			GridCell ifp = this.grid.getGridCells()[initGridCell.pos.row][initGridCell.pos.col];
 			int emptydjCount = ifp.getEmptyAdjs().size();
 
-			// 
+			//
 			if (visitedCells.contains(ifp.pairFlowPointer)) {
 				int pairPointer_emptyAdjCount = ifp.pairFlowPointer.getEmptyAdjs().size();
 
@@ -164,26 +174,24 @@ public class App
 					this.grid.pq.insert(emptydjCount, ifp);
 				else
 					this.grid.pq.insert(pairPointer_emptyAdjCount, ifp.pairFlowPointer);
-			}
-			else
+			} else
 				visitedCells.add(ifp);
 		}
-		
+
 //		this.grid.pq.removeMin()
-		
+
 //		for (Entry<Integer, GridCell> entry : this.grid.pq)
 //			entry.setKey(this.grid.nEmptyCells);		
 	}
-	
+
 	public void solvePuzzle() {
 //		Validation validation = new Validation(grid);
 //		System.out.println(validation.isThereStrandedColorOrRegion());
-		
+
 		Solver solver = new Solver(grid, gridPanel);
 		solver.solve();
 	}
-	
-	
+
 //	public void paintRandomCell(Color color) {
 //		Random rand = new Random();
 //		int randomCol = 0, randomRow = 0;
@@ -212,10 +220,10 @@ public class App
 //		}
 //	}
 
-	
 	public String toString() {
 		return this.grid.toString();
 	}
+
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -223,45 +231,60 @@ public class App
 		frame = new JFrame();
 		frame.setBounds(1700, 300, 700, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		frame.getContentPane().add(gridComponent, BorderLayout.CENTER);
 		gridComponent.setLayout(new GridLayout(Grid.ROWS, Grid.COLS, 0, 0));
-		
+
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
-				
+
 		for (int i = MINIMUM_DIMENSIONS; i <= MAXIMUM_DIMENSIONS; i++) {
 			columnComboBox.addItem(i);
 			rowComboBox.addItem(i);
+			numberOfColorsBox.addItem(i);
+			if(i>4&&i!=8&&i!=9 &&i!=11&&i!=12) {
+				
+				gridComboBox.addItem(Integer.toString(i)+'x'+Integer.toString(i));;
+			}
 		}
 		panel.setLayout(new BorderLayout(0, 0));
-		
+
 		panel.add(panel_1, BorderLayout.NORTH);
-		panel_1.add(rowComboBox);
-		panel_1.add(columnComboBox);
+//		panel_1.add(rowComboBox);
+//		panel_1.add(columnComboBox);
+		panel_1.add(numberOfColorsBox);
+		panel_1.add(gridComboBox);
 		panel_1.add(btnCreateGrid);
-		
-		
+
 		btnCreateGrid.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				createGrid();
 			}
 		});
-		
-		
+
 		rowComboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Grid.ROWS = (int) rowComboBox.getSelectedItem();
 			}
 		});
-		
+
 		columnComboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				Grid.COLS = (int) columnComboBox.getSelectedItem();
 			}
 		});
-		
+		gridComboBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				item = (String) gridComboBox.getSelectedItem();
+			}
+		});
+		numberOfColorsBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				int c = (int) numberOfColorsBox.getSelectedItem();
+			}
+		});
+
 		panel.add(panel_2, BorderLayout.CENTER);
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
