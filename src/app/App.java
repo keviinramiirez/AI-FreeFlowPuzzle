@@ -96,8 +96,8 @@ public class App
 		
 		// Hard Coded Flow Pointers
 		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
-		this.initGridFlowPointers(hardCodedPointers.initialPointers2_7x7());
+		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers2_7x7());
 
 //		this.initializeInitialPointers(hardCodedPointers.generateStrandedRegion1());
 		
@@ -175,12 +175,13 @@ public class App
 //			entry.setKey(this.grid.nEmptyCells);		
 	}
 	
-	public void solvePuzzle() {
-//		Validation validation = new Validation(grid);
-//		System.out.println(validation.isThereStrandedColorOrRegion());
-		
+	public void solvePuzzle() {		
 		Solver solver = new Solver(grid, gridPanel);
 		solver.solve();
+		
+		// repaints the grid panel with the updated cells
+		gridComponent.revalidate();
+		gridComponent.repaint();
 	}
 	
 	
