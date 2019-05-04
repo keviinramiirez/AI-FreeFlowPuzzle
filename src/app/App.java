@@ -15,6 +15,7 @@ import javax.swing.border.LineBorder;
 
 import interfaces.Entry;
 import util.HardCodedFlowPointers;
+import util.PuzzleCreator;
 
 import javax.swing.JComboBox;
 import javax.swing.JButton;
@@ -89,7 +90,10 @@ public class App {
 			}
 		}
 		grid.initializeEdges();
-
+		
+		PuzzleCreator pzl = new PuzzleCreator();
+		pzl.getPuzzle(grid);
+		
 		// Hard Coded Flow Pointers
 		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
 		
@@ -111,7 +115,7 @@ public class App {
 //
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers2_5x5());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers2_6x6());
-		this.initGridFlowPointers(hardCodedPointers.initialPointers2_7x7());
+		this.initGridFlowPointers(pzl.getPuzzle(grid));
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
 
 		// inserts the most constraint Initial Pointers within the priority queue
