@@ -89,7 +89,7 @@ public class GridCell
 
 	/** Returns true if this grid cell is the pair of the given FlowPointer. */
 	public boolean isPairPointerOf(GridCell flowPointer) {
-		return flowPointer.isColoredCell() && this == flowPointer.pairFlowPointer;
+		return this == flowPointer.pairFlowPointer;
 	}
 	
 	/** Returns true if this grid cell is the previous cell of the one given. */
@@ -171,6 +171,15 @@ public class GridCell
 		}
 
 		return initAdjs;
+	}
+	
+	public boolean hasPairPointer() {
+		for (int[] dir : Grid.DIRECTIONS) {
+			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
+			if (adjCell != null && adjCell.isPairPointerOf(this))
+				return true;
+		}
+		return false;
 	}
 	
 	public int heuristic() {
