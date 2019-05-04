@@ -12,9 +12,9 @@ public class Grid
 	public static Color EMPTY_COLOR = new Color(240, 240, 240);
 	public static int[][] DIRECTIONS = 
 		{{ 0, 1 }, { -1, 0 }, { 0, -1 }, { 1, 0 }};// right, up, left, down
-	//public static int ROWS = 5, COLS = 5;
-	public static int ROWS = 6, COLS = 6;
-//	public static int ROWS = 7, COLS = 7;
+//	public static int ROWS = 5, COLS = 5;
+//	public static int ROWS = 6, COLS = 6;
+	public static int ROWS = 7, COLS = 7;
 //	public static int ROWS = 10, COLS = 10;
 	public int nEmptyCells = ROWS*COLS;
 	

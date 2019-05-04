@@ -31,7 +31,7 @@ public class App {
 	private final JComboBox<Integer> columnComboBox = new JComboBox<>(), rowComboBox = new JComboBox<>(), numberOfColorsBox = new JComboBox<>();
 	private final JComboBox<String>gridComboBox = new JComboBox<>();
 	private JPanel gridComponent = new JPanel();	
-	private String item= "6x6";
+	private String dimensions = "6x6";
 	static int MINIMUM_DIMENSIONS = 2, MAXIMUM_DIMENSIONS = 12;
 
 	JPanel[][] gridPanel = new JPanel[Grid.ROWS][Grid.COLS];
@@ -88,28 +88,31 @@ public class App {
 				gridComponent.add(gridPanel[r][c]);
 			}
 		}
-
 		grid.initializeEdges();
 
 		// Hard Coded Flow Pointers
 		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
+		
 		// This doesnt work correctly because of how the Grid class is structure
-		switch(item) {
-		case "5x5":
-			this.initGridFlowPointers(hardCodedPointers.initialPointers2_5x5());
-			break;
-		case "6x6":
-			this.initGridFlowPointers(hardCodedPointers.initialPointers2_6x6());
-			break;
-		case "7x7":
-			this.initGridFlowPointers(hardCodedPointers.initialPointers2_7x7());
-			break;
-		case "10x10":
-			this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
-			break;
-		}
-
-//		this.initializeInitialPointers(hardCodedPointers.generateStrandedRegion1());
+//		switch(dimensions) {
+//			case "5x5":
+//				this.initGridFlowPointers(hardCodedPointers.initialPointers2_5x5());
+//				break;
+//			case "6x6":
+//				this.initGridFlowPointers(hardCodedPointers.initialPointers2_6x6());
+//				break;
+//			case "7x7":
+//				this.initGridFlowPointers(hardCodedPointers.initialPointers2_7x7());
+//				break;
+//			case "10x10":
+//				this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
+//				break;
+//		}
+//
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers2_5x5());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers2_6x6());
+		this.initGridFlowPointers(hardCodedPointers.initialPointers2_7x7());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
 
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
@@ -276,7 +279,7 @@ public class App {
 		});
 		gridComboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				item = (String) gridComboBox.getSelectedItem();
+				dimensions = (String) gridComboBox.getSelectedItem();
 			}
 		});
 		numberOfColorsBox.addItemListener(new ItemListener() {
