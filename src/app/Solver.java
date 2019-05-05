@@ -92,7 +92,7 @@ public class Solver
 				currFlowPointer = this.moveTowardsCell(currFlowPointer, 
 						currFlowPointer.nextAdjCells.removeFirst());
 				
-				this.updatePQ(currFlowPointer);
+//				this.updatePQ(currFlowPointer);
 				
 //				currFlowPointer = this.grid.pq.min().getValue();
 			}
