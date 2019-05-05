@@ -18,14 +18,14 @@ import app.Pos;
 
 public class PuzzleCreator {
 	
-	public ArrayList<GridCell> getPuzzle(Grid grid) {
+	public ArrayList<GridCell> getPuzzle(Grid grid, String dimensions) {
 		
 		ArrayList<GridCell> initialFlowPointers = new ArrayList<GridCell>();
 		
 		List<List<String>> puzzlesArray = new ArrayList<List<String>>();				
 		String[] values = null;
 				
-		try (BufferedReader reader = new BufferedReader(new FileReader("src/input/5x5.csv"));) {
+		try (BufferedReader reader = new BufferedReader(new FileReader("src/input/" + dimensions + ".csv"));) {
 			String row;
 			while ((row = reader.readLine()) != null) {
 				values = row.split(",");
@@ -66,6 +66,10 @@ public class PuzzleCreator {
 			return Color.orange;
 		case("g"):
 			return Color.green;
+		case("c"):
+			return Color.cyan;
+		case("p"):
+			return null;
 		default:
 			return null;
 		}
