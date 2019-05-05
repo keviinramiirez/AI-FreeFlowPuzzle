@@ -1,25 +1,31 @@
 package app;
 
+import java.awt.Color;
 import java.util.HashSet;
 import java.util.LinkedList;
 
 import interfaces.Entry;
 import queue.SLLQueue;
+import util.Util;
 
 public class Validation 
 {
 	Grid grid;
+	Grid savedInstanceGrid;
 	
 	public Validation(Grid grid) {
 		this.grid = grid;
+		this.savedInstanceGrid = grid;
 	}
 
 	public boolean isThereStrandedColorOrRegion(GridCell currPointer) {
-		for (Entry<Integer, GridCell> entry : grid.pq) {
-			// Stranded Color Validation
-			if (!pathToPairExists(entry.getValue()))
-				return true;
-		}
+		// only want to check paths once
+//		if (this.grid == this.savedInstanceGrid)
+//			for (Entry<Integer, GridCell> entry : grid.pq) {
+//				// Stranded Color Validation
+//				if (!pathToPairExists(entry.getValue()))
+//					return true;
+//			}
 		
 		// Stranded Region Validation
 		return strandedRegion(currPointer);
@@ -50,7 +56,6 @@ public class Validation
 //			if (emptyAdj.retrievePairAdjPointer() != null) // emptyAdj has pariPointer
 //				return emptyAdj;
 //		return null;
-//	}
 	
 	/** Return true if the given adj cells contains at least one initialPointer.
 	 */
@@ -73,35 +78,37 @@ public class Validation
 		return adjsContainingPair;
 	}
 	
-	public boolean strandedRegion(GridCell currPointer) {		
+	public boolean strandedRegion(GridCell headPointer) {
 		SLLQueue<GridCell> queue = new SLLQueue<GridCell>();
 		LinkedList<GridCell> visitedCells = new LinkedList<>(); 
-		int nRegionsEmptyCells = grid.nEmptyCells - 1;
-		
-		// contains either valid edge (if currPointer is at the edge) or null if no valid edge exists
-		GridCell validEdge = emptyEdges_withEqualColoredAdjCells(currPointer);
+		int nRegionEmptyCells = this.grid.nEmptyCells - 1;
 
-		if (validEdge != null) {
-			visitedCells.add(validEdge);
-			nRegionsEmptyCells--;
-		}
-		
-		// contains 
-		LinkedList<GridCell> emptyAdjsContainingPairPointer = this.getAdjsContainingPairPointer(
-				currPointer.getEmptyAdjs(), currPointer);
-		
-		for (GridCell emptyAdj : emptyAdjsContainingPairPointer) {
-			if (emptyAdj.getEmptyAdjs().size() == 0 && !visitedCells.contains(emptyAdj)) {
-				visitedCells.add(emptyAdj);
-				nRegionsEmptyCells--;
+		if (headPointer != null) {
+			// contains either valid edge (if currPointer is at the edge) or null if no valid edge exists
+			GridCell validEdge = emptyEdges_withEqualColoredAdjCells(headPointer);//  NEEDS validity for when has only one colored cell
+	
+			if (validEdge != null) {
+				visitedCells.add(validEdge);
+				nRegionEmptyCells--;
+			}
+			
+			// contains 
+			LinkedList<GridCell> emptyAdjsContainingPairPointer = this.getAdjsContainingPairPointer(
+					headPointer.getEmptyAdjs(), headPointer);
+			
+			for (GridCell emptyAdj : emptyAdjsContainingPairPointer) {
+				if (emptyAdj.getEmptyAdjs().size() == 0 && !visitedCells.contains(emptyAdj)) {
+					visitedCells.add(emptyAdj);
+					nRegionEmptyCells--;
+				}
 			}
 		}
 		
 		int r = 0, c = 0;
 		// iterates until finding first empty cell
 		outerloop:
-		for (; r < Grid.ROWS; r++)
-			for (c = 0; c < Grid.COLS; c++)
+		for (; r < grid.ROWS; r++)
+			for (c = 0; c < grid.COLS; c++)
 				if (!this.grid.gridCells[r][c].isColoredCell() 
 						&& !visitedCells.contains(this.grid.gridCells[r][c]))
 					break outerloop;
@@ -109,19 +116,64 @@ public class Validation
 		queue.enqueue(this.grid.gridCells[r][c]);
 		visitedCells.add(this.grid.gridCells[r][c]);
 		
+		if (headPointer == grid.gridCells[2][1])
+			System.out.println();
 		while (!queue.isEmpty()) {
 			GridCell currEmptyCell = queue.dequeue();
-			for (GridCell adjCell : currEmptyCell.getEmptyAdjs()) {
+			// considers all adjacent cells
+			for (GridCell adjCell : currEmptyCell.getAllAdjs()) {
 				// don't queue the already visited empty cells
 				if (!visitedCells.contains(adjCell)) {
-					nRegionsEmptyCells--;
-					queue.enqueue(adjCell);
-					visitedCells.add(adjCell);
+					if (!adjCell.isColoredCell()) {
+						nRegionEmptyCells--;
+						queue.enqueue(adjCell);
+						visitedCells.add(adjCell);
+					}
+					else if (adjCell.isInitialFlowPointer() && adjCell.isPairPointerOf(headPointer)) {
+if (!adjCell.isFinished && !this.pathToPairExists(adjCell)) {
+							// resetting the instance grid to the original
+							this.grid = this.savedInstanceGrid;
+							return true;
+						}
+						visitedCells.add(adjCell); // may already been added previously
+						visitedCells.add(adjCell.pairFlowPointer);
+					}
 				}
 			}
 		}
 		
-		return nRegionsEmptyCells != 0;
+		if (nRegionEmptyCells > 0) {
+			this.savedInstanceGrid = grid;
+			this.grid = grid.clone();
+			this.grid.initialFlowPointers = new LinkedList<GridCell>();
+
+			// fill the emptyCells 
+			for (r = 0; r < grid.ROWS; r++)
+				for (c = 0; c < grid.COLS; c++) {
+					GridCell test = savedInstanceGrid.gridCells[r][c].clone(grid);
+					grid.gridCells[r][c] = savedInstanceGrid.gridCells[r][c].clone(grid);
+					
+					// store clone initial pointer to the cloned grid
+					if (savedInstanceGrid.initialFlowPointers.contains(savedInstanceGrid.gridCells[r][c]))
+						this.grid.initialFlowPointers.add(grid.gridCells[r][c]);
+					
+					int innerIndex = visitedCells.indexOf(savedInstanceGrid.gridCells[r][c]);
+					if (innerIndex != -1 && visitedCells.get(innerIndex).isEmptyCell()) {
+//						cloneGrid.gridCells[r][c] = visitedCells.remove(
+//								visitedCells.indexOf(grid.gridCells[r][c]));
+						this.grid.gridCells[r][c].color = Grid.NON_CONSTRAINT_COLOR;
+					}					
+				}
+			this.grid.nEmptyCells = nRegionEmptyCells + 1;
+			if (headPointer == grid.gridCells[3][4])
+				System.out.println();
+			return this.strandedRegion(null);
+		}
+		else {
+			// resetting the instance grid to the original
+			this.grid = this.savedInstanceGrid;
+			return nRegionEmptyCells > 0;
+		}
 	}
 	
 	/** Iterates through all possible paths and returns true if there exist 
@@ -129,20 +181,22 @@ public class Validation
      */
 	private boolean pathToPairExists(GridCell flowPointer) {
 		SLLQueue<GridCell> queue = new SLLQueue<GridCell>();
-		LinkedList<GridCell> visitedPos = new LinkedList<>(); 
+		LinkedList<GridCell> visitedCell = new LinkedList<>(); 
 		queue.enqueue(flowPointer);
-		
+		int count = 0;
 		while (!queue.isEmpty()) {
 			GridCell currFlowPointer = queue.dequeue();
 			for (GridCell adjCell : currFlowPointer.getAllAdjs()) {
-				if (adjCell != null && !visitedPos.contains(adjCell.pos))// don't queue the already visited grid cells
+				if (adjCell != null && !visitedCell.contains(adjCell))// don't queue the already visited grid cells
 				{
-					if (flowPointer.isPairPointerOf(adjCell)) 
+					if (adjCell.isPairPointerOf(flowPointer)) 
 						return true;
-					if (!visitedPos.contains(adjCell)
-							&& !adjCell.isColoredCell() || adjCell.color == flowPointer.color)
+					if (!visitedCell.contains(adjCell)
+							&& (adjCell.isEmptyCell() || adjCell.isConstraintCell() || adjCell.color != flowPointer.color)) {
 						queue.enqueue(adjCell);
-					visitedPos.add(adjCell);
+						count++;
+					}
+					visitedCell.add(adjCell);
 				}
 			}
 		}
@@ -169,11 +223,11 @@ public class Validation
 //		if (pairPointerFound != null) {
 //			cellsToConsider.add(pairPointerFound);
 //			return cellsToConsider;
-		
-		LinkedList<GridCell> emptyAdjacents = currFlowPointer.getEmptyAdjs();
-		
+				
 		// don't go within this if statement if we've reached the pair pointer
 		if (pairPointerFound == null) {
+			LinkedList<GridCell> emptyAdjacents = currFlowPointer.getEmptyAdjs();
+
 			// if no empty adjacent (backtrack)
 			if (emptyAdjacents.isEmpty()) {
 				cellsToConsider.add(currFlowPointer.previousCell);
@@ -225,9 +279,10 @@ public class Validation
 				else if (!currAdj.isColoredCell()) 
 				{
 					// include dummy out bound adjacent cells
-					currAdj_coloredAdjs.addAll(this.getOutBoundAdjacents(currAdj));
-					if (currAdj_coloredAdjs.size() == 4 && oneAdjIsPairPointerOf(currAdj, currAdj_coloredAdjs)
-							|| (currAdj_coloredAdjs.size() == 3 
+					int outBoundAdjs = this.getOutBoundAdjacents(currAdj).size();
+//					currAdj_coloredAdjs.addAll(this.getOutBoundAdjacents(currAdj));
+					if (currAdj_coloredAdjs.size()+outBoundAdjs == 4 && oneAdjIsPairPointerOf(currAdj, currAdj_coloredAdjs)
+							|| (currAdj_coloredAdjs.size()+outBoundAdjs == 3 
 								&& !this.hasOtherInitialPointerAsAdjs(currAdj_coloredAdjs, currFlowPointer))) 
 					{
 						cellsToConsider.add(currFlowPointer.previousCell);
@@ -253,6 +308,77 @@ public class Validation
 		
 		return cellsToConsider;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public boolean strandedRegion2(GridCell currPointer) {		
+		SLLQueue<GridCell> queue = new SLLQueue<GridCell>();
+		LinkedList<GridCell> visitedCells = new LinkedList<>(); 
+		int nRegionsEmptyCells = grid.nEmptyCells - 1;
+		
+		// contains either valid edge (if currPointer is at the edge) or null if no valid edge exists
+		GridCell validEdge = emptyEdges_withEqualColoredAdjCells(currPointer);
+
+		if (validEdge != null) {
+			visitedCells.add(validEdge);
+			nRegionsEmptyCells--;
+		}
+		
+		// contains 
+		LinkedList<GridCell> emptyAdjsContainingPairPointer = this.getAdjsContainingPairPointer(
+				currPointer.getEmptyAdjs(), currPointer);
+		
+		for (GridCell emptyAdj : emptyAdjsContainingPairPointer) {
+			if (emptyAdj.getEmptyAdjs().size() == 0 && !visitedCells.contains(emptyAdj)) {
+				visitedCells.add(emptyAdj);
+				nRegionsEmptyCells--;
+			}
+		}
+		
+		int r = 0, c = 0;
+		// iterates until finding first empty cell
+		outerloop:
+		for (; r < grid.ROWS; r++)
+			for (c = 0; c < grid.COLS; c++)
+				if (!this.grid.gridCells[r][c].isColoredCell() 
+						&& !visitedCells.contains(this.grid.gridCells[r][c]))
+					break outerloop;
+		
+		queue.enqueue(this.grid.gridCells[r][c]);
+		visitedCells.add(this.grid.gridCells[r][c]);
+		
+		while (!queue.isEmpty()) {
+			GridCell currEmptyCell = queue.dequeue();
+			for (GridCell adjCell : currEmptyCell.getEmptyAdjs()) {
+				// don't queue the already visited empty cells
+				if (!visitedCells.contains(adjCell)) {
+					nRegionsEmptyCells--;
+					queue.enqueue(adjCell);
+					visitedCells.add(adjCell);
+				}
+			}
+		}
+		
+		return nRegionsEmptyCells != 0;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	private boolean oneAdjIsPairPointerOf(GridCell currAdj, LinkedList<GridCell> cells) {
 		for (GridCell cell : cells) {
@@ -322,6 +448,35 @@ public class Validation
 		return grid.toString();
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+//		// include dummy out bound adjacent cells
+//		currAdj_coloredAdjs.addAll(this.getOutBoundAdjacents(currAdj));
+//		if (currAdj_coloredAdjs.size() == 4 && oneAdjIsPairPointerOf(currAdj, currAdj_coloredAdjs)
+//				|| (currAdj_coloredAdjs.size() == 3 
+//					&& !this.hasOtherInitialPointerAsAdjs(currAdj_coloredAdjs, currFlowPointer))) 
+//		{
+//			cellsToConsider.add(currFlowPointer.previousCell);
+//			return cellsToConsider;
+//		}
+
+
+
+
+
+
+
 
 
 

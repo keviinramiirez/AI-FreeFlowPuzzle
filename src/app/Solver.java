@@ -30,8 +30,6 @@ public class Solver
 		while (!validation.puzzleIsSolved()) {			
 			if (currFlowPointer == grid.gridCells[4][4] && currFlowPointer.color == Color.blue)
 				System.out.println();
-//			if (currFlowPointer == grid.gridCells[1][2] && currFlowPointer.color == Color.yellow)
-//				System.out.println();
 			
 			/* 
 			   If 'nextAdjCells' is empty, it means that we have backtracked and
@@ -53,9 +51,10 @@ public class Solver
 				// constraint: if current Flow Pointer is at an invalid position (backtrack)
 				if (cellToMoveInto.isPreviousPointerOf(currFlowPointer))
 					currFlowPointer = this.backtrackToPrevious(currFlowPointer);
+				
 				// if arrived at goal pair pointer
 				else if (cellToMoveInto.isPairPointerOf(currFlowPointer)) {
-					if (validation.isThereStrandedColorOrRegion(currFlowPointer))
+					if (validation.strandedRegion(currFlowPointer))
 						currFlowPointer = this.backtrackToPrevious(currFlowPointer);
 					else {
 						System.out.println("arrived at goal");
@@ -80,7 +79,7 @@ public class Solver
 			}
 			
 			// validate for stranded colors or regions (backtrack)
-			else if (validation.isThereStrandedColorOrRegion(currFlowPointer))
+			else if (validation.strandedRegion(currFlowPointer))
 				currFlowPointer = this.backtrackToPrevious(currFlowPointer);
 			
 			// If 'nextAdjCells' property is empty, then add the cells to consider

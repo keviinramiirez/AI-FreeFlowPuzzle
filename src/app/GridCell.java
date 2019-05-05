@@ -63,8 +63,8 @@ public class GridCell
 		this.color = color;
 		this.heuristic = heuristic;
 
-		this.previousCell = previousPointer;
 		this.pairFlowPointer = pairFlowPointer;
+		this.previousCell = previousPointer;
 		this.nextAdjCells = nextAdjCells;
 		this.hasForcedMove = this.isFinished = false;
 	}
@@ -79,12 +79,22 @@ public class GridCell
 	
 	/** Returns true if this cell is a non empty cell. */
 	public boolean isColoredCell() {
-		return !color.equals(Grid.EMPTY_COLOR);
+//		boolean isEmpty = isEmptyCell();
+//		boolean isContraint = isConstraintCell();
+//		return !isEmptyCell() && !isConstraintCell();
+		return !isEmptyCell();
+	}
+	
+	public boolean isEmptyCell() {
+		return color.equals(Grid.EMPTY_COLOR);
+	}
+	public boolean isConstraintCell() {
+		return color.equals(Grid.NON_CONSTRAINT_COLOR);
 	}
 	
 	/** Returns true if this is an INTITIAL Flow Pointer. */
 	public boolean isInitialFlowPointer() {
-		return this.isColoredCell() && grid.initialFlowPointers.contains(this);
+		return grid.initialFlowPointers.contains(this);
 	}
 
 	/** Returns true if this grid cell is the pair of the given FlowPointer. */
@@ -191,6 +201,13 @@ public class GridCell
 		}
 		
 		return adjacents;
+	}
+	
+	public GridCell clone(Grid grid) {
+		GridCell test = new GridCell(grid, pos, color, heuristic, 
+				pairFlowPointer, pairFlowPointer, nextAdjCells);
+		return new GridCell(grid, pos, color, heuristic,
+				pairFlowPointer, previousCell, nextAdjCells);
 	}
 	
 	public String toString() {
