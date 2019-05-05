@@ -2,10 +2,16 @@ package util;
 
 import java.util.Comparator;
 
-public class HeuristicComparator implements Comparator<Integer>
+import app.GridCell;
+
+public class HeuristicComparator implements Comparator<GridCell>
 {
 	@Override
-	public int compare(Integer n1, Integer n2) {
-		return (n1 > n2) ? 1 : ((n1 < n2) ? -1 : 0);
+	public int compare(GridCell gc1, GridCell gc2) {
+//		int emptyAdjs1 = gc1.getEmptyAdjs().size(), emptyAdjs2 = gc2.getEmptyAdjs().size();
+		
+		if (gc1.heuristic > gc2.heuristic) return 1;
+		if (gc1.heuristic < gc2.heuristic) return -1;
+		else return 0;
 	}
 }

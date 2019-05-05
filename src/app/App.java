@@ -177,18 +177,19 @@ public class App {
 			//
 			if (visitedCells.contains(ifp.pairFlowPointer)) {
 				int pairPointer_emptyAdjCount = ifp.pairFlowPointer.getEmptyAdjs().size();
-
+				ifp.heuristic = emptydjCount;
+				ifp.pairFlowPointer.heuristic = pairPointer_emptyAdjCount;
 				// inserts the most constraint initial pointer of this pair
 				if (emptydjCount < pairPointer_emptyAdjCount)
-					this.grid.pq.insert(emptydjCount, ifp);
+					this.grid.pq.add(ifp);
 				else
-					this.grid.pq.insert(pairPointer_emptyAdjCount, ifp.pairFlowPointer);
+					this.grid.pq.add(ifp.pairFlowPointer);
 			} else
 				visitedCells.add(ifp);
 		}
 
-//		this.grid.pq.removeMin()
-
+//		this.grid.pq.removeMin();
+		System.out.println();
 //		for (Entry<Integer, GridCell> entry : this.grid.pq)
 //			entry.setKey(this.grid.nEmptyCells);		
 	}

@@ -23,13 +23,15 @@ public class Solver
 	boolean backtrackedToInitial = false;
 
 	public void solve() {
-		GridCell currFlowPointer = this.grid.pq.removeMin().getValue();
+		GridCell currFlowPointer = this.grid.pq.remove();
 
 		GridCell initialFlowPointer = currFlowPointer;
 
 		while (!validation.puzzleIsSolved()) {
-			if (currFlowPointer == grid.gridCells[2][3])
+			if (currFlowPointer == grid.gridCells[5][0])
 				System.out.println();
+			
+			
 			
 			/* 
 			   If 'nextAdjCells' is empty, it means that we have backtracked and
@@ -96,15 +98,26 @@ public class Solver
 			// is true, it means we've arrived to initial pointer after 
 			// backtracking (no path found) or we found a path.
 			if (currFlowPointer == initialFlowPointer) {
+				
+				
 				System.out.println("have backtracked to initial Pointer");
 				if (currFlowPointer.nextAdjCells.isEmpty()) {
-					currFlowPointer = this.grid.pq.removeMin().getValue();
+					
+					this.grid.pq.add(currFlowPointer);
+
+					currFlowPointer = this.restorePrevFinishedPath();
+					
+					this.grid.pq.add(currFlowPointer);
+					
+					currFlowPointer = this.grid.pq.remove();
+					
 					initialFlowPointer = currFlowPointer;
 				}
-				else {
-					currFlowPointer = this.moveTowardsCell(currFlowPointer, 
-							currFlowPointer.nextAdjCells.removeFirst());
-				}
+				
+				
+				
+				else currFlowPointer = this.moveTowardsCell(currFlowPointer, 
+						currFlowPointer.nextAdjCells.removeFirst());
 			}
 		}		
 	}
@@ -122,6 +135,12 @@ public class Solver
 		}
 		path.addFirst(currFlowPointer);
 		finishedPaths.push(path);
+	}
+	
+	/** restores previous finished path and returns the starting pointer of the path */
+	public GridCell restorePrevFinishedPath() {
+		
+		return backtrackToPrevious(this.finishedPaths.lastElement().getLast());
 	}
 
 	/** Moves from <i>currFlowPointer</i> to  <i>nextToMoveInto</i>, and connects 
@@ -176,14 +195,14 @@ public class Solver
 		return prevCell;
 	}
 	
-	public void updatePQ(GridCell curr_flow_pointer) {
-		int newHeuristic = curr_flow_pointer.heuristic();
-		this.grid.pq.changeKey(curr_flow_pointer, newHeuristic);
-		for (GridCell adj : curr_flow_pointer.getColoredAdjs()) {
-			int new_heuristic = adj.heuristic();
-			this.grid.pq.changeKey(adj, new_heuristic);
-		}
-	}
+//	public void updatePQ(GridCell curr_flow_pointer) {
+//		int newHeuristic = curr_flow_pointer.heuristic();
+//		this.grid.pq.changeKey(curr_flow_pointer, newHeuristic);
+//		for (GridCell adj : curr_flow_pointer.getColoredAdjs()) {
+//			int new_heuristic = adj.heuristic();
+//			this.grid.pq.changeKey(adj, new_heuristic);
+//		}
+//	}
 
 	
 	public String toString() {

@@ -211,9 +211,8 @@ public class GridCell
 	}
 	
 	public String toString() {
-		return "Pos:"+ pos;
+//		return "Pos:"+ pos;
 //		return "Pos:"+ pos +", "+ color.toString().substring(9);
-//		return "Pos="+ pos +" : heur="+ heuristic +" : pairFlowPointerPos="+ pairInitialFlowPointer.pos 
-//			+" : previousPointerPos="+ previousPointer.pos +" : forced="+ wasMoveForced;
+		return "Pos:"+ pos +", emptyAdjs="+ this.getEmptyAdjs().size();
 	}
 }

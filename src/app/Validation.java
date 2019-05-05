@@ -1,6 +1,7 @@
 package app;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -227,10 +228,9 @@ public class Validation
 	
 	/** Return true if the given adj cells contains at least one initialPointer.
 	 */
-	private boolean initialPointer_asAdjOfAdj(LinkedList<GridCell> coloredAdjs) {
+	private boolean initialPointer_asAdjOfAdj(java.util.List<GridCell> coloredAdjs) {
 		for (GridCell adj : coloredAdjs)
 			if (adj.isInitialFlowPointer())
-//					&& cell.color != currPointer.color && cell == currPointer.pairFlowPointer)
 				return true;
 		return false;
 	}
@@ -248,7 +248,16 @@ public class Validation
 	
 	
 	
-	
+	public boolean initPointerAdjConstraint(LinkedList<GridCell> emptyAdjs) {
+		for (GridCell emptyAdj : emptyAdjs) {
+			// if empty adj has two init pointers, then it isn't constraint
+			if (emptyAdj.getEmptyAdjs().size() == 1 
+					&& emptyAdj.getInitialPointerAdjs().size() == 1) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	
 	
@@ -337,6 +346,16 @@ public class Validation
 		
 		// if one of the valid colored adjacents was its pair flow pointer
 		if (pairPointerFound != null) {
+//			boolean initPointerAdj_hasNoAdjWithInitPointer = !this.initialPointer_asAdjOfAdj(pairPointerFound.getEmptyAdjs());
+			boolean hasInitPointerEmptyAdjContraint = 
+					initPointerAdjConstraint(pairPointerFound.getEmptyAdjs());	
+			
+			// an empty adj is constraint
+			if (hasInitPointerEmptyAdjContraint) {
+				cellsToConsider.add(currFlowPointer.previousCell);
+				return cellsToConsider;
+			}
+			
 			cellsToConsider.addFirst(pairPointerFound);
 			for (GridCell emptyAdj : currFlowPointer.getEmptyAdjs())
 				if (!shallContraintsAdjInitialPointer(emptyAdj))
