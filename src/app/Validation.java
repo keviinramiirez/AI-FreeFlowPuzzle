@@ -18,13 +18,13 @@ public class Validation
 		this.grid = grid;
 	}
 	public boolean isThereStrandedColorOrRegion(GridCell currPointer) {
-		return strandedRegion(grid, null, currPointer);
+		return strandedRegion(grid, null, currPointer, new LinkedList<>());
 	}
 	
-	public boolean strandedRegion(Grid cloneGrid, Grid previousGrid, GridCell headPointer) {
+	public boolean strandedRegion(Grid cloneGrid, Grid previousGrid, 
+			GridCell headPointer, LinkedList<GridCell> visitedCells) {
 		SLLQueue<GridCell> queue = new SLLQueue<GridCell>();
-		LinkedList<GridCell> visitedCells = new LinkedList<>(); 
-		int nRegionEmptyCells = this.grid.nEmptyCells - 1;
+		int nRegionEmptyCells = cloneGrid.nEmptyCells - 1;
 
 		if (headPointer != null) {
 			// contains either valid edge (if currPointer is at the edge) or null if no valid edge exists
@@ -46,25 +46,27 @@ public class Validation
 				}
 			}
 		}
+		else nRegionEmptyCells--;
 		
 		int r = 0, c = 0;
 		// iterates until finding first empty cell
 		outerloop:
 		for (; r < cloneGrid.ROWS; r++)
 			for (c = 0; c < cloneGrid.COLS; c++)
-				if (!cloneGrid.gridCells[r][c].isColoredCell() 
+				if (cloneGrid.gridCells[r][c].isEmptyCell() 
 						&& !visitedCells.contains(this.grid.gridCells[r][c]))
 					break outerloop;
-		
-		if (cloneGrid.gridCells[r][c] == cloneGrid.gridCells[0][3])
-			System.out.println();
-		
-		try {
-		queue.enqueue(cloneGrid.gridCells[r][c]);
-		visitedCells.add(cloneGrid.gridCells[r][c]);} 
-		catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println();
+				
+		int outBountCount = this.getOutBoundAdjacents(cloneGrid.gridCells[r][c]).size();
+		// is 
+		if (headPointer == null 
+				&& cloneGrid.gridCells[r][c].getColoredAdjs().size()+outBountCount == 4) {
+			cloneGrid = previousGrid; // reset instance grid to saved one
+			return true;
 		}
+		
+		queue.enqueue(cloneGrid.gridCells[r][c]);
+		visitedCells.add(cloneGrid.gridCells[r][c]);
 		
 		if (headPointer == cloneGrid.gridCells[2][0])
 			System.out.println();
@@ -142,8 +144,16 @@ public class Validation
 			
 			cloneGrid.nEmptyCells = nRegionEmptyCells + 1;
 			
+			int counter = visitedCells.size();
+			// add 
+			while (counter > 0) {
+				GridCell prevVisited = visitedCells.removeFirst();
+				int row = prevVisited.pos.row, col = prevVisited.pos.col;
+				visitedCells.add(cloneGrid.gridCells[row][col]);
+				counter--;
+			}
 			
-			return this.strandedRegion(cloneGrid, null, null);
+			return this.strandedRegion(cloneGrid, null, null, visitedCells);
 		}
 		else {
 			// resetting the instance grid to the original
@@ -217,8 +227,8 @@ public class Validation
 	
 	/** Return true if the given adj cells contains at least one initialPointer.
 	 */
-	private boolean hasOtherInitialPointerAsAdjs(LinkedList<GridCell> adjs, GridCell currPointer) {
-		for (GridCell adj : adjs)
+	private boolean initialPointer_asAdjOfAdj(LinkedList<GridCell> coloredAdjs) {
+		for (GridCell adj : coloredAdjs)
 			if (adj.isInitialFlowPointer())
 //					&& cell.color != currPointer.color && cell == currPointer.pairFlowPointer)
 				return true;
@@ -271,7 +281,7 @@ public class Validation
 				
 				for (GridCell initPointer : emptyAdjacents.getFirst().getInitialPointerAdjs())
 					// backtrack if initial pointer isn't the previous cell && 
-					// moving into empty cell would other initial pointers
+					// moving into empty cell would constraint other initial pointers
 					if (currFlowPointer != initPointer && !initPointer.isFinished 
 							&& initPointer.getEmptyAdjs().size() == 1
 							&& grid.nEmptyCells != 1) 
@@ -288,19 +298,19 @@ public class Validation
 		// analyze each adjacent
 		for (int[] dir : Grid.DIRECTIONS) {
 			// current ADJACENT cell of the current flow pointer
-			GridCell currAdj = null;
+			GridCell cAdj = null;
 			if (grid.validPosition(currRow+dir[0], currCol+dir[1]))
-				currAdj = grid.gridCells[currRow + dir[0]][currCol + dir[1]];
+				cAdj = grid.gridCells[currRow + dir[0]][currCol + dir[1]];
 			
 			// if current adjacent is not out of bounds
-			if (currAdj != null && !currAdj.isPreviousPointerOf(currFlowPointer)) {
+			if (cAdj != null && !cAdj.isPreviousPointerOf(currFlowPointer)) {
 				// if current adjacent cell is its pair pointer
-				if (currAdj.isPairPointerOf(currFlowPointer))
-					pairPointerFound = currAdj;
+				if (cAdj.isPairPointerOf(currFlowPointer))
+					pairPointerFound = cAdj;
 				
-				LinkedList<GridCell> currAdj_coloredAdjs = currAdj.getColoredAdjs();
+				LinkedList<GridCell> currAdj_coloredAdjs = cAdj.getColoredAdjs();
 				// if currAdj constraints an initial pointer which isn't its pair pointer (backtrack)
-				if (currAdj.isColoredCell() && currAdj.isInitialFlowPointer() 
+				if (cAdj.isColoredCell() && cAdj.isInitialFlowPointer() 
 						&& pairPointerFound == null && currAdj_coloredAdjs.isEmpty()) {
 					cellsToConsider.add(currFlowPointer.previousCell);
 					return cellsToConsider;
@@ -308,14 +318,15 @@ public class Validation
 				
 				// if it's an empty cell && it has only one move to consider && 
 				// at least one of the other three colored cells isn't an initial pointer.
-				else if (!currAdj.isColoredCell()) 
+				else if (!cAdj.isColoredCell()) 
 				{
-					// include dummy out bound adjacent cells
-					int outBoundAdjs = this.getOutBoundAdjacents(currAdj).size();
-//					currAdj_coloredAdjs.addAll(this.getOutBoundAdjacents(currAdj));
-					if (currAdj_coloredAdjs.size()+outBoundAdjs == 4 && oneAdjIsPairPointerOf(currAdj, currAdj_coloredAdjs)
-							|| (currAdj_coloredAdjs.size()+outBoundAdjs == 3 
-								&& !this.hasOtherInitialPointerAsAdjs(currAdj_coloredAdjs, currFlowPointer))) 
+					// counts dummy out bound adjacent cells
+					int outBoundAdjs = this.getOutBoundAdjacents(cAdj).size();
+
+					if (currAdj_coloredAdjs.size()+outBoundAdjs == 4 && oneAdjIsPairPointerOf(cAdj, currAdj_coloredAdjs)
+							|| (currAdj_coloredAdjs.size()+outBoundAdjs == 3 // only 1 move to consider
+								&& !this.initialPointer_asAdjOfAdj(currAdj_coloredAdjs)
+								&& outBoundAdjs != 2)) 
 					{
 						cellsToConsider.add(currFlowPointer.previousCell);
 						return cellsToConsider;

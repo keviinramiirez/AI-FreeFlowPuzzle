@@ -44,7 +44,7 @@ public class Grid
 		edges.add(gridCells[ROWS-1][0]);
 		edges.add(gridCells[ROWS-1][COLS-1]);
 	}
-	
+
 	public GridCell[][] getGridCells() { return gridCells; }
 	public LinkedList<GridCell> getInitialFlowPointers() { return initialFlowPointers; }
 	
@@ -96,8 +96,8 @@ public class Grid
 			c = "y";
 		else if (color.equals(Color.blue))
 			c = "b";
-		else if (color.equals(Color.magenta))
-			c = "m";
+		else if (color.equals(Color.cyan))
+			c = "c";
 		else if (color.equals(NON_CONSTRAINT_COLOR))
 			c = "*";
 		
