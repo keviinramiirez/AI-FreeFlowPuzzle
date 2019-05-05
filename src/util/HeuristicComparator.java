@@ -11,7 +11,7 @@ public class HeuristicComparator implements Comparator<GridCell>
 //		int emptyAdjs1 = gc1.getEmptyAdjs().size(), emptyAdjs2 = gc2.getEmptyAdjs().size();
 		
 		if (gc1.heuristic > gc2.heuristic) return 1;
-		if (gc1.heuristic < gc2.heuristic) return -1;
+		if (gc1.heuristic <= gc2.heuristic) return -1;
 		else return 0;
 	}
 }

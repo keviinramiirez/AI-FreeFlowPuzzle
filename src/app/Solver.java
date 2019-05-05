@@ -28,7 +28,7 @@ public class Solver
 		GridCell initialFlowPointer = currFlowPointer;
 
 		while (!validation.puzzleIsSolved()) {
-			if (currFlowPointer == grid.gridCells[5][0])
+			if (currFlowPointer == grid.gridCells[0][7])
 				System.out.println();
 			
 			
@@ -103,13 +103,12 @@ public class Solver
 				System.out.println("have backtracked to initial Pointer");
 				if (currFlowPointer.nextAdjCells.isEmpty()) {
 					
-					this.grid.pq.add(currFlowPointer);
-
-					currFlowPointer = this.restorePrevFinishedPath();
-					
-					this.grid.pq.add(currFlowPointer);
-					
-					currFlowPointer = this.grid.pq.remove();
+					// restore previous finish path to find another path for that color
+					if (!currFlowPointer.isFinished) {
+						this.grid.pq.add(currFlowPointer);
+						currFlowPointer = this.restorePrevFinishedPath();
+					}
+					else currFlowPointer = this.grid.pq.remove();
 					
 					initialFlowPointer = currFlowPointer;
 				}
@@ -139,8 +138,15 @@ public class Solver
 	
 	/** restores previous finished path and returns the starting pointer of the path */
 	public GridCell restorePrevFinishedPath() {
+		LinkedList<GridCell> path = this.finishedPaths.lastElement();
 		
-		return backtrackToPrevious(this.finishedPaths.lastElement().getLast());
+		// get the previous to last grid cell within path
+		GridCell prevLastGridCell = path.get(path.size()-2);
+		
+		// remove path from list
+		this.finishedPaths.remove(finishedPaths.remove(finishedPaths.size()-1));
+		
+		return backtrackToPrevious(prevLastGridCell);
 	}
 
 	/** Moves from <i>currFlowPointer</i> to  <i>nextToMoveInto</i>, and connects 

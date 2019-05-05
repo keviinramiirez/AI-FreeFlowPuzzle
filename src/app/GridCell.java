@@ -213,6 +213,6 @@ public class GridCell
 	public String toString() {
 //		return "Pos:"+ pos;
 //		return "Pos:"+ pos +", "+ color.toString().substring(9);
-		return "Pos:"+ pos +", emptyAdjs="+ this.getEmptyAdjs().size();
+		return "Pos:"+ pos +", eAdjs="+ this.getEmptyAdjs().size();
 	}
 }
