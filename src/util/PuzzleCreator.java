@@ -25,7 +25,9 @@ public class PuzzleCreator {
 		List<List<String>> puzzlesArray = new ArrayList<List<String>>();				
 		String[] values = null;
 		
-		try (BufferedReader reader = new BufferedReader(new FileReader("/home/irixa/git/AI-FreeFlowPuzzle/src/util/puzzles.csv"));) {
+		System.out.println(new File(".").getAbsoluteFile());
+		
+		try (BufferedReader reader = new BufferedReader(new FileReader("src/input/puzzles.csv"));) {
 			String row;
 			while ((row = reader.readLine()) != null) {
 				System.out.println(row);
