@@ -27,10 +27,10 @@ public class Solver
 
 		GridCell initialFlowPointer = currFlowPointer;
 
-		while (!validation.puzzleIsSolved()) {			
-			
-			if (currFlowPointer == grid.gridCells[2][0])
+		while (!validation.puzzleIsSolved()) {
+			if (currFlowPointer == grid.gridCells[2][3])
 				System.out.println();
+			
 			/* 
 			   If 'nextAdjCells' is empty, it means that we have backtracked and
 			   we are now considering the valid cells that we haven't moved into yet.
@@ -91,7 +91,7 @@ public class Solver
 				currFlowPointer = this.moveTowardsCell(currFlowPointer, 
 						currFlowPointer.nextAdjCells.removeFirst());
 			}
-			
+
 			
 			// is true, it means we've arrived to initial pointer after 
 			// backtracking (no path found) or we found a path.

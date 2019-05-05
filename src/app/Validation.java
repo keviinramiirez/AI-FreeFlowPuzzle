@@ -384,7 +384,7 @@ public class Validation
 				nRegionsEmptyCells--;
 			}
 		}
-		
+
 		int r = 0, c = 0;
 		// iterates until finding first empty cell
 		outerloop:
