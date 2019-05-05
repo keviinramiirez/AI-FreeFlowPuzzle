@@ -24,13 +24,10 @@ public class PuzzleCreator {
 		
 		List<List<String>> puzzlesArray = new ArrayList<List<String>>();				
 		String[] values = null;
-		
-		System.out.println(new File(".").getAbsoluteFile());
-		
-		try (BufferedReader reader = new BufferedReader(new FileReader("src/input/puzzles.csv"));) {
+				
+		try (BufferedReader reader = new BufferedReader(new FileReader("src/input/5x5.csv"));) {
 			String row;
 			while ((row = reader.readLine()) != null) {
-				System.out.println(row);
 				values = row.split(",");
 		        puzzlesArray.add(Arrays.asList(values));
 			}
@@ -40,7 +37,6 @@ public class PuzzleCreator {
 		
 		Random rand = new Random();
 		List<String> colorCellsArray = puzzlesArray.get(rand.nextInt(puzzlesArray.size()));
-		System.out.println(colorCellsArray);
 		
 		for (String cell : colorCellsArray) {
 			String[] attr = cell.split(" ");
