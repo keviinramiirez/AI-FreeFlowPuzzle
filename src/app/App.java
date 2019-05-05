@@ -35,9 +35,10 @@ public class App {
 	private String dimensions = "6x6";
 	static int MINIMUM_DIMENSIONS = 2, MAXIMUM_DIMENSIONS = 12;
 
-	JPanel[][] gridPanel = new JPanel[Grid.ROWS][Grid.COLS];
+	JPanel[][] gridPanel;
 	public Grid grid = new Grid();
 	private final JButton btnNewButton = new JButton("Solve Now");
+
 
 	/**
 	 * Launch the application.
@@ -55,11 +56,13 @@ public class App {
 		});
 	}
 
+
 	/**
 	 * Create the application.
 	 */
 	public App() {
 		initialize();
+		gridPanel = new JPanel[grid.ROWS][grid.COLS];
 	}
 
 	public void clearPanels() {
@@ -72,17 +75,17 @@ public class App {
 //		}
 	}
 
-	public void createGrid() {
+	public void createGrid()  {
 //		Grid.ROWS = 10;
 //		Grid.COLS = 10;
 
 		frame.getContentPane().remove(gridComponent);
 		gridComponent = new JPanel();
-		gridComponent.setLayout(new GridLayout(Grid.ROWS, Grid.COLS));
+		gridComponent.setLayout(new GridLayout(grid.ROWS, grid.COLS));
 		frame.getContentPane().add(gridComponent, BorderLayout.CENTER);
 
-		for (int r = 0; r < Grid.ROWS; r++) {
-			for (int c = 0; c < Grid.COLS; c++) {
+		for (int r = 0; r < grid.ROWS; r++) {
+			for (int c = 0; c < grid.COLS; c++) {
 				this.grid.getGridCells()[r][c] = new GridCell(grid, new Pos(r, c));
 				gridPanel[r][c] = new JPanel();
 				gridPanel[r][c].setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -120,6 +123,8 @@ public class App {
 
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
+		
+//		this.solvePuzzle();
 	}
 
 	/**
@@ -192,11 +197,12 @@ public class App {
 	}
 
 	public void solvePuzzle() {
-//		Validation validation = new Validation(grid);
-//		System.out.println(validation.isThereStrandedColorOrRegion());
-
 		Solver solver = new Solver(grid, gridPanel);
 		solver.solve();
+		
+		// repaints the grid panel with the updated cells
+		gridComponent.revalidate();
+		gridComponent.repaint();
 	}
 
 //	public void paintRandomCell(Color color) {
@@ -240,7 +246,7 @@ public class App {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		frame.getContentPane().add(gridComponent, BorderLayout.CENTER);
-		gridComponent.setLayout(new GridLayout(Grid.ROWS, Grid.COLS, 0, 0));
+		gridComponent.setLayout(new GridLayout(grid.ROWS, grid.COLS, 0, 0));
 
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
@@ -272,13 +278,13 @@ public class App {
 
 		rowComboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				Grid.ROWS = (int) rowComboBox.getSelectedItem();
+				grid.ROWS = (int) rowComboBox.getSelectedItem();
 			}
 		});
 
 		columnComboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				Grid.COLS = (int) columnComboBox.getSelectedItem();
+				grid.COLS = (int) columnComboBox.getSelectedItem();
 			}
 		});
 		gridComboBox.addItemListener(new ItemListener() {
