@@ -7,7 +7,6 @@ import java.util.Stack;
 
 import interfaces.Entry;
 import queue.SLLQueue;
-import util.Util;
 
 public class Validation 
 {

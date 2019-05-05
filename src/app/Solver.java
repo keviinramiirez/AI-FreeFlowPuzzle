@@ -41,6 +41,7 @@ public class Solver
 					? validation.cellsToConsiderMovingInto(currFlowPointer)
 							: currFlowPointer.nextAdjCells;
 			
+			// dead-end
 			// if no cells to consider (backtrack)
 			if (cellsToConsider.isEmpty())
 				currFlowPointer = this.backtrackToPrevious(currFlowPointer);
@@ -90,6 +91,10 @@ public class Solver
 
 				currFlowPointer = this.moveTowardsCell(currFlowPointer, 
 						currFlowPointer.nextAdjCells.removeFirst());
+				
+//				this.updatePQ(currFlowPointer);
+				
+//				currFlowPointer = this.grid.pq.min().getValue();
 			}
 			
 			
@@ -178,7 +183,10 @@ public class Solver
 	
 	public void updatePQ(GridCell curr_flow_pointer) {
 		int newHeuristic = curr_flow_pointer.heuristic();
-		this.grid.pq.changeKey(curr_flow_pointer, newHeuristic);
+		// insert new flow pointer to pq
+		this.grid.pq.insert(newHeuristic, curr_flow_pointer);
+//		this.grid.pq.changeKey(curr_flow_pointer, newHeuristic);
+		// search for the adjacent flow pointers of new flow pointer, if any
 		for (GridCell adj : curr_flow_pointer.getColoredAdjs()) {
 			int new_heuristic = adj.heuristic();
 			this.grid.pq.changeKey(adj, new_heuristic);
