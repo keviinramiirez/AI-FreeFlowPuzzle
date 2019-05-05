@@ -54,7 +54,7 @@ public class Solver
 				
 				// if arrived at goal pair pointer
 				else if (cellToMoveInto.isPairPointerOf(currFlowPointer)) {
-					if (validation.strandedRegion(currFlowPointer))
+					if (validation.strandedRegion(this.grid, null, currFlowPointer))
 						currFlowPointer = this.backtrackToPrevious(currFlowPointer);
 					else {
 						System.out.println("arrived at goal");
@@ -79,7 +79,7 @@ public class Solver
 			}
 			
 			// validate for stranded colors or regions (backtrack)
-			else if (validation.strandedRegion(currFlowPointer))
+			else if (validation.strandedRegion(this.grid, null, currFlowPointer))
 				currFlowPointer = this.backtrackToPrevious(currFlowPointer);
 			
 			// If 'nextAdjCells' property is empty, then add the cells to consider

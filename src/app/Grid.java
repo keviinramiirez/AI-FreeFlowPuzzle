@@ -15,10 +15,10 @@ public class Grid
 	public static int[][] DIRECTIONS = 
 		{{ 0, 1 }, { -1, 0 }, { 0, -1 }, { 1, 0 }};// right, up, left, down
 	
-//	public static int ROWS = 5, COLS = 5;
-	public static int ROWS = 6, COLS = 6;
-//	public int ROWS = 7, COLS = 7;
-//	public static int ROWS = 10, COLS = 10;
+//	public int ROWS = 5, COLS = 5;
+//	public int ROWS = 6, COLS = 6;
+	public int ROWS = 7, COLS = 7;
+//	public int ROWS = 10, COLS = 10;
 
 	public int nEmptyCells = ROWS*COLS;
 	
@@ -26,7 +26,7 @@ public class Grid
 	/* Matrix containing grid cell elements */
 	public GridCell[][] gridCells = new GridCell[ROWS][COLS];
 	
-	
+	/** Contains the the four cells on the edge of the grid. */
 	public LinkedList<GridCell> edges = new LinkedList<GridCell>();
 	
 	/* Unordered set of all initial flow pointers */
