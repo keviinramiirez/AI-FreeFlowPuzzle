@@ -114,14 +114,13 @@ public class App {
 //
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_5x5());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_6x6());
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7());
-		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8());
+		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
 
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
 		
-//		this.solvePuzzle();
 	}
 
 	/**
@@ -209,35 +208,6 @@ public class App {
 		gridComponent.revalidate();
 		gridComponent.repaint();
 	}
-
-//	public void paintRandomCell(Color color) {
-//		Random rand = new Random();
-//		int randomCol = 0, randomRow = 0;
-//		
-//		do {
-//			randomCol = rand.nextInt(nCols);
-//			randomRow = rand.nextInt(nRows);
-//		} while (initialPositions.contains(randomCol+","+randomRow));
-//		
-//		this.initialPositions.add(new Pos(randomCol, randomRow));
-//		this.matrixPanel[randomCol][randomRow].setBackground(color);
-//		this.gridsssss.flowPointers[randomCol][randomRow].color = color;
-//	}
-//	
-//
-//	private void randomizeFlowPointers() {
-//		this.clearPanels();
-//		if (grid.COLS*grid.ROWS/2 < this.nPairFlowPointer) {
-//			System.out.println("invalid amount of Pair Flow Pointers");
-//			return;
-//		}
-//		for (int i = 0; i < this.nPairFlowPointer; i++) {
-//			Color color = colorIterator.next();
-//			paintRandomCell(color);
-//			paintRandomCell(color);
-//		}
-//	}
-
 	public String toString() {
 		return this.grid.toString();
 	}

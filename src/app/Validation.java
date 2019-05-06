@@ -13,7 +13,6 @@ import util.Util;
 public class Validation 
 {
 	Grid grid;
-//	Stack<Grid> gridStack = new Stack<>();
 	
 	public Validation(Grid grid) {
 		this.grid = grid;
@@ -29,7 +28,7 @@ public class Validation
 
 		if (headPointer != null) {
 			// contains either valid edge (if currPointer is at the edge) or null if no valid edge exists
-			GridCell validConstraintEdge = emptyEdges_withEqualColoredAdjCells(headPointer);//  NEEDS validity for when has only one colored cell
+			GridCell validConstraintEdge = emptyEdges_withEqualColoredAdjCells(headPointer);// MAYBE needs validity for when has only one colored cell
 	
 			if (validConstraintEdge != null) {
 				visitedCells.add(validConstraintEdge);
@@ -59,11 +58,8 @@ public class Validation
 						&& !visitedCells.contains(this.grid.gridCells[r][c]))
 					break outerloop;
 		int outBountCount = 0;
-		try {
+		
 		outBountCount = this.getOutBoundAdjacents(cloneGrid.gridCells[r][c]).size();
-		} catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println();
-		}
 		// if head pointer is surrounded by colored cells
 		if (headPointer == null 
 				&& cloneGrid.gridCells[r][c].getColoredAdjs().size()+outBountCount == 4) {
@@ -155,7 +151,7 @@ public class Validation
 				}
 			
 			
-			cloneGrid.nEmptyCells = nRegionEmptyCells + 1;
+			cloneGrid.nEmptyCells = nRegionEmptyCells;
 			
 			int counter = visitedCells.size();
 			// add 
