@@ -114,7 +114,7 @@ public class Grid
 
 	/** Returns this Grid with a shallow copy of this Grid Cells. */
 	public Grid clone() {
-		Grid clone =  new Grid();
+		Grid clone =  new Grid(ROWS, COLS);
 		clone.gridCells = new GridCell[ROWS][COLS];
 		clone.edges = this.edges;
 		clone.initialFlowPointers = this.initialFlowPointers;

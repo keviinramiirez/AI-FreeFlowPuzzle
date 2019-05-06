@@ -28,8 +28,6 @@ public class Solver
 		GridCell goalPairPointer = currFlowPointer.pairFlowPointer;
 
 		while (!validation.puzzleIsSolved()) {
-			if (currFlowPointer == grid.gridCells[6][1])
-				System.out.println();
 			
 			/* 
 			   If 'nextAdjCells' is empty, it means that we have backtracked and
@@ -125,8 +123,11 @@ public class Solver
 				currFlowPointer = goalPairPointer.pairFlowPointer;
 			// if we found a path.
 			if (currFlowPointer.isFinished) {
-				currFlowPointer = this.grid.pq.remove();
-				goalPairPointer = currFlowPointer.pairFlowPointer;
+//				if (!this.grid.pq.isEmpty()) {
+				System.out.println(this.grid.pq);
+					currFlowPointer = this.grid.pq.remove();
+					goalPairPointer = currFlowPointer.pairFlowPointer;
+//				}
 			}
 			// if arrived to initial pointer after backtracking (no path found)
 			else if (currFlowPointer == goalPairPointer.pairFlowPointer) {
