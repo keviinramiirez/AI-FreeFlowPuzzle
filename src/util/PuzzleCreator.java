@@ -76,20 +76,24 @@ public class PuzzleCreator {
 	 */
 	private Color getColor(String c) {
 		switch(c.toLowerCase()) {
-		case("r"):
+		case("r"): // red
 			return Color.red;
-		case("y"):
+		case("y"): // yellow
 			return Color.yellow;
-		case("b"):
+		case("b"): // blue
 			return Color.blue;
-		case("o"):
+		case("o"): // orange
 			return Color.orange;
-		case("g"):
+		case("g"): // green
 			return Color.green;
-		case("c"):
+		case("c"): // cyan
 			return Color.cyan;
-		case("p"):
-			return null;
+		case("p"): // purple
+			return Color.pink;
+		case("w"): // wine
+			return Color.black;
+		case ("m"): // magenta
+			return Color.magenta;
 		default:
 			return null;
 		}
