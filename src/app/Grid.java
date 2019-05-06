@@ -19,8 +19,8 @@ public class Grid
 	
 //	public int ROWS = 5, COLS = 5;
 //	public int ROWS = 6, COLS = 6;
-//	public int ROWS = 7, COLS = 7;
-	public int ROWS = 8, COLS = 8;
+	public int ROWS = 7, COLS = 7;
+//	public int ROWS = 8, COLS = 8;
 //	public int ROWS = 10, COLS = 10;
 
 	public int nEmptyCells = ROWS*COLS;
@@ -104,7 +104,7 @@ public class Grid
 		else if (color.equals(NON_CONSTRAINT_COLOR))
 			c = "*";
 		
-		return cell.isInitialFlowPointer() ? c.toUpperCase() : c;
+		return cell.isInitialPointer() ? c.toUpperCase() : c;
 	}
 
 	/** Returns this Grid with a shallow copy of this Grid Cells. */

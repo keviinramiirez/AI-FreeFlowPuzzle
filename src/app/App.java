@@ -114,8 +114,8 @@ public class App {
 //
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_5x5());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_6x6());
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7());
-		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8());
+		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
 
 		// inserts the most constraint Initial Pointers within the priority queue
@@ -197,6 +197,13 @@ public class App {
 	public void solvePuzzle() {
 		Solver solver = new Solver(grid, gridPanel);
 		solver.solve();
+		
+		// make sure its all repainted
+		for (int r = 0; r < grid.ROWS; r++) {
+			for (int c = 0; c < grid.COLS; c++) {
+				this.gridPanel[r][c].setBackground(this.grid.gridCells[r][c].color);;
+			}
+		}
 		
 		// repaints the grid panel with the updated cells
 		gridComponent.revalidate();

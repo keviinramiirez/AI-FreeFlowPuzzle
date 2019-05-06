@@ -1,6 +1,7 @@
 package app;
 
 import java.awt.Color;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /** This class represents each Grid Cell.  Can either be an Empty Cell 
@@ -10,6 +11,22 @@ import java.util.LinkedList;
  */
 public class GridCell 
 {
+	
+	public class CellID
+	{
+		public GridCell cell;
+		public Color color;
+		public CellID(GridCell cell, Color color) {
+			this.cell = cell;
+			this.color = color;
+		}
+		
+		public String toString() {
+//			return "Pos:"+ pos +","+ color.toString().substring(9);
+			return cell.toString();
+		}
+	}
+	
 	/** Contains the grid properties such as the 2d array of grid cells, 
 	 *  set of all initialFlowPointers, and priority queue of initialPointers 
 	 *  to move first.
@@ -34,18 +51,28 @@ public class GridCell
 	/** Adjacent cells to consider moving towards to. */
 	public LinkedList<GridCell> nextAdjCells;
 	
+	/** Already Considered Cells */
+//	private LinkedList<GridCell> consideredCells;
+	
+	private HashSet<String> cellsToRemember;
+	
 	/** This Grid Cell had one cell to move into. */
 	public boolean hasForcedMove;
 		
 	/** This Grid Cell is part of a finished path. */
 	public boolean isFinished;
 	
+	/** Property that uniquely identifies this grid cell */
+	private final CellID cellID;
+	
 	
 	public GridCell(Grid grid, Pos pos) {
-		this(grid, pos, Grid.EMPTY_COLOR, 0, null, null, new LinkedList<GridCell>());
+		this(grid, pos, Grid.EMPTY_COLOR, 0, null, null, 
+				new LinkedList<GridCell>(), new HashSet<String>());
 	}
 	public GridCell(Grid grid, Pos pos, Color color) {
-		this(grid, pos, color, 0, null, null, new LinkedList<GridCell>());
+		this(grid, pos, color, 0, null, null, 
+				new LinkedList<GridCell>(), new HashSet<String>());
 	}
 	/** 
 	 *  @param pos position of this cell
@@ -57,7 +84,7 @@ public class GridCell
 	 *  @param hasForcedMove tells us if this grid cell was forced to move to this position.
 	 */
 	public GridCell(Grid grid, Pos pos, Color color, int heuristic, GridCell pairFlowPointer, 
-			GridCell previousPointer, LinkedList<GridCell> nextAdjCells) {
+			GridCell previousPointer, LinkedList<GridCell> nextAdjCells, HashSet<String> cellsToRemember) {
 		this.grid = grid;
 		this.pos = pos;
 		this.color = color;
@@ -66,7 +93,9 @@ public class GridCell
 		this.pairFlowPointer = pairFlowPointer;
 		this.previousCell = previousPointer;
 		this.nextAdjCells = nextAdjCells;
+		this.cellsToRemember = cellsToRemember;
 		this.hasForcedMove = this.isFinished = false;
+		this.cellID = new CellID(this, color);
 	}
 	
 	/** Resets this color, nextAdjCells, and previousPointer properties */
@@ -77,23 +106,16 @@ public class GridCell
 		gridPanel[pos.row][pos.col].setBackground(Grid.EMPTY_COLOR);
 	}
 	
-	/** Returns true if this cell is a non empty cell. */
-	public boolean isColoredCell() {
-//		boolean isEmpty = isEmptyCell();
-//		boolean isContraint = isConstraintCell();
-//		return !isEmptyCell() && !isConstraintCell();
-		return !isEmptyCell();
-	}
+	/** Gets this cell grid's ID. */
+	public CellID getCellID() { return this.cellID; }
 	
-	public boolean isEmptyCell() {
-		return color.equals(Grid.EMPTY_COLOR);
-	}
-	public boolean isConstraintCell() {
-		return color.equals(Grid.NON_CONSTRAINT_COLOR);
-	}
+	/** Returns true if this cell is a non empty cell. */
+	public boolean isColoredCell() 		{ return !isEmptyCell(); }
+	public boolean isEmptyCell() 		{ return color.equals(Grid.EMPTY_COLOR); }
+	public boolean isConstraintCell() 	{ return color.equals(Grid.NON_CONSTRAINT_COLOR); }
 	
 	/** Returns true if this is an INTITIAL Flow Pointer. */
-	public boolean isInitialFlowPointer() {
+	public boolean isInitialPointer() {
 		return grid.initialFlowPointers.contains(this);
 	}
 
@@ -105,6 +127,19 @@ public class GridCell
 	/** Returns true if this grid cell is the previous cell of the one given. */
 	public boolean isPreviousPointerOf(GridCell cell) {
 		return cell.isColoredCell() && this == cell.previousCell;
+	}
+	
+	/** Returns true if this Grid Cell already moved to the given cell */
+	public boolean alreadyMovedTo(GridCell cell) {
+		return cell.cellsToRemember.contains(this.toString());
+	}
+	
+	public void removeToNotRemember(GridCell cell) {
+		this.cellsToRemember.remove(cell.toString());
+	}
+	
+	public void rememberIMovedInto(GridCell toMoveInto) {
+		toMoveInto.cellsToRemember.add(this.cellID.toString());
 	}
 	
 	/** If the grid cell in <b>[</b>row<b>+incrRow</b>, col<b>+incrCol</b><b>]</b> is 
@@ -203,16 +238,19 @@ public class GridCell
 		return adjacents;
 	}
 	
+	/** Creates a clone with this grid cell's references, 
+	 *  only distinct reference would be the grid.
+	 */
 	public GridCell clone(Grid grid) {
-		GridCell test = new GridCell(grid, pos, color, heuristic, 
-				pairFlowPointer, pairFlowPointer, nextAdjCells);
+//		GridCell test = new GridCell(grid, pos, color, heuristic, 
+//				pairFlowPointer, pairFlowPointer, nextAdjCells);
 		return new GridCell(grid, pos, color, heuristic,
-				pairFlowPointer, previousCell, nextAdjCells);
+				pairFlowPointer, previousCell, nextAdjCells, cellsToRemember);
 	}
 	
 	public String toString() {
 //		return "Pos:"+ pos;
-//		return "Pos:"+ pos +", "+ color.toString().substring(9);
-		return "Pos:"+ pos +", eAdjs="+ this.getEmptyAdjs().size();
+		return "Pos:"+ pos +", "+ color.toString().substring(9);
+//		return "Pos:"+ pos +", eAdjs="+ this.getEmptyAdjs().size();
 	}
 }
