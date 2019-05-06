@@ -119,13 +119,15 @@ public class App {
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_5x5());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_6x6());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7());
-		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8());
-		this.initGridFlowPointers(pzl.getPuzzle(grid, dimensions));
+		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7_V2());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V2());
+		
+//		this.initGridFlowPointers(pzl.getPuzzle(grid, dimensions));
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
 
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
-		
 	}
 
 	/**

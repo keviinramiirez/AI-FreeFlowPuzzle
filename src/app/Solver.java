@@ -28,8 +28,8 @@ public class Solver
 		GridCell goalPairPointer = currFlowPointer.pairFlowPointer;
 
 		while (!validation.puzzleIsSolved()) {
-//			if (currFlowPointer == grid.gridCells[5][0] && currFlowPointer.nextAdjCells.size() == 1)
-//				System.out.println();
+			if (currFlowPointer == grid.gridCells[6][1])
+				System.out.println();
 			
 			/* 
 			   If 'nextAdjCells' is empty, it means that we have backtracked and
