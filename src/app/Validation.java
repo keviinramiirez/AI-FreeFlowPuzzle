@@ -185,8 +185,8 @@ public class Validation
 		LinkedList<GridCell> visitedCell = new LinkedList<>(); 
 		queue.enqueue(initPointer);
 		
-		if (initPointer.pos.row == 0 && initPointer.pos.col == 4)
-			System.out.println();
+//		if (initPointer.pos.row == 0 && initPointer.pos.col == 4)
+//			System.out.println();
 
 		while (!queue.isEmpty()) {
 			GridCell currEmpty = queue.dequeue();
