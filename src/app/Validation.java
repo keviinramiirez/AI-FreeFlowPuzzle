@@ -80,9 +80,17 @@ public class Validation
 			
 			// CONSIDER ALL ADJACENTS
 			for (GridCell cAdj : emptyAdj.getAllAdjs()) 
-			{   // won't analyze visited adjacent
+			{   
+				
+				if (cAdj.hasConstraintAdj())
+					return false;
+				
+				// won't analyze visited adjacent
 				if (!visitedCells.contains(cAdj)) {
-					if (cAdj == cloneGrid.gridCells[0][3])
+//					if (cAdj == cloneGrid.gridCells[0][3])
+//						System.out.println();
+					
+					if (cAdj.pos.row == 0 && cAdj.pos.col == 2)
 						System.out.println();
 					
 					if (cAdj.isEmptyCell()) {
@@ -93,7 +101,8 @@ public class Validation
 					// analyze path of cAdj == initial cell
 					else if (cAdj.isInitialPointer()) {
 						// 
-						if (!cAdj.isFinished && !this.pathToPairExists(cAdj)) {
+						if (!cAdj.isFinished
+								&& !this.pathToPairExists(cAdj)) {
 							cloneGrid = previousGrid; // reset instance grid to saved one
 							return true;
 						}
@@ -191,8 +200,8 @@ public class Validation
 			
 			// consider ALL adjacents
 			for (GridCell cAdj : currEmpty.getAllAdjs()) {
-				if (currEmpty.isInitialPointer() && cAdj.isConstraintCell())
-					return true;
+//				if (currEmpty.isInitialPointer() && cAdj.isConstraintCell())
+//					return true;
 				// if have not visited cAdj
 				if (cAdj != null && cAdj != initPointer && !visitedCell.contains(cAdj)) {
 					if (initPointer.isPairPointerOf(cAdj)) 

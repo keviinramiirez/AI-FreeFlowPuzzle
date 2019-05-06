@@ -218,6 +218,15 @@ public class GridCell
 		return initAdjs;
 	}
 	
+	public boolean hasConstraintAdj() {
+		for (int[] dir : Grid.DIRECTIONS) {
+			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
+			if (adjCell != null && adjCell.isConstraintCell())
+				return true;
+		}
+		return false;
+	}
+	
 	public boolean hasPairPointer() {
 		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
