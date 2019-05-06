@@ -116,15 +116,18 @@ public class App {
 //				break;
 //		}
 //
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers2_5x5());
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers2_6x6());
-		this.initGridFlowPointers(pzl.getPuzzle(grid, dimensions));
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_5x5());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_6x6());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7());
+		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7_V2());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V2());
+		
+//		this.initGridFlowPointers(pzl.getPuzzle(grid, dimensions));
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
 
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
-		
-//		this.solvePuzzle();
 	}
 
 	/**
@@ -180,18 +183,19 @@ public class App {
 			//
 			if (visitedCells.contains(ifp.pairFlowPointer)) {
 				int pairPointer_emptyAdjCount = ifp.pairFlowPointer.getEmptyAdjs().size();
-
+				ifp.heuristic = emptydjCount;
+				ifp.pairFlowPointer.heuristic = pairPointer_emptyAdjCount;
 				// inserts the most constraint initial pointer of this pair
 				if (emptydjCount < pairPointer_emptyAdjCount)
-					this.grid.pq.insert(emptydjCount, ifp);
+					this.grid.pq.add(ifp);
 				else
-					this.grid.pq.insert(pairPointer_emptyAdjCount, ifp.pairFlowPointer);
+					this.grid.pq.add(ifp.pairFlowPointer);
 			} else
 				visitedCells.add(ifp);
 		}
 
-//		this.grid.pq.removeMin()
-
+//		this.grid.pq.removeMin();
+		System.out.println();
 //		for (Entry<Integer, GridCell> entry : this.grid.pq)
 //			entry.setKey(this.grid.nEmptyCells);		
 	}
@@ -200,39 +204,17 @@ public class App {
 		Solver solver = new Solver(grid, gridPanel);
 		solver.solve();
 		
+		// make sure its all repainted
+		for (int r = 0; r < grid.ROWS; r++) {
+			for (int c = 0; c < grid.COLS; c++) {
+				this.gridPanel[r][c].setBackground(this.grid.gridCells[r][c].color);;
+			}
+		}
+		
 		// repaints the grid panel with the updated cells
 		gridComponent.revalidate();
 		gridComponent.repaint();
 	}
-
-//	public void paintRandomCell(Color color) {
-//		Random rand = new Random();
-//		int randomCol = 0, randomRow = 0;
-//		
-//		do {
-//			randomCol = rand.nextInt(nCols);
-//			randomRow = rand.nextInt(nRows);
-//		} while (initialPositions.contains(randomCol+","+randomRow));
-//		
-//		this.initialPositions.add(new Pos(randomCol, randomRow));
-//		this.matrixPanel[randomCol][randomRow].setBackground(color);
-//		this.gridsssss.flowPointers[randomCol][randomRow].color = color;
-//	}
-//	
-//
-//	private void randomizeFlowPointers() {
-//		this.clearPanels();
-//		if (grid.COLS*grid.ROWS/2 < this.nPairFlowPointer) {
-//			System.out.println("invalid amount of Pair Flow Pointers");
-//			return;
-//		}
-//		for (int i = 0; i < this.nPairFlowPointer; i++) {
-//			Color color = colorIterator.next();
-//			paintRandomCell(color);
-//			paintRandomCell(color);
-//		}
-//	}
-
 	public String toString() {
 		return this.grid.toString();
 	}
