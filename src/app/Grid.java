@@ -17,17 +17,13 @@ public class Grid
 	public static int[][] DIRECTIONS = 
 		{{ 0, 1 }, { -1, 0 }, { 0, -1 }, { 1, 0 }};// right, up, left, down
 	
-//	public int ROWS = 5, COLS = 5;
-//	public int ROWS = 6, COLS = 6;
-	public int ROWS = 7, COLS = 7;
-//	public int ROWS = 8, COLS = 8;
-//	public int ROWS = 10, COLS = 10;
+	public int ROWS, COLS;
 
-	public int nEmptyCells = ROWS*COLS;
+	public int nEmptyCells;
 	
 
 	/* Matrix containing grid cell elements */
-	public GridCell[][] gridCells = new GridCell[ROWS][COLS];
+	public GridCell[][] gridCells;
 	
 	/** Contains the the four cells on the edge of the grid. */
 	public LinkedList<GridCell> edges = new LinkedList<GridCell>();
@@ -39,7 +35,14 @@ public class Grid
 	public PriorityQueue<GridCell> pq = new PriorityQueue<GridCell>(new HeuristicComparator());
 	public LinkedList<LinkedList<GridCell>> finishedPaths = new LinkedList<LinkedList<GridCell>>();
 	
-	public Grid() {}
+	public Grid() { this(5, 5); }
+	public Grid(int rows, int cols) {
+		this.ROWS = rows;
+		this.COLS = cols;
+		this.nEmptyCells = ROWS*COLS;
+		gridCells = new GridCell[ROWS][COLS];
+	}
+
 	
 	public void initializeEdges() {
 		edges.add(gridCells[0][0]);

@@ -23,17 +23,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.Font;
 
 public class App {
 	private JFrame frame;
 	private final JButton btnCreateGrid = new JButton("Create Grid");
 	private final JPanel panel_1 = new JPanel();
-	private final JPanel panel_2 = new JPanel();
-	private final JComboBox<Integer> columnComboBox = new JComboBox<>(), rowComboBox = new JComboBox<>(), numberOfColorsBox = new JComboBox<>();
-	private final JComboBox<String>gridComboBox = new JComboBox<>();
+	private final JComboBox<String> dimensionsBox = new JComboBox<>();
 	private JPanel gridComponent = new JPanel();	
-	private String dimensions = "6x6";
-	static int MINIMUM_DIMENSIONS = 2, MAXIMUM_DIMENSIONS = 12;
+	private String nDimensions = "5x5";
 
 	JPanel[][] gridPanel;
 	public Grid grid = new Grid();
@@ -64,25 +62,19 @@ public class App {
 		initialize();
 		gridPanel = new JPanel[grid.ROWS][grid.COLS];
 	}
-
-	public void clearPanels() {
-//		this.grid.initialFlowPointers = new HashSet<Pos>();
-//		for (int r = 0; r < nRows; r++) {
-//			for (int c = 0; c < nCols; c++) {
-//				positions.add(new Pos(c, r));
-//				matrixPanel[c][r].setBackground(Grid.EMPTY_COLOR);
-//			}
-//		}
-	}
-
+	
 	public void createGrid()  {
-//		Grid.ROWS = 10;
-//		Grid.COLS = 10;
-
 		frame.getContentPane().remove(gridComponent);
-		gridComponent = new JPanel();
-		gridComponent.setLayout(new GridLayout(grid.ROWS, grid.COLS));
+		gridComponent  = new JPanel();
+		gridComponent.setLayout(new GridLayout(grid.ROWS, grid.COLS, 0, 0));
 		frame.getContentPane().add(gridComponent, BorderLayout.CENTER);
+
+		gridPanel = new JPanel[grid.ROWS][grid.COLS];
+		this.grid = new Grid(grid.ROWS, grid.COLS);
+		
+		gridComponent.repaint();
+		frame.getContentPane().repaint();
+
 
 		for (int r = 0; r < grid.ROWS; r++) {
 			for (int c = 0; c < grid.COLS; c++) {
@@ -92,6 +84,7 @@ public class App {
 				gridComponent.add(gridPanel[r][c]);
 			}
 		}
+		
 		grid.initializeEdges();
 		
 		PuzzleCreator pzl = new PuzzleCreator();
@@ -99,32 +92,16 @@ public class App {
 		
 		// Hard Coded Flow Pointers
 		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
-		
-		// This doesnt work correctly because of how the Grid class is structure
-//		switch(dimensions) {
-//			case "5x5":
-//				this.initGridFlowPointers(hardCodedPointers.initialPointers2_5x5());
-//				break;
-//			case "6x6":
-//				this.initGridFlowPointers(hardCodedPointers.initialPointers2_6x6());
-//				break;
-//			case "7x7":
-//				this.initGridFlowPointers(hardCodedPointers.initialPointers2_7x7());
-//				break;
-//			case "10x10":
-//				this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
-//				break;
-//		}
 //
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_5x5());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_6x6());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7());
-		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7_V2());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7_V2());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V2());
 		
-//		this.initGridFlowPointers(pzl.getPuzzle(grid, dimensions));
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
+		// initialize flow pointer
+		this.initGridFlowPointers(pzl.getPuzzle(grid, nDimensions));
 
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
@@ -228,28 +205,37 @@ public class App {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		frame.getContentPane().add(gridComponent, BorderLayout.CENTER);
-		gridComponent.setLayout(new GridLayout(grid.ROWS, grid.COLS, 0, 0));
+//		gridComponent.setLayout(new GridLayout(grid.ROWS, grid.COLS, 0, 0));
 
-		JPanel panel = new JPanel();
-		frame.getContentPane().add(panel, BorderLayout.SOUTH);
+		JPanel buttonsPanel = new JPanel();
+		frame.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
 
-		for (int i = MINIMUM_DIMENSIONS; i <= MAXIMUM_DIMENSIONS; i++) {
-			columnComboBox.addItem(i);
-			rowComboBox.addItem(i);
-			numberOfColorsBox.addItem(i);
-			if(i>4&&i!=8&&i!=9 &&i!=11&&i!=12) {
-				
-				gridComboBox.addItem(Integer.toString(i)+'x'+Integer.toString(i));;
-			}
+//		for (int i = MINIMUM_DIMENSIONS; i <= MAXIMUM_DIMENSIONS; i++) {
+//			if(i>4&&i!=8&&i!=9 &&i!=11&&i!=12) {
+//				dimensionsBox.addItem(Integer.toString(i)+'x'+Integer.toString(i));;
+//			}
+//		}
+		for (int i = 5; i <= 7; i++) {
+			dimensionsBox.addItem(Integer.toString(i)+'x'+Integer.toString(i));;
+
 		}
-		panel.setLayout(new BorderLayout(0, 0));
+		buttonsPanel.setLayout(new BorderLayout(0, 0));
 
-		panel.add(panel_1, BorderLayout.NORTH);
-//		panel_1.add(rowComboBox);
-//		panel_1.add(columnComboBox);
-		panel_1.add(numberOfColorsBox);
-		panel_1.add(gridComboBox);
+		buttonsPanel.add(panel_1, BorderLayout.NORTH);
+		dimensionsBox.setFont(new Font("Tahoma", Font.PLAIN, 22));
+		panel_1.add(dimensionsBox);
+		btnCreateGrid.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		panel_1.add(btnCreateGrid);
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 22));
+		btnNewButton.setForeground(Color.WHITE);
+		btnNewButton.setBackground(new Color(0, 204, 102));
+		panel_1.add(btnNewButton);
+		btnNewButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				solvePuzzle();
+			}
+		});
 
 		btnCreateGrid.addMouseListener(new MouseAdapter() {
 			@Override
@@ -258,36 +244,13 @@ public class App {
 			}
 		});
 
-		rowComboBox.addItemListener(new ItemListener() {
+		dimensionsBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
-				grid.ROWS = (int) rowComboBox.getSelectedItem();
+				nDimensions = (String) dimensionsBox.getSelectedItem();
+				grid.ROWS = Integer.parseInt(nDimensions.substring(0, 1));
+				grid.COLS = Integer.parseInt(nDimensions.substring(nDimensions.length()-1));
 			}
 		});
-
-		columnComboBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				grid.COLS = (int) columnComboBox.getSelectedItem();
-			}
-		});
-		gridComboBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				dimensions = (String) gridComboBox.getSelectedItem();
-			}
-		});
-		numberOfColorsBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				int c = (int) numberOfColorsBox.getSelectedItem();
-			}
-		});
-
-		panel.add(panel_2, BorderLayout.CENTER);
-		btnNewButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				solvePuzzle();
-			}
-		});
-		panel_2.add(btnNewButton);
 	}
 
 }
