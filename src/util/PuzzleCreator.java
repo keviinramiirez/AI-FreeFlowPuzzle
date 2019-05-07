@@ -21,17 +21,17 @@ import app.Pos;
  * Parses flow pointers from a csv file and returns them as a list of GridCell objects
  *
  */
-public class PuzzleCreator {
-	
-	public ArrayList<GridCell> getPuzzle(Grid grid, String dimensions) {
-		
+public class PuzzleCreator 
+{	
+	public ArrayList<GridCell> getPuzzle(Grid grid, String dimensions) {	
 		ArrayList<GridCell> initialFlowPointers = new ArrayList<GridCell>();
-		
+
 		List<List<String>> puzzlesArray = new ArrayList<List<String>>();				
-				
+
 		try (BufferedReader reader = new BufferedReader(new FileReader("src/input/" + dimensions + ".csv"));) {
 			// A row contains the list of initial flow pointer for a single puzzle
 			String row;
+
 			while ((row = reader.readLine()) != null) {
 				// Create an array of the flow pointers				
 				String[] values = row.split(",");
@@ -76,27 +76,26 @@ public class PuzzleCreator {
 	 */
 	private Color getColor(String c) {
 		switch(c.toLowerCase()) {
-		case("r"): // red
-			return Color.red;
-		case("y"): // yellow
-			return Color.yellow;
-		case("b"): // blue
-			return Color.blue;
-		case("o"): // orange
-			return Color.orange;
-		case("g"): // green
-			return Color.green;
-		case("c"): // cyan
-			return Color.cyan;
-		case("p"): // purple
-			return Color.pink;
-		case("w"): // wine
-			return Color.black;
-		case ("m"): // magenta
-			return Color.magenta;
-		default:
-			return null;
+			case("r"): // red
+				return Color.red;
+			case("y"): // yellow
+				return Color.yellow;
+			case("b"): // blue
+				return Color.blue;
+			case("o"): // orange
+				return Color.orange;
+			case("g"): // green
+				return Color.green;
+			case("c"): // cyan
+				return Color.cyan;
+			case("p"): // purple
+				return Color.pink;
+			case("w"): // wine
+				return Color.black;
+			case("m"): // magenta
+				return Color.magenta;
+			default:
+				return null;
 		}
 	}
-
 }

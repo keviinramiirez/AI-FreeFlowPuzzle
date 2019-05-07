@@ -37,7 +37,10 @@ public class Validation
 			GridCell headPointer, LinkedList<GridCell> visitedCells) {
 		SLLQueue<GridCell> queue = new SLLQueue<GridCell>();
 		int nRegionEmptyCells = cloneGrid.nEmptyCells - 1;
-
+		
+		if (headPointer == null)
+			System.out.println();
+		
 		if (headPointer != null) {
 			// contains either valid edge (if currPointer is at the edge) or null if no valid edge exists
 			GridCell validConstraintEdge = emptyEdges_withEqualColoredAdjCells(headPointer);// MAYBE needs validity for when has only one colored cell
@@ -52,17 +55,17 @@ public class Validation
 					headPointer.getEmptyAdjs(), headPointer);
 			
 			for (GridCell emptyAdj : emptyAdjsContainingPairPointer) {
-				if (emptyAdj.getEmptyAdjs().size() == 0 && !visitedCells.contains(emptyAdj)) {
+				if (emptyAdj.getEmptyAdjs().size() == 0 
+						&& !visitedCells.contains(emptyAdj) && grid.nEmptyCells != 1) {
 					visitedCells.add(emptyAdj);
 					nRegionEmptyCells--;
 				}
 			}
 		}
-		else nRegionEmptyCells--;
+//		else nRegionEmptyCells--;
 
-		
-		int r = 0, c = 0;
 		// iterates until finding first empty cell
+		int r = 0, c = 0;
 		outerloop:
 		for (; r < cloneGrid.ROWS; r++)
 			for (c = 0; c < cloneGrid.COLS; c++)
@@ -70,9 +73,11 @@ public class Validation
 						&& !visitedCells.contains(this.grid.gridCells[r][c]))
 					break outerloop;
 		
+		try {
+		// colored get adjacents and count of out bound adjacents
+		LinkedList<GridCell> coloredAdjs =  cloneGrid.gridCells[r][c].getColoredAdjs();
 		int outBountCount  = this.getOutBoundAdjacents(cloneGrid.gridCells[r][c]).size();
 		
-		LinkedList<GridCell> coloredAdjs =  cloneGrid.gridCells[r][c].getColoredAdjs();
 		// if head pointer is surrounded by colored cells
 		if (headPointer == null 
 				&& coloredAdjs.size()+outBountCount == 4
@@ -80,12 +85,9 @@ public class Validation
 			cloneGrid = previousGrid; // reset instance grid to saved one
 			return true;
 		}
-		
-//		if (headPointer == null 
-//				&& cloneGrid.gridCells[r][c].getColoredAdjs().size()+outBountCount == 4) {
-//			cloneGrid = previousGrid; // reset instance grid to saved one
-//			return true;
-//		}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.out.println();
+		}
 		
 		queue.enqueue(cloneGrid.gridCells[r][c]);
 		visitedCells.add(cloneGrid.gridCells[r][c]);
@@ -98,27 +100,17 @@ public class Validation
 			for (GridCell cAdj : emptyAdj.getAllAdjs()) 
 			{   
 				
-				if (cAdj.hasConstraintAdj())
-					return false;
-				
 				// won't analyze visited adjacent
-				if (!visitedCells.contains(cAdj)) {
-//					if (cAdj == cloneGrid.gridCells[0][3])
-//						System.out.println();
-					
-					if (cAdj.pos.row == 0 && cAdj.pos.col == 2)
-						System.out.println();
-					
+				if (!visitedCells.contains(cAdj)) {					
 					if (cAdj.isEmptyCell()) {
 						nRegionEmptyCells--;
 						queue.enqueue(cAdj);
 						visitedCells.add(cAdj);
 					}
-					// analyze path of cAdj == initial cell
-					else if (cAdj.isInitialPointer()) {
+					// analyze path of cAdj == initial cell, only if it hasn't been analyzed
+					else if (cAdj.isInitialPointer() && !cAdj.hasConstraintAdj()) {
 						// 
-						if (!cAdj.isFinished
-								&& !this.pathToPairExists(cAdj)) {
+						if (!cAdj.isFinished && !this.pathToPairExists(cAdj)) {
 							cloneGrid = previousGrid; // reset instance grid to saved one
 							return true;
 						}
@@ -132,7 +124,7 @@ public class Validation
 		}
 		
 		if (nRegionEmptyCells > 0) {
-			nRegionEmptyCells = this.grid.nEmptyCells - 1;
+			nRegionEmptyCells = cloneGrid.nEmptyCells;
 			
 			// save instant grid and create a clone to analyze
 			previousGrid = cloneGrid;
@@ -150,12 +142,6 @@ public class Validation
 					
 					// reference clone grid cell within clone grid
 					cloneGrid.gridCells[r][c] = cloneCell;
-					
-					// reference pair pointers
-//					if (previousCell.isInitialPointer())
-//						cloneCell.pairFlowPointer = cloneGrid.gridCells
-//						[previousCell.pairFlowPointer.pos.row]
-//								[previousCell.pairFlowPointer.pos.col];
 					
 					// store clone init pointer to cloned grid
 					if (previousGrid.initialFlowPointers.contains(previousCell))
@@ -199,13 +185,8 @@ public class Validation
 			
 			return this.strandedRegion(cloneGrid, null, null, visitedCells);
 		}
-		else {
-			// resetting the instance grid to the original
-//			this.grid = this.gridStack.pop();
-			
-			// there are no constrain color nor region 
-			return false;
-		}
+		// there are no constrain color nor region 
+		else return false;
 	}
 	
 	
@@ -217,20 +198,12 @@ public class Validation
 		SLLQueue<GridCell> queue = new SLLQueue<GridCell>();
 		LinkedList<GridCell> visitedCell = new LinkedList<>(); 
 		queue.enqueue(initPointer);
-		
-//		if (initPointer.pos.row == 0 && initPointer.pos.col == 4)
-//			System.out.println();
 
 		while (!queue.isEmpty()) {
 			GridCell currEmpty = queue.dequeue();
 			
-//			if (currEmpty.pos.row == 0 && currEmpty.pos.col == 4)
-//				System.out.println();
-			
 			// consider ALL adjacents
 			for (GridCell cAdj : currEmpty.getAllAdjs()) {
-//				if (currEmpty.isInitialPointer() && cAdj.isConstraintCell())
-//					return true;
 				// if have not visited cAdj
 				if (cAdj != null && cAdj != initPointer && !visitedCell.contains(cAdj)) {
 					if (initPointer.isPairPointerOf(cAdj)) 
@@ -288,19 +261,18 @@ public class Validation
 //		return false;
 //	}
 	
-	
-
-	
-	
 	private boolean validEdgeToMoveInto(GridCell edge) {
 		LinkedList<GridCell> coloredAdjs = edge.getColoredAdjs();
-		if (coloredAdjs.size() == 2)
-			return coloredAdjs.getFirst().color == coloredAdjs.getLast().color;
+		if (coloredAdjs.size() == 2) {
+			// valid if both adjacents are initial pair pointers
+			GridCell edge1 = coloredAdjs.getFirst(), edge2 = coloredAdjs.getLast();
+			return edge1.isInitialPointer() && edge2.isInitialPointer()
+					&& edge1.color == edge2.color;
+		}
 		return false;
 	}
 	
-	
-	private GridCell emptyEdges_withEqualColoredAdjCells(GridCell currPointer) {
+	private GridCell emptyEdges_withEqualColoredAdjCells(GridCell currPointer) {		
 		LinkedList<GridCell> emptyAdjs = currPointer.getEmptyAdjs();
 		if (emptyAdjs.size() <= 2) {
 			for (GridCell emptyAdj : emptyAdjs)

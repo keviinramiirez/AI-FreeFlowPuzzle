@@ -173,6 +173,50 @@ public class HardCodedFlowPointers {
 
 		return initialFlowPointers;
 	}
+
+	
+	public ArrayList<GridCell> initialPointers_8x8_V3() {
+		// RED
+		GridCell red16 = new GridCell(grid, new Pos(1, 6), Color.red);
+		GridCell red34 = new GridCell(grid, new Pos(3, 4), Color.red);
+
+		// BLUE
+		GridCell blue06 = new GridCell(grid, new Pos(0, 6), Color.blue);
+		GridCell blue22 = new GridCell(grid, new Pos(2, 2), Color.blue);
+
+		// GREEN
+		GridCell green23 = new GridCell(grid, new Pos(2, 3), Color.green);
+		GridCell green66 = new GridCell(grid, new Pos(6, 6), Color.green);
+
+		// YELLOW
+		GridCell yellow45 = new GridCell(grid, new Pos(4, 5), Color.yellow);
+		GridCell yellow71 = new GridCell(grid, new Pos(7, 1), Color.yellow);
+
+		// ORANGE
+		GridCell orange04 = new GridCell(grid, new Pos(0, 4), Color.orange);
+		GridCell orange15 = new GridCell(grid, new Pos(1, 5), Color.orange);
+
+		// CYAN
+		GridCell cyan12 = new GridCell(grid, new Pos(1, 2), Color.cyan);
+		GridCell cyan61 = new GridCell(grid, new Pos(6, 1), Color.cyan);
+		// NEED A 10x10 GRID
+		ArrayList<GridCell> initialFlowPointers = new ArrayList<GridCell>();
+
+		initialFlowPointers.add(red16);
+		initialFlowPointers.add(red34);
+		initialFlowPointers.add(blue06);
+		initialFlowPointers.add(blue22);
+		initialFlowPointers.add(green23);
+		initialFlowPointers.add(green66);
+		initialFlowPointers.add(yellow45);
+		initialFlowPointers.add(yellow71);
+		initialFlowPointers.add(orange04);
+		initialFlowPointers.add(orange15);
+		initialFlowPointers.add(cyan12);
+		initialFlowPointers.add(cyan61);
+
+		return initialFlowPointers;
+	}
 	
 	public ArrayList<GridCell> initialPointers_8x8() {
 		// RED

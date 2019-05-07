@@ -63,21 +63,27 @@ public class App {
 		gridPanel = new JPanel[grid.ROWS][grid.COLS];
 	}
 	
-	public void createGrid()  {
+	public void createGrid(int rows, int cols)  {
+		// hard code the dimensions
+//		rows = 5; cols = 5;
+//		rows = 6; cols = 6;
+//		rows = 7; cols = 7;
+//		rows = 8; cols = 8;
+//		rows = 10; cols = 10;
 		frame.getContentPane().remove(gridComponent);
 		gridComponent  = new JPanel();
-		gridComponent.setLayout(new GridLayout(grid.ROWS, grid.COLS, 0, 0));
+		gridComponent.setLayout(new GridLayout(rows, cols, 0, 0));
 		frame.getContentPane().add(gridComponent, BorderLayout.CENTER);
 
-		gridPanel = new JPanel[grid.ROWS][grid.COLS];
-		this.grid = new Grid(grid.ROWS, grid.COLS);
+		gridPanel = new JPanel[rows][rows];
+		this.grid = new Grid(rows, cols);
 		
 		gridComponent.repaint();
 		frame.getContentPane().repaint();
 
 
-		for (int r = 0; r < grid.ROWS; r++) {
-			for (int c = 0; c < grid.COLS; c++) {
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < cols; c++) {
 				this.grid.getGridCells()[r][c] = new GridCell(grid, new Pos(r, c));
 				gridPanel[r][c] = new JPanel();
 				gridPanel[r][c].setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -85,11 +91,10 @@ public class App {
 			}
 		}
 		
+		
 		grid.initializeEdges();
 		
-		PuzzleCreator pzl = new PuzzleCreator();
-//		pzl.getPuzzle(grid);
-		
+
 		// Hard Coded Flow Pointers
 		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
 //
@@ -99,8 +104,11 @@ public class App {
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7_V2());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V2());
-		
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V3());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
+
 		// initialize flow pointer
+		PuzzleCreator pzl = new PuzzleCreator();
 		this.initGridFlowPointers(pzl.getPuzzle(grid, nDimensions));
 
 		// inserts the most constraint Initial Pointers within the priority queue
@@ -143,6 +151,7 @@ public class App {
 		gridComponent.repaint();
 	}
 
+
 	/**
 	 * Queues the most constraint initial pointer of each pair. <br>
 	 * *Note: The more non-empty adjacent cells, the more constraint it is.
@@ -157,7 +166,7 @@ public class App {
 			GridCell ifp = this.grid.getGridCells()[initGridCell.pos.row][initGridCell.pos.col];
 			int emptydjCount = ifp.getEmptyAdjs().size();
 
-			//
+			// 
 			if (visitedCells.contains(ifp.pairFlowPointer)) {
 				int pairPointer_emptyAdjCount = ifp.pairFlowPointer.getEmptyAdjs().size();
 				ifp.heuristic = emptydjCount;
@@ -171,10 +180,7 @@ public class App {
 				visitedCells.add(ifp);
 		}
 
-//		this.grid.pq.removeMin();
-		System.out.println();
-//		for (Entry<Integer, GridCell> entry : this.grid.pq)
-//			entry.setKey(this.grid.nEmptyCells);		
+		System.out.println();	
 	}
 
 	public void solvePuzzle() {
@@ -210,15 +216,8 @@ public class App {
 		JPanel buttonsPanel = new JPanel();
 		frame.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
 
-//		for (int i = MINIMUM_DIMENSIONS; i <= MAXIMUM_DIMENSIONS; i++) {
-//			if(i>4&&i!=8&&i!=9 &&i!=11&&i!=12) {
-//				dimensionsBox.addItem(Integer.toString(i)+'x'+Integer.toString(i));;
-//			}
-//		}
-		for (int i = 5; i <= 7; i++) {
-			dimensionsBox.addItem(Integer.toString(i)+'x'+Integer.toString(i));;
-
-		}
+		for (int i = 5; i <= 7; i++)
+			dimensionsBox.addItem(Integer.toString(i)+'x'+Integer.toString(i));
 		buttonsPanel.setLayout(new BorderLayout(0, 0));
 
 		buttonsPanel.add(panel_1, BorderLayout.NORTH);
@@ -240,7 +239,7 @@ public class App {
 		btnCreateGrid.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				createGrid();
+				createGrid(grid.ROWS, grid.COLS);
 			}
 		});
 
@@ -252,5 +251,4 @@ public class App {
 			}
 		});
 	}
-
 }
