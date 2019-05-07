@@ -29,10 +29,6 @@ public class Solver
 		GridCell goalPairPointer = currFlowPointer.pairFlowPointer;
 
 		while (!validation.puzzleIsSolved()) {
-			if (currFlowPointer == grid.gridCells[4][0] && currFlowPointer.color == Color.yellow)
-				System.out.println();
-			
-			System.out.println(grid.nEmptyCells);
 			/* 
 			   If 'nextAdjCells' is empty, it means that we have backtracked and
 			   we are now considering the valid cells that we haven't moved into yet.
@@ -85,11 +81,12 @@ public class Solver
 						if (validation.isThereStrandedColorOrRegion(currFlowPointer))
 							currFlowPointer = this.backtrackToPrevious(currFlowPointer);
 						else {
-						// don't consider the first move to be a force move, cause then 
-						// it would cause error when backtracking to the initial pointer
-						if (currFlowPointer.pairFlowPointer != goalPairPointer)
-	//							if (!currFlowPointer.isInitialFlowPointer())
+							// don't consider the first move to be a force move, cause then 
+							// it would cause error when backtracking to the initial pointer
+							if (currFlowPointer.pairFlowPointer != goalPairPointer)
+//								if (!currFlowPointer.isInitialFlowPointer())
 								currFlowPointer.hasForcedMove = true;
+							
 							// move to next cell
 							currFlowPointer = this.moveTowardsCell(currFlowPointer, 
 									cellsToConsider.removeFirst());
@@ -118,6 +115,7 @@ public class Solver
 			// and don't have any adjacents to consider
 			if (currFlowPointer == null)
 				currFlowPointer = goalPairPointer.pairFlowPointer;
+			
 			// if we found a path.
 			if (currFlowPointer.isFinished) {
 				currFlowPointer = this.grid.pq.remove();
@@ -131,7 +129,6 @@ public class Solver
 					if (currFlowPointer != goalPairPointer.pairFlowPointer)
 						currFlowPointer = currFlowPointer.nextAdjCells.removeFirst();
 					currFlowPointer.pairFlowPointer = goalPairPointer;
-//					grid.nEmptyCells--; //
 				}
 				// restore the previous finished path and find another path
 				else {
@@ -144,7 +141,8 @@ public class Solver
 					// 
 					if (!currFlowPointer.nextAdjCells.isEmpty())
 						currFlowPointer.nextAdjCells.removeFirst();
-					else currFlowPointer = this.backtrackToPrevious(currFlowPointer);
+					else 
+						currFlowPointer = this.backtrackToPrevious(currFlowPointer);
 					
 						try {
 					// 
@@ -165,7 +163,6 @@ public class Solver
 		while (!currFlowPointer.isPairPointerOf(flowPointer)) {
 			path.addFirst(currFlowPointer);
 			
-			// 
 			currFlowPointer = (currFlowPointer.previousCell != null)
 					? currFlowPointer.previousCell : flowPointer.pairFlowPointer;
 
@@ -261,7 +258,6 @@ public class Solver
 //		}
 //	}
 
-	
 	public String toString() {
 		return grid.toString();
 	}

@@ -105,7 +105,7 @@ public class App {
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V2());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V3());
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers1_10x10());
+//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V4());
 
 		// initialize flow pointer
 		PuzzleCreator pzl = new PuzzleCreator();
@@ -179,8 +179,6 @@ public class App {
 			} else
 				visitedCells.add(ifp);
 		}
-
-		System.out.println();	
 	}
 
 	public void solvePuzzle() {
@@ -218,6 +216,7 @@ public class App {
 
 		for (int i = 5; i <= 7; i++)
 			dimensionsBox.addItem(Integer.toString(i)+'x'+Integer.toString(i));
+		
 		buttonsPanel.setLayout(new BorderLayout(0, 0));
 
 		buttonsPanel.add(panel_1, BorderLayout.NORTH);
