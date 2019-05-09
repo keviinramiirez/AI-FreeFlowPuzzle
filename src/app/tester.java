@@ -26,9 +26,9 @@ public class tester
 		int counter = 0;
 		while (puzzleIterator.hasNext()) {
 			Grid grid = new Grid();
-			
+
 			App.gridPanel = new JPanel[rows][cols];
-			
+
 			// create grid with empty cells
 			for (int r = 0; r < rows; r++)
 				for (int c = 0; c < cols; c++) {
