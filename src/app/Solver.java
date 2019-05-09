@@ -1,10 +1,7 @@
 package app;
 
-import java.awt.Color;
 import java.util.LinkedList;
 import java.util.Stack;
-
-import javax.swing.JPanel;
 
 // This is part of Constraint satisfaction problems (CSP)
 
