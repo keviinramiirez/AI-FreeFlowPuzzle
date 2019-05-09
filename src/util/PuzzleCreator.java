@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -23,12 +24,32 @@ import app.Pos;
  */
 public class PuzzleCreator {
 	
-	public ArrayList<GridCell> getPuzzle(Grid grid, String dimensions) {
+	public ArrayList<GridCell> getRamdomPuzzle(Grid grid, String dimensions) {
 		
-		ArrayList<GridCell> initialFlowPointers = new ArrayList<GridCell>();
-		
-		List<List<String>> puzzlesArray = new ArrayList<List<String>>();				
+		// parse puzzles from csv file and add them to an array
+		List<List<String>> puzzlesArray = this.parsePuzzles(dimensions);				
 				
+		// Select a random puzzle from the array of puzzles
+		Random rand = new Random();
+		List<String> colorCellsArray = puzzlesArray.get(rand.nextInt(puzzlesArray.size()));
+								
+		// return an array of flow pointers made from parsed string
+		return this.stringToGridCells(grid, colorCellsArray);
+	}
+	
+	public Iterator<List<String>> puzzleIterator(String dimensions) {
+		
+		List<List<String>> puzzlesString = this.parsePuzzles(dimensions);
+		
+		Iterator<List<String>> iterator = new flowPointersIterator(puzzlesString);		
+		
+		return iterator;
+	}
+	
+	private List<List<String>> parsePuzzles(String dimensions) {
+		
+		List<List<String>> puzzlesArray = new ArrayList<List<String>>();
+		
 		try (BufferedReader reader = new BufferedReader(new FileReader("src/input/" + dimensions + ".csv"));) {
 			// A row contains the list of initial flow pointer for a single puzzle
 			String row;
@@ -42,9 +63,12 @@ public class PuzzleCreator {
 			e.printStackTrace();
 		}
 		
-		// Select a random puzzle from the array of puzzles
-		Random rand = new Random();
-		List<String> colorCellsArray = puzzlesArray.get(rand.nextInt(puzzlesArray.size()));
+		return puzzlesArray;
+	}
+	
+	public ArrayList<GridCell> stringToGridCells(Grid grid, List<String> colorCellsArray) {
+		
+		ArrayList<GridCell> initialFlowPointers = new ArrayList<GridCell>();
 		
 		for (String cell : colorCellsArray) {
 			// Each element of the array (puzzle) is an initial flow pointer in the form 'C Row Col'
@@ -60,12 +84,8 @@ public class PuzzleCreator {
 			
 			// Create GridCell object and add to initial flow pointers array
 			initialFlowPointers.add(new GridCell(grid, pos, color));
-			
 		}
 		
-		// testing purposes
-//		System.out.print(initialFlowPointers);
-				
 		return initialFlowPointers;
 	}
 	
@@ -98,5 +118,29 @@ public class PuzzleCreator {
 			return null;
 		}
 	}
+	
+	
+	public class flowPointersIterator implements Iterator<List<String>> {
+		
+		private List<List<String>> list;
+		private int current_index = 0;
+		
+		public flowPointersIterator(List<List<String>> list) {
+			this.list = list;
+		}
+		
+		public boolean hasNext() {
+			return this.current_index < this.list.size();
+		}
+		
+		
+		public List<String> next() {
+			List<String> e = this.list.get(this.current_index);
+			this.current_index++;
+			return e;
+		}
+
+	}
+
 
 }

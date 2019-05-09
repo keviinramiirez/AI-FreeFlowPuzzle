@@ -101,7 +101,7 @@ public class App {
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V2());
 		
 		// initialize flow pointer
-		this.initGridFlowPointers(pzl.getPuzzle(grid, nDimensions));
+		this.initGridFlowPointers(pzl.getRamdomPuzzle(grid, nDimensions));
 
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
