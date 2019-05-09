@@ -37,7 +37,6 @@ public class App
 	public Grid grid = new Grid();
 	private final JButton btnNewButton = new JButton("Solve Now");
 
-
 	/**
 	 * Launch the application.
 	 */
@@ -68,8 +67,10 @@ public class App
 //		rows = 5; cols = 5;
 //		rows = 6; cols = 6;
 //		rows = 7; cols = 7;
-//		rows = 8; cols = 8;
+		rows = 8; cols = 8;
 //		rows = 10; cols = 10;
+		nDimensions = rows +"x"+ cols;
+		
 		frame.getContentPane().remove(gridComponent);
 		gridComponent  = new JPanel();
 		gridComponent.setLayout(new GridLayout(rows, cols, 0, 0));
