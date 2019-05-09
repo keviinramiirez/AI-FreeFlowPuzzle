@@ -11,13 +11,11 @@ import javax.swing.JPanel;
 public class Solver
 {
 	Grid grid;
-	JPanel[][] gridPanel;
 	Validation validation;
 
-	public Solver(Grid grid, JPanel[][] gridPanel) {
+	public Solver(Grid grid) {
 		this.grid = grid;
 		this.validation = new Validation(grid);
-		this.gridPanel = gridPanel;
 	}
 	
 	Stack<LinkedList<GridCell>> finishedPaths = new Stack<>();
@@ -206,7 +204,7 @@ public class Solver
 		nextToMoveInto.pairFlowPointer = currFlowPointer.pairFlowPointer;
 		
 		// change cell's color in panel
-		this.gridPanel[nextToMoveInto.pos.row][nextToMoveInto.pos.col]
+		App.gridPanel[nextToMoveInto.pos.row][nextToMoveInto.pos.col]
 				.setBackground(nextToMoveInto.color);
 		
 		// decrease number of empty cells
@@ -231,7 +229,7 @@ public class Solver
 			currCell.isFinished = false;
 			currCell.pairFlowPointer = null;
 			currCell.hasForcedMove = false;
-			this.gridPanel[currCell.pos.row][currCell.pos.col]
+			App.gridPanel[currCell.pos.row][currCell.pos.col]
 					.setBackground(Grid.EMPTY_COLOR);
 			
 			prevCell = currCell.previousCell;

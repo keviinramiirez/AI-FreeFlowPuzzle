@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
-import priorityQueue.HeapListPriorityQueue;
 import util.HeuristicComparator;
 
 public class Grid 

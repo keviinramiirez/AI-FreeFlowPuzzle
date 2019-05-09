@@ -1,7 +1,6 @@
 package queue;
 
 import java.util.ArrayList;
-import interfaces.Queue;
 
 public class ArrayQueue<E> implements Queue<E> 
 {

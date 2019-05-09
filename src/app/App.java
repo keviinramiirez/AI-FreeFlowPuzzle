@@ -13,7 +13,6 @@ import java.util.LinkedList;
 
 import javax.swing.border.LineBorder;
 
-import interfaces.Entry;
 import util.HardCodedFlowPointers;
 import util.PuzzleCreator;
 
@@ -25,7 +24,8 @@ import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.Font;
 
-public class App {
+public class App 
+{
 	private JFrame frame;
 	private final JButton btnCreateGrid = new JButton("Create Grid");
 	private final JPanel panel_1 = new JPanel();
@@ -33,7 +33,7 @@ public class App {
 	private JPanel gridComponent = new JPanel();	
 	private String nDimensions = "5x5";
 
-	JPanel[][] gridPanel;
+	public static JPanel[][] gridPanel;
 	public Grid grid = new Grid();
 	private final JButton btnNewButton = new JButton("Solve Now");
 
@@ -109,7 +109,7 @@ public class App {
 
 		// initialize flow pointer
 		PuzzleCreator pzl = new PuzzleCreator();
-		this.initGridFlowPointers(pzl.getPuzzle(grid, nDimensions));
+		this.initGridFlowPointers(pzl.getRamdomPuzzle(grid, nDimensions));
 
 		// inserts the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
@@ -130,7 +130,7 @@ public class App {
 			int col = currInitPointer.pos.col;
 
 			// UI Grid
-			this.gridPanel[row][col].setBackground(currInitPointer.color);
+			gridPanel[row][col].setBackground(currInitPointer.color);
 
 			// Grid Class
 			this.grid.getInitialFlowPointers().add(currInitPointer);
@@ -182,20 +182,19 @@ public class App {
 	}
 
 	public void solvePuzzle() {
-		Solver solver = new Solver(grid, gridPanel);
+		Solver solver = new Solver(grid);
 		solver.solve();
-		
-		// make sure its all repainted
-		for (int r = 0; r < grid.ROWS; r++) {
-			for (int c = 0; c < grid.COLS; c++) {
-				this.gridPanel[r][c].setBackground(this.grid.gridCells[r][c].color);;
-			}
-		}
+
+		// repainting cells, making sure all cells are painted.
+		for (int r = 0; r < grid.ROWS; r++)
+			for (int c = 0; c < grid.COLS; c++)
+				gridPanel[r][c].setBackground(this.grid.gridCells[r][c].color);;
 		
 		// repaints the grid panel with the updated cells
 		gridComponent.revalidate();
 		gridComponent.repaint();
 	}
+	
 	public String toString() {
 		return this.grid.toString();
 	}

@@ -1,7 +1,5 @@
 package queue;
 
-import interfaces.Queue;
-
 public class SLLQueue<E> implements Queue<E> 
 {
 	@SuppressWarnings("hiding")

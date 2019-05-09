@@ -1,4 +1,4 @@
-package interfaces;
+package queue;
 
 public interface Queue<E> {
 	   /** Accessor Method. Returns the size of the current instance **/
