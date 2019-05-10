@@ -60,18 +60,18 @@ public class App
 	public App() {
 		initialize();
 		gridPanel = new JPanel[grid.ROWS][grid.COLS];
-		createGrid(grid.ROWS, grid.COLS);
+//		createGrid(grid.ROWS, grid.COLS);
 	}
 
 	public void createGrid(int rows, int cols)  {
 		// hard code the dimensions
 //		rows = 5; cols = 5;
-//		rows = 6; cols = 6;
-		rows = 7; cols = 7;
+		rows = 6; cols = 6;
+//		rows = 7; cols = 7;
 //		rows = 8; cols = 8;
 //		rows = 10; cols = 10;
 		nDimensions = rows +"x"+ cols;
-		
+
 		frame.getContentPane().remove(gridComponent);
 		gridComponent  = new JPanel();
 		gridComponent.setLayout(new GridLayout(rows, cols, 0, 0));

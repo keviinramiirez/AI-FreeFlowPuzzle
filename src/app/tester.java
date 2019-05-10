@@ -19,7 +19,7 @@ public class tester
 		
 		String nDimensions = "5x5";
 		Iterator<List<String>> puzzleIterator = puzzleCreator.puzzleIterator(nDimensions);
-		
+
 		int rows = Integer.parseInt(nDimensions.substring(0, 1));
 		int cols = Integer.parseInt(nDimensions.substring(2));
 
