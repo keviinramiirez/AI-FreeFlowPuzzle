@@ -1,4 +1,4 @@
-package app;
+package main;
 
 import java.awt.EventQueue;
 
@@ -13,6 +13,10 @@ import java.util.LinkedList;
 
 import javax.swing.border.LineBorder;
 
+import appClasses.Grid;
+import appClasses.GridCell;
+import appClasses.Pos;
+import appClasses.Solver;
 import util.HardCodedFlowPointers;
 import util.PuzzleCreator;
 
@@ -23,19 +27,20 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.Font;
+import javax.swing.border.EmptyBorder;
 
 public class App 
 {
 	private JFrame frame;
-	private final JButton btnCreateGrid = new JButton("Create Grid");
+	private final JButton btnCreateGrid = new JButton("Create Random Grid");
 	private final JPanel panel_1 = new JPanel();
 	private final JComboBox<String> dimensionsBox = new JComboBox<>();
-	private JPanel gridComponent = new JPanel();	
-	private String nDimensions = "5x5";
+	private JPanel gridComponent = new JPanel();
+	private String nDimensions = "5x5"; // starts with a 5x5 puzzle
 
 	public static JPanel[][] gridPanel;
 	public Grid grid = new Grid();
-	private final JButton btnNewButton = new JButton("Solve Now");
+	private final JButton solveNowButton = new JButton("Solve Now");
 
 	/**
 	 * Launch the application.
@@ -60,18 +65,13 @@ public class App
 	public App() {
 		initialize();
 		gridPanel = new JPanel[grid.ROWS][grid.COLS];
-		createGrid(grid.ROWS, grid.COLS);
+		createGrid();
 	}
 
-	public void createGrid(int rows, int cols)  {
-		// hard code the dimensions
-//		rows = 5; cols = 5;
-//		rows = 6; cols = 6;
-//		rows = 7; cols = 7;
-//		rows = 8; cols = 8;
-//		rows = 10; cols = 10;
-//		nDimensions = rows +"x"+ cols;
-
+	
+	public void createGrid() { createGrid(grid.ROWS, grid.COLS); }
+	/** initializes the puzzle (the grid) with empty cells and then generates random flow pointer. */
+	public void createGrid(int rows, int cols) {
 		frame.getContentPane().remove(gridComponent);
 		gridComponent  = new JPanel();
 		gridComponent.setLayout(new GridLayout(rows, cols, 0, 0));
@@ -84,6 +84,7 @@ public class App
 		frame.getContentPane().repaint();
 
 
+		// initialize the grid with empty cells
 		for (int r = 0; r < rows; r++) {
 			for (int c = 0; c < cols; c++) {
 				this.grid.getGridCells()[r][c] = new GridCell(grid, new Pos(r, c));
@@ -93,27 +94,16 @@ public class App
 			}
 		}
 		
-		
-		grid.initializeEdges();
-		
+		// store the four edges
+		grid.storeEdges();
 
-		// Hard Coded Flow Pointers
-//		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
-//
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers_5x5());
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers_6x6());
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7());
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers_7x7_V2());
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8());
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V2());
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V3());
-//		this.initGridFlowPointers(hardCodedPointers.initialPointers_8x8_V4());
-
-		// initialize flow pointer
 		PuzzleCreator pzl = new PuzzleCreator();
+		
+		// initialize respective flow pointer
+
 		this.initGridFlowPointers(pzl.getRamdomPuzzle(grid, nDimensions));
 
-		// inserts the most constraint Initial Pointers within the priority queue
+		// insert the most constraint Initial Pointers within the priority queue
 		this.queueMostConstraintInitialPointers();
 	}
 
@@ -168,21 +158,23 @@ public class App
 			GridCell ifp = this.grid.getGridCells()[initGridCell.pos.row][initGridCell.pos.col];
 			int emptydjCount = ifp.getEmptyAdjs().size();
 
-			// 
 			if (visitedCells.contains(ifp.pairFlowPointer)) {
+				// 
 				int pairPointer_emptyAdjCount = ifp.pairFlowPointer.getEmptyAdjs().size();
 				ifp.heuristic = emptydjCount;
 				ifp.pairFlowPointer.heuristic = pairPointer_emptyAdjCount;
+				
+				GridCell iPointerToQueue = 
+						(emptydjCount < pairPointer_emptyAdjCount) ? ifp : ifp.pairFlowPointer;
+				
 				// inserts the most constraint initial pointer of this pair
-				if (emptydjCount < pairPointer_emptyAdjCount)
-					this.grid.pq.add(ifp);
-				else
-					this.grid.pq.add(ifp.pairFlowPointer);
+				this.grid.pq.add(iPointerToQueue);
 			} else
 				visitedCells.add(ifp);
 		}
 	}
 
+	/** begins the process of solving the puzzle. Paints the puzzle when finished. */
 	public void solvePuzzle() {
 		Solver solver = new Solver(grid);
 		solver.solve();
@@ -206,7 +198,7 @@ public class App
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(1700, 300, 700, 700);
+		frame.setBounds(300, 300, 800, 800);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		frame.getContentPane().add(gridComponent, BorderLayout.CENTER);
@@ -215,31 +207,35 @@ public class App
 		JPanel buttonsPanel = new JPanel();
 		frame.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
 
-		for (int i = 5; i <= 7; i++)
+		for (int i = 5; i <= 8; i++)
 			dimensionsBox.addItem(Integer.toString(i)+'x'+Integer.toString(i));
 		
 		buttonsPanel.setLayout(new BorderLayout(0, 0));
+		panel_1.setBorder(new EmptyBorder(20, 0, 20, 0));
 
 		buttonsPanel.add(panel_1, BorderLayout.NORTH);
 		dimensionsBox.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		panel_1.add(dimensionsBox);
 		btnCreateGrid.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		panel_1.add(btnCreateGrid);
-		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		btnNewButton.setForeground(Color.WHITE);
-		btnNewButton.setBackground(new Color(0, 204, 102));
-		panel_1.add(btnNewButton);
-		btnNewButton.addMouseListener(new MouseAdapter() {
+		solveNowButton.setFont(new Font("Tahoma", Font.PLAIN, 22));
+		solveNowButton.setForeground(Color.WHITE);
+		solveNowButton.setBackground(new Color(0, 204, 102));
+		panel_1.add(solveNowButton);
+		solveNowButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				solvePuzzle();
+				if (solveNowButton.isEnabled())
+					solvePuzzle();
+				solveNowButton.setEnabled(false);
 			}
 		});
 
 		btnCreateGrid.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				createGrid(grid.ROWS, grid.COLS);
+				solveNowButton.setEnabled(true);
+				createGrid();
 			}
 		});
 
@@ -248,7 +244,11 @@ public class App
 				nDimensions = (String) dimensionsBox.getSelectedItem();
 				grid.ROWS = Integer.parseInt(nDimensions.substring(0, 1));
 				grid.COLS = Integer.parseInt(nDimensions.substring(nDimensions.length()-1));
+				solveNowButton.setEnabled(true);
+				createGrid();
 			}
 		});
 	}
+	
+	public boolean disableSolveButton = false;
 }

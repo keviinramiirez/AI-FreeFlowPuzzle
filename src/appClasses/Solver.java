@@ -1,10 +1,11 @@
-package app;
+package appClasses;
 
 import java.util.LinkedList;
 import java.util.Stack;
 
-// This is part of Constraint satisfaction problems (CSP)
+import main.App;
 
+/**  */
 public class Solver
 {
 	Grid grid;
@@ -18,6 +19,10 @@ public class Solver
 	Stack<LinkedList<GridCell>> finishedPaths = new Stack<>();
 	
 	
+	/** 
+	 *  Runs the agent's process of finding each initial flow pointer's path.
+	 *  
+	 */
 	public void solve() {
 		GridCell currFlowPointer = this.grid.pq.remove();
 
@@ -150,6 +155,9 @@ public class Solver
 		}		
 	}
 	
+	/** Stores the path ending with the given flow pointer all the way to 
+	 *  the beginning of flow the given pointer has stepped to.
+	 */
 	public void storePath(GridCell flowPointer) {
 		GridCell currFlowPointer = flowPointer;
 		currFlowPointer.isFinished = true;
@@ -167,15 +175,17 @@ public class Solver
 		finishedPaths.push(path);
 	}
 	
-	/** restores previous finished path and returns the starting pointer of the path */
+	/** Restores previous finished path and returns the starting pointer of the path */
 	public GridCell restorePrevFinishedPath() {
 		LinkedList<GridCell> path = this.finishedPaths.lastElement();
 		
+		// sets every cell of the path to not be finished
 		for (GridCell cell : path)
 			cell.isFinished = false;
 		
 		// get the previous to last grid cell within path
 		GridCell prevLastGridCell = path.get(path.size()-2);
+		
 		// remove path from list
 		this.finishedPaths.remove(finishedPaths.remove(finishedPaths.size()-1));
 		
@@ -211,10 +221,10 @@ public class Solver
 	}
 	
 	
-	/** Backtracks to the previous non force-moved cell, resetting each backtracked cell.
-	 *  @return the given flow pointer's previous cell */
+	/** Backtracks to the previous non-forced moved cell, resetting each backtracked cell.
+	 *  @return the last non forced flow pointer's previous to the given flow pointer.  */
 	public GridCell backtrackToPrevious(GridCell flowPointer) {
-		// un_reference flow pointer to the adjacents
+		// un_reference flow pointer to the adjacent cells
 		for (GridCell emptyAdj : flowPointer.getEmptyAdjs())
 			emptyAdj.removeToNotRemember(flowPointer);
 
@@ -240,18 +250,6 @@ public class Solver
 			prevCell.isFinished = false;
 		return prevCell;
 	}
-	
-//	public void updatePQ(GridCell curr_flow_pointer) {
-//		int newHeuristic = curr_flow_pointer.heuristic();
-//		// insert new flow pointer to pq
-//		this.grid.pq.insert(newHeuristic, curr_flow_pointer);
-////		this.grid.pq.changeKey(curr_flow_pointer, newHeuristic);
-//		// search for the adjacent flow pointers of new flow pointer, if any
-//		for (GridCell adj : curr_flow_pointer.getColoredAdjs()) {
-//			int new_heuristic = adj.heuristic();
-//			this.grid.pq.changeKey(adj, new_heuristic);
-//		}
-//	}
 
 	public String toString() {
 		return grid.toString();

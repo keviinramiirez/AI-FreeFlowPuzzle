@@ -10,9 +10,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import app.Grid;
-import app.GridCell;
-import app.Pos;
+import appClasses.Grid;
+import appClasses.GridCell;
+import appClasses.Pos;
 
 /**
  * This class creates a puzzle that takes as a parameter the grid to be used and dimensions of the grid
@@ -49,7 +49,7 @@ public class PuzzleCreator
 		
 		List<List<String>> puzzlesArray = new ArrayList<List<String>>();
 
-		try (BufferedReader reader = new BufferedReader(new FileReader("src/input/" + dimensions + ".csv"));) {
+		try (BufferedReader reader = new BufferedReader(new FileReader("csvPuzzles/" + dimensions + ".csv"));) {
 			// A row contains the list of initial flow pointer for a single puzzle
 			String row;
 			while ((row = reader.readLine()) != null) {

@@ -3,11 +3,12 @@ package util;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import app.Grid;
-import app.GridCell;
-import app.Pos;
+import appClasses.Grid;
+import appClasses.GridCell;
+import appClasses.Pos;
 
-public class HardCodedFlowPointers {
+public class HardCodedFlowPointers 
+{
 	private Grid grid;
 
 	public HardCodedFlowPointers(Grid grid) {

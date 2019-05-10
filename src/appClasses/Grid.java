@@ -1,4 +1,4 @@
-package app;
+package appClasses;
 
 import java.awt.Color;
 import java.util.LinkedList;
@@ -41,7 +41,7 @@ public class Grid
 	}
 
 	
-	public void initializeEdges() {
+	public void storeEdges() {
 		edges.add(gridCells[0][0]);
 		edges.add(gridCells[0][COLS-1]);
 		edges.add(gridCells[ROWS-1][0]);
@@ -107,6 +107,17 @@ public class Grid
 			c = "*";
 		
 		return cell.isInitialPointer() ? c.toUpperCase() : c;
+	}
+	
+	/** Clones each of this grid's cells */
+	public GridCell[][] cloneGridCells(GridCell[][] gridCells) {
+		GridCell[][] clone = new GridCell[gridCells.length][gridCells[0].length];
+		
+		for (int r = 0; r < gridCells.length; r++)
+			for (int c = 0; c < gridCells[0].length; c++)
+				clone[r][c] = gridCells[r][c].clone(this);
+		
+		return clone;
 	}
 
 	/** Returns this Grid with a shallow copy of this Grid Cells. */

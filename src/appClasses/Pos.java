@@ -1,4 +1,4 @@
-package app;
+package appClasses;
 
 public class Pos 
 {

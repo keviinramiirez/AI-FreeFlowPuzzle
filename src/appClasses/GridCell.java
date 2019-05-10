@@ -1,4 +1,4 @@
-package app;
+package appClasses;
 
 import java.awt.Color;
 import java.util.HashSet;
@@ -55,10 +55,10 @@ public class GridCell
 	/** 
 	 *  @param pos position of this cell
 	 *  @param color this Grid Cell's color.
-	 *  @param heuristic
+	 *  @param heuristic amount of empty adjacent at initialization
 	 *  @param pairFlowPointer this cell's pair color pointer. Null if this cell is non empty.
 	 *  @param previousPointer reference to the previous pointer, tracked to move backwards to it.
-	 *  @param nextAdjCells
+	 *  @param nextAdjCells list of next adjacent cells to consider
 	 *  @param hasForcedMove tells us if this grid cell was forced to move to this position.
 	 */
 	public GridCell(Grid grid, Pos pos, Color color, int heuristic, GridCell pairFlowPointer, 
@@ -84,17 +84,19 @@ public class GridCell
 	}
 
 	
-	/** Returns true if this cell is a non empty cell. */
+	/** Returns true if this cell is a colored cell. */
 	public boolean isColoredCell() 		{ return !isEmptyCell(); }
+	/** Returns true if this cell is an empty cell. */
 	public boolean isEmptyCell() 		{ return color.equals(Grid.EMPTY_COLOR); }
+	/** Returns true if this cell is a constraint cell. */
 	public boolean isConstraintCell() 	{ return color.equals(Grid.NON_CONSTRAINT_COLOR); }
 	
-	/** Returns true if this is an INTITIAL Flow Pointer. */
+	/** Returns true if this is one of the initial flow pointer. */
 	public boolean isInitialPointer() {
 		return grid.initialFlowPointers.contains(this);
 	}
 
-	/** Returns true if this grid cell is the pair of the given FlowPointer. */
+	/** Returns true if this grid cell is the pair of the given flow pointer. */
 	public boolean isPairPointerOf(GridCell flowPointer) {
 		return this == flowPointer.pairFlowPointer;
 	}
@@ -104,15 +106,17 @@ public class GridCell
 		return cell.isColoredCell() && this == cell.previousCell;
 	}
 	
-	/** Returns true if this Grid Cell already moved to the given cell */
+	/** Returns true if this grid cell already moved to the given cell */
 	public boolean alreadyMovedTo(GridCell cell) {
 		return cell.cellsToRemember.contains(this.toString());
 	}
 	
+	/** Removes the given cell from the hash set of <i>cellsToRemember</i>. */
 	public void removeToNotRemember(GridCell cell) {
 		this.cellsToRemember.remove(cell.toString());
 	}
 	
+	/** Adds the given cell to the hash set of cells to remember not moving into again. */
 	public void rememberIMovedInto(GridCell toMoveInto) {
 		toMoveInto.cellsToRemember.add(this.toString());
 	}
@@ -180,7 +184,7 @@ public class GridCell
 		return adjacentCells;
 	}
 	
-	/** */
+	/** Returns, if any, this grid cell's adjacent initial flow pointer. */
 	public LinkedList<GridCell> getInitialPointerAdjs() {
 		LinkedList<GridCell> initAdjs = new LinkedList<>();
 		
@@ -193,6 +197,7 @@ public class GridCell
 		return initAdjs;
 	}
 	
+	/** Return true if this grid cell has any constraint adjacent cell. */
 	public boolean hasConstraintAdj() {
 		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
@@ -202,6 +207,7 @@ public class GridCell
 		return false;
 	}
 	
+	/** Returns true if this grid cell has reached its pair flow pointer. */
 	public boolean hasPairPointer() {
 		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell adjCell = this.getDistantCell(dir[0], dir[1]);
@@ -211,12 +217,14 @@ public class GridCell
 		return false;
 	}
 	
+	/** Returns amount of empty adjacent cells. */
 	public int heuristic() {
 		int adjacents = 0;
 		
 		for (int[] dir : Grid.DIRECTIONS) {
 			GridCell adj_cell = this.getDistantCell(dir[0], dir[1]);
-			if (adj_cell != null && !adj_cell.isColoredCell()) adjacents++;
+			if (adj_cell != null && !adj_cell.isColoredCell()) 
+				adjacents++;
 		}
 		
 		return adjacents;

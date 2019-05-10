@@ -1,4 +1,4 @@
-package app;
+package appClasses;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import main.App;
 import util.PuzzleCreator;
 
 public class tester 

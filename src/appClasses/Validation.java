@@ -1,4 +1,4 @@
-package app;
+package appClasses;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -20,21 +20,29 @@ public class Validation
 		return strandedColorOrRegion(grid, null, currPointer, new LinkedList<>());
 	}
 
+	/** Returns true if there exist any stranded colored cell or region. Recursive algorithm.
+	 *  @param cloneGrid at first it is the instance grid. When there multiple regions 
+	 *         within the grid, then it contains a clone of the instance grid with the 
+	 *         analyzed region's cells labeled.
+	 *  @param previousGrid the previous grid that was analyzed when analyzing stranded regions recursively. 
+	 *  @param headPointer 
+	 */
 	public boolean strandedColorOrRegion(Grid cloneGrid, Grid previousGrid, 
 			GridCell headPointer, LinkedList<GridCell> visitedCells) 
 	{
 		SLLQueue<GridCell> queue = new SLLQueue<GridCell>();
 		int nRegionEmptyCells = cloneGrid.nEmptyCells - 1;
 		
+		// will only go through this logic once.
 		if (headPointer != null) {
 			// contains either valid edge (if currPointer is at the edge) or null if no valid edge exists
-			GridCell validConstraintEdge = emptyEdges_withEqualColoredAdjCells(headPointer);// MAYBE needs validity for when has only one colored cell
+			GridCell validConstraintEdge = emptyEdges_withEqualColoredAdjCells(headPointer);
 	
 			if (validConstraintEdge != null) {
+				// consider this edge valid
 				visitedCells.add(validConstraintEdge);
 				nRegionEmptyCells--;
 			}
-			
 			
 			LinkedList<GridCell> emptyAdjsContainingPairPointer = this.getAdjsContainingPairPointer(
 					headPointer.getEmptyAdjs(), headPointer);
@@ -42,6 +50,7 @@ public class Validation
 			for (GridCell emptyAdj : emptyAdjsContainingPairPointer) {
 				if (emptyAdj.getEmptyAdjs().size() == 0 
 						&& !visitedCells.contains(emptyAdj) && grid.nEmptyCells != 1) {
+					// consider this empty adjacent valid
 					visitedCells.add(emptyAdj);
 					nRegionEmptyCells--;
 				}
@@ -61,6 +70,7 @@ public class Validation
 		LinkedList<GridCell> coloredAdjs =  cloneGrid.gridCells[r][c].getColoredAdjs();
 		int outBountCount  = this.getOutBoundAdjacents(cloneGrid.gridCells[r][c]).size();
 		
+		// will go through this logic once (before recursion is applied).
 		// if head pointer is surrounded by colored cells
 		if (headPointer == null 
 				&& coloredAdjs.size()+outBountCount == 4
@@ -79,7 +89,6 @@ public class Validation
 			// CONSIDER ALL ADJACENTS
 			for (GridCell cAdj : emptyAdj.getAllAdjs()) 
 			{   
-				
 				// won't analyze visited adjacent
 				if (!visitedCells.contains(cAdj)) {					
 					if (cAdj.isEmptyCell()) {
@@ -89,32 +98,32 @@ public class Validation
 					}
 					// analyze path of cAdj == initial cell, only if it hasn't been analyzed
 					else if (cAdj.isInitialPointer() && !cAdj.hasConstraintAdj()) {
-						// 
+						// does current analyzed initial pointer have a path to its pair pointer
 						if (!cAdj.isFinished && !this.pathToPairExists(cAdj)) {
 							cloneGrid = previousGrid; // reset instance grid to saved one
 							return true;
 						}
 						
-						// store adj and its pair as visited
-						visitedCells.add(cAdj); // may already been added previously
+						// store cAdj and its pair as visited
+						visitedCells.add(cAdj);
 						visitedCells.add(cAdj.pairFlowPointer);
 					}
 				}
 			}
 		}
 		
-		if (nRegionEmptyCells > 0) {
+		if (nRegionEmptyCells == 0)  
+			return false; // there are no constrain color nor region 
+		else {
 			nRegionEmptyCells = cloneGrid.nEmptyCells;
 			
 			// save instant grid and create a clone to analyze
 			previousGrid = cloneGrid;
 			cloneGrid = cloneGrid.clone();
 			cloneGrid.initialFlowPointers = new LinkedList<GridCell>();
-
-
 			
 			// fill the emptyCells 
-			for (r = 0; r < cloneGrid.ROWS; r++)
+			for (r = 0; r < cloneGrid.ROWS; r++) {
 				for (c = 0; c < cloneGrid.COLS; c++) {
 					// current instance and clone cell
 					GridCell previousCell = previousGrid.gridCells[r][c];
@@ -123,29 +132,23 @@ public class Validation
 					// reference clone grid cell within clone grid
 					cloneGrid.gridCells[r][c] = cloneCell;
 					
-					// store clone init pointer to cloned grid
+					// store clone initial pointer to cloned grid
 					if (previousGrid.initialFlowPointers.contains(previousCell))
 						cloneGrid.initialFlowPointers.add(cloneCell);
 
 					// row index of clone cell, if any
 					int rowIndex = visitedCells.indexOf(previousCell);
 					
-					// if 
+					// if the cell in that row index is empty and was visited, then label it.
 					if (rowIndex != -1 && visitedCells.get(rowIndex).isEmptyCell()) {
 						cloneCell.color = Grid.NON_CONSTRAINT_COLOR;
 						nRegionEmptyCells--;
 					}
 				}
-
-			for (GridCell prevInitialPointer : previousGrid.initialFlowPointers) {
-				int row = prevInitialPointer.pos.row;
-				int col = prevInitialPointer.pos.col;
-				int pairRow = prevInitialPointer.pairFlowPointer.pos.row;
-				int pairCol = prevInitialPointer.pairFlowPointer.pos.col;
-				
-				cloneGrid.gridCells[row][col].pairFlowPointer = 
-						cloneGrid.gridCells[pairRow][pairCol];		
 			}
+
+			// pairing each cloned initial flow pointer
+			this.pairEachInitialPointer(cloneGrid, previousGrid);
 			
 			
 			cloneGrid.nEmptyCells = nRegionEmptyCells;
@@ -162,10 +165,22 @@ public class Validation
 			
 			return this.strandedColorOrRegion(cloneGrid, null, null, visitedCells);
 		}
-		// there are no constrain color nor region 
-		else return false;
 	}
 	
+	/** Pair each of the cloned initial pointers to their respective pair flow pointer.
+	 *  the previous grid is used to locate where the initial pointers were.
+	 */
+	public void pairEachInitialPointer(Grid cloneGrid, Grid previousGrid) {
+		for (GridCell prevInitialPointer : previousGrid.initialFlowPointers) {
+			int row = prevInitialPointer.pos.row;
+			int col = prevInitialPointer.pos.col;
+			int pairRow = prevInitialPointer.pairFlowPointer.pos.row;
+			int pairCol = prevInitialPointer.pairFlowPointer.pos.col;
+			
+			cloneGrid.gridCells[row][col].pairFlowPointer = 
+					cloneGrid.gridCells[pairRow][pairCol];		
+		}
+	}
 	
 	/** Returns true if the given cell has a pair of pointer which are their own pair. */
 	public boolean hasAdjMatchingPair(LinkedList<GridCell> coloredAdjs) {
@@ -191,15 +206,14 @@ public class Validation
 			
 			// consider ALL adjacents
 			for (GridCell cAdj : currEmpty.getAllAdjs()) {
-				// if have not visited cAdj
+				// if have not visited cAdj, then 
 				if (cAdj != null && cAdj != initPointer && !visitedCell.contains(cAdj)) {
 					if (initPointer.isPairPointerOf(cAdj)) 
 						return true;
 					
 					// cAdj empty || same color cell
-					if (cAdj.isEmptyCell() || cAdj.color == initPointer.color) {
+					if (cAdj.isEmptyCell() || cAdj.color == initPointer.color)
 						queue.enqueue(cAdj);
-					}
 					
 					visitedCell.add(cAdj);
 				}
@@ -209,7 +223,8 @@ public class Validation
 		return false;
 	}
 	
-	
+	/** Return true if the given edge cell is valid. More formally, an edge is invalid if
+	 *  both of its adjacents are colored cells (not initial pointers) and have distinct colors. */
 	private boolean validEdgeToMoveInto(GridCell edge) {
 		LinkedList<GridCell> coloredAdjs = edge.getColoredAdjs();
 		if (coloredAdjs.size() == 2) {
@@ -221,6 +236,10 @@ public class Validation
 		return false;
 	}
 	
+	// contains either valid edge (if currPointer is at the edge) or null if no valid edge exists
+
+	/** Returns either null, if currPointer is at the edge and there are no valid adjacent
+	 *  edge exist, or returns the empty adjacent edge cell. */
 	private GridCell emptyEdges_withEqualColoredAdjCells(GridCell currPointer) {		
 		LinkedList<GridCell> emptyAdjs = currPointer.getEmptyAdjs();
 		if (emptyAdjs.size() <= 2) {
@@ -232,7 +251,7 @@ public class Validation
 	}
 	
 	
-	/** Return true if the given adj cells don't contain any
+	/** Return true if the given adjacent cells don't contain any
 	 *  initial constraint initial pointer.
 	 */
 	public boolean anyConstraintAdjInitialPointer(java.util.List<GridCell> coloredAdjs) {
@@ -243,7 +262,7 @@ public class Validation
 	}
 	
 	
-	/** Return true if the given adj cells don't contain any
+	/** Return true if the given adjacent cells don't contain any
 	 *  initial constraint initial pointer.
 	 */
 	private boolean initialPointer_asAdjOfAdj(java.util.List<GridCell> coloredAdjs) {
@@ -253,6 +272,7 @@ public class Validation
 		return false;
 	}
 	
+	/** Gets the adjacent cells that contain pair pointer. */
 	private LinkedList<GridCell> getAdjsContainingPairPointer(LinkedList<GridCell> emptyAdjs, GridCell currPointer) {
 		LinkedList<GridCell> adjsContainingPair = new LinkedList<GridCell>();
 		for (GridCell emptyAdj : emptyAdjs) {
@@ -276,8 +296,9 @@ public class Validation
 		return false;
 	}
 	
-	
-	
+	/** returns the cells that are validated to be able to move into without causing 
+	 *  the puzzle to be unsolvable.
+	 */
 	public LinkedList<GridCell> cellsToConsiderMovingInto(GridCell currFlowPointer) {
 		int currRow = currFlowPointer.pos.row;
 		int currCol = currFlowPointer.pos.col;
@@ -296,7 +317,6 @@ public class Validation
 
 			// if there is only one move to consider (force move)
 			if (emptyAdjacents.size() == 1) {
-				
 				for (GridCell initPointer : emptyAdjacents.getFirst().getInitialPointerAdjs())
 					// backtrack if initial pointer isn't the previous cell && 
 					// moving into empty cell would constraint other initial pointers
@@ -331,6 +351,7 @@ public class Validation
 					pairPointerFound = cAdj;
 				
 				LinkedList<GridCell> currAdj_coloredAdjs = cAdj.getColoredAdjs();
+				
 				// if currAdj constraints an initial pointer which isn't its pair pointer (backtrack)
 				if (cAdj.isColoredCell() && cAdj.isInitialPointer() 
 						&& pairPointerFound == null && currAdj_coloredAdjs.isEmpty()) {
@@ -346,7 +367,7 @@ public class Validation
 					int outBoundAdjs = this.getOutBoundAdjacents(cAdj).size();
 					
 					if (currAdj_coloredAdjs.size()+outBoundAdjs == 4 && oneAdjIsPairPointerOf(cAdj, currAdj_coloredAdjs)
-							|| (currAdj_coloredAdjs.size()+outBoundAdjs == 3) // only 1 move to consider
+							|| (currAdj_coloredAdjs.size()+outBoundAdjs == 3) // if only 1 move to consider
 								&& !initialPointer_asAdjOfAdj(currAdj_coloredAdjs)
 								&& outBoundAdjs != 2) 
 					{
@@ -357,27 +378,28 @@ public class Validation
 			}
 		}
 		
-		// if one of the valid colored adjacents is its pair flow pointer
+		// if one of the valid colored adjacent cells is its pair flow pointer
 		if (pairPointerFound != null) {
 			boolean hasInitPointerEmptyAdjContraint = 
 					initPointerAdjConstraint(pairPointerFound.getEmptyAdjs());	
 			
-			// an empty adj is constraint
+			// if an empty adjacent is constraint
 			if (hasInitPointerEmptyAdjContraint) {
 				cellsToConsider.add(currFlowPointer.previousCell);
 				return cellsToConsider;
 			}
 			
 			cellsToConsider.addFirst(pairPointerFound);
+			
 			for (GridCell emptyAdj : currFlowPointer.getEmptyAdjs())
-				if (!shallContraintsAdjInitialPointer(emptyAdj, currFlowPointer.pairFlowPointer)
+				if (!shallContraintAdjInitialPointer(emptyAdj, currFlowPointer.pairFlowPointer)
 						&& !currFlowPointer.alreadyMovedTo(emptyAdj))
 					currFlowPointer.nextAdjCells.add(emptyAdj);
 		}
 		// at this point consider the empty adjs that don't constraint any initial pointer
 		else {
 			for (GridCell emptyAdj : currFlowPointer.getEmptyAdjs())
-				if (!shallContraintsAdjInitialPointer(emptyAdj, currFlowPointer.pairFlowPointer)  
+				if (!shallContraintAdjInitialPointer(emptyAdj, currFlowPointer.pairFlowPointer)  
 						&& !currFlowPointer.alreadyMovedTo(emptyAdj))
 					cellsToConsider.add(emptyAdj);
 		}
@@ -386,12 +408,7 @@ public class Validation
 	}
 	
 	
-	
-	
-	
-	
-	
-	
+	/** Returns true if any of the given cells is the pair pointer of the given current adjacent cell. */
 	private boolean oneAdjIsPairPointerOf(GridCell currAdj, LinkedList<GridCell> cells) {
 		for (GridCell cell : cells)
 			if (cell.isPairPointerOf(currAdj))
@@ -410,8 +427,10 @@ public class Validation
 		return outBoundAdjs;
 	}
 	
-	
-	public boolean shallContraintsAdjInitialPointer(GridCell emptyCell, GridCell goalPointer) {
+	/** Returns true if moving into the given empty cell constraints any of its initial pointer 
+	 *  (except its pair pointer)  
+	 */
+	public boolean shallContraintAdjInitialPointer(GridCell emptyCell, GridCell goalPointer) {
 		if (emptyCell.isColoredCell())
 			throw new IllegalArgumentException("Argument should be an empty cell");
 		
