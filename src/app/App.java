@@ -60,14 +60,15 @@ public class App
 	public App() {
 		initialize();
 		gridPanel = new JPanel[grid.ROWS][grid.COLS];
+		createGrid(grid.ROWS, grid.COLS);
 	}
-	
+
 	public void createGrid(int rows, int cols)  {
 		// hard code the dimensions
 //		rows = 5; cols = 5;
 //		rows = 6; cols = 6;
-//		rows = 7; cols = 7;
-		rows = 8; cols = 8;
+		rows = 7; cols = 7;
+//		rows = 8; cols = 8;
 //		rows = 10; cols = 10;
 		nDimensions = rows +"x"+ cols;
 		
@@ -97,7 +98,7 @@ public class App
 		
 
 		// Hard Coded Flow Pointers
-		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
+//		HardCodedFlowPointers hardCodedPointers = new HardCodedFlowPointers(grid);
 //
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_5x5());
 //		this.initGridFlowPointers(hardCodedPointers.initialPointers_6x6());

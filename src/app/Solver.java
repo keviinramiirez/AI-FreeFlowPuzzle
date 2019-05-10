@@ -33,10 +33,10 @@ public class Solver
 			LinkedList<GridCell> cellsToConsider = (currFlowPointer.nextAdjCells.isEmpty())
 					? validation.cellsToConsiderMovingInto(currFlowPointer)
 							: currFlowPointer.nextAdjCells;
-			
+
 			// paint current flow pointer
 			currFlowPointer.color = goalPairPointer.color;
-			
+
 			// dead-end
 			// if no cells to consider (backtrack)
 			if (cellsToConsider.isEmpty())
